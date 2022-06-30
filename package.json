@@ -1,0 +1,15 @@
+{
+  "name": "tetsudai-api",
+  "version": "1.0.0",
+  "description": "Tetsudai API",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "author": "Xavier Jean",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1"
+  }
+}
