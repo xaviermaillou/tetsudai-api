@@ -23,7 +23,7 @@ module.exports = [
         collections: [
             1,
         ],
-        romaji: ['hito, ichi'],
+        romaji: ['hito', 'ichi'],
         translation: 'un',
     },
     {
