@@ -6833,6 +6833,72 @@ module.exports = [
         romaji: ['seki', 'zeki', 'karakuri', 'kan'],
         translation: 'connexion, lien, relation, passage',
     },
+    {
+        id: 291,
+        kanji: '伊',
+        strokes: 6,
+        level: 'N1',
+        frequency: 703,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'かれ',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'イ',
+                },
+            ],
+        },
+        romaji: ['kare', 'i'],
+        translation: 'Italie, celui-là',
+    },
+    {
+        id: 292,
+        kanji: '太',
+        strokes: 4,
+        level: 'N3',
+        frequency: 552,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'ふと',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'タイ',
+                },
+                {
+                    'kana': 'タ',
+                },
+            ],
+        },
+        romaji: ['futo', 'tai', 'ta'],
+        translation: 'gros, épais, dodu',
+    },
+    {
+        id: 293,
+        kanji: '利',
+        strokes: 7,
+        level: 'N3',
+        frequency: 203,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'き',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'リ',
+                },
+            ],
+        },
+        romaji: ['ki', 'ri'],
+        translation: 'profit, avantage, bénéfice',
+    },
 ];
 
 // Collections:

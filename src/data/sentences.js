@@ -244,4 +244,25 @@ module.exports = [
         ],
         translation: 'Nous nous dirigeons vers la victoire.',
     },
+    {
+        elements: [
+            {
+                word: 'イタリア',
+                id: 365,
+            },
+            {
+                word: 'レストラン',
+                id: 362,
+            },
+            {
+                word: 'は',
+                id: 278,
+            },
+            {
+                word: 'どう',
+                id: 221,
+            },
+        ],
+        translation: 'Que dis-tu d\'un restaurant italien ?',
+    },
 ];

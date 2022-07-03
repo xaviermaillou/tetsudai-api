@@ -44,8 +44,14 @@ app.get('/kanjiList/:level/:grammar/:collection/:search?', (req, res) => {
                 || !search
             )
         ) {
-            kanjiArray.push({ ...kanji, importance: filters
-                .getKanjiImportance(kanji.vocabulary, kanji.romaji, kanji.translationArray, search) })
+            kanjiArray.push({ 
+                id: kanji.id,
+                kanji: kanji.kanji,
+                readings: kanji.readings,
+                translation: kanji.translation,
+                importance: filters
+                    .getKanjiImportance(kanji.vocabulary, kanji.romaji, kanji.translationArray, search)
+            })
         }
     })
 
@@ -73,8 +79,14 @@ app.get('/vocabularyList/:level/:grammar/:collection/:search?', (req, res) => {
             && (filters.searchThroughWord(word.romaji, word.translationArray, search)
                 || !search)
         ) {
-            vocabularyArray.push({ ...word, importance: filters
-                .getWordImportance(word.romaji, word.translationArray, word.variants, search), })
+            vocabularyArray.push({
+                id: word.id,
+                elements: word.elements,
+                jukujikun: word.jukujikun,
+                translation: word.translation,
+                importance: filters
+                    .getWordImportance(word.romaji, word.translationArray, word.variants, search)
+            })
         }
     })
 
@@ -119,19 +131,6 @@ app.get('/kanji/:id', (req, res) => {
 
     kanjiList.forEach((kanji) => {
         if (kanji.id === id) foundKanji = kanji
-    })
-
-    res.json(foundKanji)
-})
-app.get('/kanjiByKanji/:kanji', (req, res) => {
-    const kanji = Number(req.params.kanji)
-
-    console.log('\nKanji spécifique requêté\n')
-
-    let foundKanji
-
-    kanjiList.forEach((kanji) => {
-        if (kanji.kanji === kanji) foundKanji = kanji
     })
 
     res.json(foundKanji)

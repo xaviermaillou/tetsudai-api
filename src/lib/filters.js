@@ -1,6 +1,6 @@
 const searchRegularization = (string) => {
     return string.split(' ').join('').split('\'').join('').split('é').join('e').split('è').join('e').split('ê').join('e')
-        .split('à').join('a').split('â').join('a').split('î').join('i').split('ô').join('o').split('û').join('u')
+        .split('à').join('a').split('â').join('a').split('î').join('i').split('ô').join('o').split('û').join('u').split('-').join('')
 }
 const romajiRegularization = (string) => {
     return string.split('ou').join('o').split('ei').join('e').split('aa').join('a').split('ii').join('i').split('uu').join('u')

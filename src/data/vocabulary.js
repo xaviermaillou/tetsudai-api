@@ -4694,7 +4694,7 @@ module.exports = [
         level: 'N5',
         frequency: 1511,
         romaji: 'dou',
-        translation: 'comment',
+        translation: 'comment, qu\'en est-il',
         grammar: [5],
         kosoado: true,
     },
@@ -6446,7 +6446,7 @@ module.exports = [
         level: 'N5',
         frequency: 10000,
         romaji: 'doushite',
-        translation: 'pourquoi, comment',
+        translation: 'pourquoi, comment, comment ça se fait',
         grammar: [5],
     },
     {
@@ -7533,6 +7533,7 @@ module.exports = [
         ],
         common: true,
         rareKanji: true,
+        formality: 2,
         level: 'N5',
         frequency: 4244,
         romaji: 'naze',
@@ -7553,11 +7554,40 @@ module.exports = [
         ],
         common: true,
         rareKanji: true,
+        formality: 0,
         level: 'N3',
         frequency: 9747,
         romaji: 'nande',
         translation: 'pourquoi, comment',
         grammar: [5],
+    },
+    {
+        id: 365,
+        elements: [
+            {
+                kanji: '伊',
+                kana: '',
+            },
+            {
+                kanji: '太',
+                kana: '',
+            },
+            {
+                kanji: '利',
+                kana: '',
+            },
+        ],
+        jukujikun: 'イタリア',
+        collections: [
+            2,
+            3,
+        ],
+        common: true,
+        level: null,
+        frequency: 347,
+        romaji: 'itaria',
+        translation: 'Italie',
+        grammar: [2],
     },
 ];
 
