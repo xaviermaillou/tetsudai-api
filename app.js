@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 
 const app = express()
-const port = 8000
+const port = process.env.PORT || 8000
 
 const kanjiJSON = require('./src/data/kanjis')
 const vocabularyJSON = require('./src/data/vocabulary')
@@ -15,6 +15,8 @@ const data = require('./src/lib/data')
 app.use(cors())
 
 const { kanjiList, vocabularyList } = data.buildData(kanjiJSON, vocabularyJSON)
+
+app.get('/', (req, res) => res.send('Tetsudai API running'))
 
 app.get('/kanji/:level/:grammar/:collection/:search?', (req, res) => {
     const level = Number(req.params.level)
