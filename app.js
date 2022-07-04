@@ -48,6 +48,7 @@ app.get('/kanjiList/:level/:grammar/:collection/:search?', (req, res) => {
                 id: kanji.id,
                 kanji: kanji.kanji,
                 readings: kanji.readings,
+                frequency: kanji.frequency,
                 translation: kanji.translation,
                 importance: filters
                     .getKanjiImportance(kanji.vocabulary, kanji.romaji, kanji.translationArray, search)
@@ -56,8 +57,8 @@ app.get('/kanjiList/:level/:grammar/:collection/:search?', (req, res) => {
     })
 
     console.log('Kanji envoyés:', kanjiArray.length)
-    const sortedByFrecuencyData = kanjiArray.sort((a, b) => a.frecuency - b.frecuency)
-    res.json(commonLib.sortByObjectKey(sortedByFrecuencyData, commonLib.levels))
+    const sortedByFrequencyData = kanjiArray.sort((a, b) => a.frequency - b.frequency)
+    res.json(commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels))
 })
 app.get('/vocabularyList/:level/:grammar/:collection/:search?', (req, res) => {
     const level = Number(req.params.level)
@@ -83,6 +84,7 @@ app.get('/vocabularyList/:level/:grammar/:collection/:search?', (req, res) => {
                 id: word.id,
                 elements: word.elements,
                 jukujikun: word.jukujikun,
+                frequency: word.frequency,
                 translation: word.translation,
                 importance: filters
                     .getWordImportance(word.romaji, word.translationArray, word.variants, search)
@@ -91,8 +93,8 @@ app.get('/vocabularyList/:level/:grammar/:collection/:search?', (req, res) => {
     })
 
     console.log('Vocabulaire envoyé:', vocabularyArray.length)
-    const sortedByFrecuencyData = vocabularyArray.sort((a, b) => a.frecuency - b.frecuency)
-    res.json(commonLib.sortByObjectKey(sortedByFrecuencyData, commonLib.levels))
+    const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
+    res.json(commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels))
 })
 app.get('/sentences/:id', (req, res) => {
     const id = Number(req.params.id)
