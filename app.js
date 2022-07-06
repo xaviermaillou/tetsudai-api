@@ -19,16 +19,19 @@ const { kanjiList, vocabularyList } = data.buildData(kanjiJSON, vocabularyJSON)
 
 app.get('/', (req, res) => res.send('Tetsudai API running'))
 
-app.get('/kanjiList/:level/:grammar/:collection/:search?', (req, res) => {
+app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) => {
     const level = Number(req.params.level)
     const grammar = Number(req.params.grammar)
     const collection = Number(req.params.collection)
     const search = req.params.search || ""
 
+    const offset = Number(req.params.offset)
+
     console.log('\nKanji requêtés \n',
         'Niveau:', commonLib.levels[level], 'Grammaire:', commonLib.pluralClasses[grammar],
-        'Collection:', commonLib.collections[collection], 'Recherche:', search)
-
+        'Collection:', commonLib.collections[collection], 'Recherche:', search,
+        '\nOffset:', offset)
+        
     const kanjiArray = []
 
     kanjiList.forEach((kanji) => {
@@ -56,20 +59,27 @@ app.get('/kanjiList/:level/:grammar/:collection/:search?', (req, res) => {
         }
     })
 
-    console.log('Kanji envoyés:', kanjiArray.length)
     const sortedByFrequencyData = kanjiArray.sort((a, b) => a.frequency - b.frequency)
-    res.json(commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels))
+    const sortedByLevel = commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
+
+    const slicedKanjiArray = sortedByLevel.slice(offset, offset + 100)
+
+    console.log('Kanji envoyés:', slicedKanjiArray.length)
+    res.json(slicedKanjiArray)
 })
-app.get('/vocabularyList/:level/:grammar/:collection/:search?', (req, res) => {
+app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, res) => {
     const level = Number(req.params.level)
     const grammar = Number(req.params.grammar)
     const collection = Number(req.params.collection)
     const search = req.params.search || ""
 
+    const offset = Number(req.params.offset)
+
     console.log('\nVocabulaire requêté \n',
         'Niveau:', commonLib.levels[level], 'Grammaire:', commonLib.pluralClasses[grammar],
-        'Collection:', commonLib.collections[collection], 'Recherche:', search)
-
+        'Collection:', commonLib.collections[collection], 'Recherche:', search,
+        '\nOffset:', offset)
+    
     const vocabularyArray = []
 
     vocabularyList.forEach((word) => {
@@ -92,9 +102,13 @@ app.get('/vocabularyList/:level/:grammar/:collection/:search?', (req, res) => {
         }
     })
 
-    console.log('Vocabulaire envoyé:', vocabularyArray.length)
     const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
-    res.json(commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels))
+    const sortedByLevel = commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
+
+    const slicedVocabularyArray = sortedByLevel.slice(offset, offset + 100)
+
+    console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
+    res.json(commonLib.sortByObjectKey(slicedVocabularyArray, commonLib.levels))
 })
 app.get('/sentences/:id', (req, res) => {
     const id = Number(req.params.id)
