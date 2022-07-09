@@ -67,6 +67,7 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
     console.log('Kanji envoyés:', slicedKanjiArray.length)
     res.json(slicedKanjiArray)
 })
+
 app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, res) => {
     const level = Number(req.params.level)
     const grammar = Number(req.params.grammar)
@@ -110,6 +111,7 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
     console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
     res.json(commonLib.sortByObjectKey(slicedVocabularyArray, commonLib.levels))
 })
+
 app.get('/sentences/:id', (req, res) => {
     const id = Number(req.params.id)
 
@@ -125,6 +127,7 @@ app.get('/sentences/:id', (req, res) => {
 
     res.json(sentencesArray)
 })
+
 app.get('/inflexions/:id', (req, res) => {
     const id = Number(req.params.id)
 
@@ -138,6 +141,7 @@ app.get('/inflexions/:id', (req, res) => {
 
     res.json(wordInflexions)
 })
+
 app.get('/kanji/:id', (req, res) => {
     const id = Number(req.params.id)
 
@@ -151,6 +155,7 @@ app.get('/kanji/:id', (req, res) => {
 
     res.json(foundKanji)
 })
+
 app.get('/word/:id', (req, res) => {
     const id = Number(req.params.id)
 
@@ -163,6 +168,60 @@ app.get('/word/:id', (req, res) => {
     })
 
     res.json(foundWord)
+})
+
+app.get('/kanjiTrainingList/:level/:grammar/:collection', (req, res) => {
+    const level = Number(req.params.level)
+    const grammar = Number(req.params.grammar)
+    const collection = Number(req.params.collection)
+
+    console.log('\nKanji requêtés pour l\'entraînement \n',
+        'Niveau:', commonLib.levels[level], 'Grammaire:', commonLib.pluralClasses[grammar],
+        'Collection:', commonLib.collections[collection])
+        
+    const kanjiArray = []
+
+    kanjiList.forEach((kanji) => {
+        if (
+            (kanji.collections?.includes(collection) || collection === 0)
+            && (commonLib.levels[level] === kanji.level || !level) 
+            && (kanji.grammar.includes(grammar) || grammar === 0)
+        ) {
+            kanjiArray.push({ 
+                id: kanji.id,
+            })
+        }
+    })
+
+    console.log('Kanji d\'entraînement envoyés:', kanjiArray.length)
+    res.json(kanjiArray)
+})
+
+app.get('/vocabularyTrainingList/:level/:grammar/:collection', (req, res) => {
+    const level = Number(req.params.level)
+    const grammar = Number(req.params.grammar)
+    const collection = Number(req.params.collection)
+
+    console.log('\nVocabulaire requêté pour l\'entraînement \n',
+        'Niveau:', commonLib.levels[level], 'Grammaire:', commonLib.pluralClasses[grammar],
+        'Collection:', commonLib.collections[collection])
+        
+    const vocabularyArray = []
+
+    vocabularyList.forEach((word) => {
+        if (
+            (word.collections?.includes(collection) || collection === 0)
+            && (commonLib.levels[level] === word.level || !level) 
+            && (word.grammar.includes(grammar) || grammar === 0)
+        ) {
+            vocabularyArray.push({ 
+                id: word.id,
+            })
+        }
+    })
+
+    console.log('Vocabulaire d\'entraînement envoyé:', vocabularyArray.length)
+    res.json(vocabularyArray)
 })
 
 app.listen(port, () => console.log(`L'application Node est démarrée sur http://localhost:${port}`))
