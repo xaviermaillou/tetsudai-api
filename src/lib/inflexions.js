@@ -51,21 +51,21 @@ const copuleConjugationStructure = (adjective) => {
         nonPast: {
             affirmative: {
                 neutral: {
-                    main: adjective + 'だ',
+                    main: (adjective ?? '') + 'だ',
                     ending: '',
                 },
                 polite: {
-                    main: adjective + 'で',
+                    main: (adjective ?? '') + 'で',
                     ending: 'す',
                 }
             },
             negative: {
                 neutral: {
-                    main: adjective + 'では',
+                    main: (adjective ?? '') + 'では',
                     ending: 'ない',
                 },
                 polite: {
-                    main: adjective + 'では',
+                    main: (adjective ?? '') + 'では',
                     ending: 'ありません',
                 }
             }
@@ -73,21 +73,21 @@ const copuleConjugationStructure = (adjective) => {
         past: {
             affirmative: {
                 neutral: {
-                    main: adjective + 'だ',
+                    main: (adjective ?? '') + 'だ',
                     ending: 'った',
                 },
                 polite: {
-                    main: adjective + 'で',
+                    main: (adjective ?? '') + 'で',
                     ending: 'した',
                 }
             },
             negative: {
                 neutral: {
-                    main: adjective + 'では',
+                    main: (adjective ?? '') + 'では',
                     ending: 'なかった',
                 },
                 polite: {
-                    main: adjective + 'では',
+                    main: (adjective ?? '') + 'では',
                     ending: 'ありませんでした',
                 }
             }
