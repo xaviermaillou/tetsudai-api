@@ -3,21 +3,21 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
         nonPast: {
             affirmative: {
                 neutral: {
-                    main: exceptionBases?.nonPastAffNeutral || base,
+                    main: exceptionBases?.nonPastAffNeutral ?? base,
                     ending: inflexions.okurigana,
                 },
                 polite: {
-                    main: exceptionBases?.nonPastAffPolite || base,
+                    main: exceptionBases?.nonPastAffPolite ?? base,
                     ending: inflexions.politeInterm + 'ます',
                 }
             },
             negative: {
                 neutral: {
-                    main: exceptionBases?.nonPastNegNeutral || base,
+                    main: exceptionBases?.nonPastNegNeutral ?? base,
                     ending: inflexions.connective + 'ない',
                 },
                 polite: {
-                    main: exceptionBases?.nonPastNegPolite || base,
+                    main: exceptionBases?.nonPastNegPolite ?? base,
                     ending: inflexions.politeInterm + 'ません',
                 }
             }
@@ -25,21 +25,21 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
         past: {
             affirmative: {
                 neutral: {
-                    main: exceptionBases?.pastAffNeutral || base,
+                    main: exceptionBases?.pastAffNeutral ?? base,
                     ending: inflexions.past,
                 },
                 polite: {
-                    main: exceptionBases?.pastAffPolite || base,
+                    main: exceptionBases?.pastAffPolite ?? base,
                     ending: inflexions.politeInterm + 'ました',
                 }
             },
             negative: {
                 neutral: {
-                    main: exceptionBases?.pastNegNeutral || base,
+                    main: exceptionBases?.pastNegNeutral ?? base,
                     ending: inflexions.connective + 'なかった',
                 },
                 polite: {
-                    main: exceptionBases?.pastNegPolite || base,
+                    main: exceptionBases?.pastNegPolite ?? base,
                     ending: inflexions.politeInterm + 'ませんでした',
                 }
             }
@@ -224,6 +224,17 @@ const getVerbConjugation = (word) => {
             politeInterm: 'き',
             connective: 'か',
             past: 'った',
+        });
+    }
+    if (info.type === 'aru') {
+        return verbConjugationStructure(base, {
+            okurigana: 'る',
+            politeInterm: 'り',
+            connective: '',
+            past: 'った',
+        }, {
+            nonPastNegNeutral: '',
+            pastNegNeutral: '',
         });
     }
     if (info.type === 'desu') {

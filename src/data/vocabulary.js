@@ -5321,8 +5321,7 @@ module.exports = [
         translation: 'verbe de présence (objets inanimés)',
         grammar: [3],
         verbPrecisions: {
-            type: 'godan',
-            ending: 'ru',
+            type: 'aru',
             grammar: 'intransitive',
         },
     },
