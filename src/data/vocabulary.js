@@ -5241,7 +5241,7 @@ module.exports = [
         level: 'N5',
         frequency: 10000,
         romaji: 'shimaru',
-        translation: 'être fermé',
+        translation: 'se fermer',
         grammar: [3],
         verbPrecisions: {
             type: 'godan',
@@ -7590,6 +7590,234 @@ module.exports = [
         romaji: 'itaria',
         translation: 'Italie',
         grammar: [2],
+    },
+    {
+        id: 366,
+        elements: [
+            {
+                kanji: '出',
+                kana: 'だ',
+            },
+            {
+                kanji: '',
+                kana: 'す',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 214,
+        romaji: 'dasu',
+        translation: 'enlever, retirer',
+        grammar: [3],
+        verbPrecisions: {
+            type: 'godan',
+            ending: 'su',
+            grammar: 'transitive',
+        },
+    },
+    {
+        id: 367,
+        elements: [
+            {
+                kanji: '出',
+                kana: 'で',
+            },
+            {
+                kanji: '',
+                kana: 'る',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 220,
+        romaji: 'deru',
+        translation: 'sortir, partir',
+        grammar: [3],
+        verbPrecisions: {
+            type: 'ichidan',
+            grammar: 'intransitive',
+        },
+    },
+    {
+        id: 368,
+        elements: [
+            {
+                kanji: '入',
+                kana: 'い',
+            },
+            {
+                kanji: '',
+                kana: 'れ',
+            },
+            {
+                kanji: '',
+                kana: 'る',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 786,
+        romaji: 'ireru',
+        translation: 'faire entrer, insérer, installer',
+        grammar: [3],
+        verbPrecisions: {
+            type: 'ichidan',
+            grammar: 'transitive',
+        },
+    },
+    {
+        id: 369,
+        elements: [
+            {
+                kanji: '付',
+                kana: 'つ',
+            },
+            {
+                kanji: '',
+                kana: 'け',
+            },
+            {
+                kanji: '',
+                kana: 'る',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 279,
+        romaji: 'tsukeru',
+        translation: 'attacher, joindre, connecter, allumer',
+        grammar: [3],
+        verbPrecisions: {
+            type: 'ichidan',
+            grammar: 'transitive',
+        },
+    },
+    {
+        id: 370,
+        elements: [
+            {
+                kanji: '付',
+                kana: 'つ',
+            },
+            {
+                kanji: '',
+                kana: 'く',
+            },
+        ],
+        common: true,
+        level: 'N4',
+        frequency: 401,
+        romaji: 'tsuku',
+        translation: 's\'attacher, se connecter, s\'allumer',
+        grammar: [3],
+        verbPrecisions: {
+            type: 'godan',
+            ending: 'ku',
+            grammar: 'intransitive',
+        },
+    },
+    {
+        id: 371,
+        elements: [
+            {
+                kanji: '消',
+                kana: 'け',
+            },
+            {
+                kanji: '',
+                kana: 'す',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 3645,
+        romaji: 'kesu',
+        translation: 'effacer, supprimer, éteindre',
+        grammar: [3],
+        verbPrecisions: {
+            type: 'godan',
+            ending: 'su',
+            grammar: 'transitive',
+        },
+    },
+    {
+        id: 372,
+        elements: [
+            {
+                kanji: '消',
+                kana: 'き',
+            },
+            {
+                kanji: '',
+                kana: 'え',
+            },
+            {
+                kanji: '',
+                kana: 'る',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 4220,
+        romaji: 'kieru',
+        translation: 's\'effacer, disparaître, s\'éteindre',
+        grammar: [3],
+        verbPrecisions: {
+            type: 'ichidan',
+            grammar: 'intransitive',
+        },
+    },
+    {
+        id: 373,
+        elements: [
+            {
+                kanji: '電',
+                kana: 'デン',
+            },
+            {
+                kanji: '気',
+                kana: 'キ',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 707,
+        romaji: 'denki',
+        translation: 'électricité, lumière (éléctrique)',
+        grammar: [1],
+    },
+    {
+        id: 374,
+        elements: [
+            {
+                kanji: '窓',
+                kana: 'まど',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 1647,
+        romaji: 'mado',
+        translation: 'fenêtre',
+        grammar: [1],
+    },
+    {
+        id: 375,
+        elements: [
+            {
+                kanji: '',
+                kana: 'ボール',
+            },
+        ],
+        collections: [
+            2,
+        ],
+        common: true,
+        level: 'N3',
+        frequency: 2179,
+        romaji: 'bouru',
+        translation: 'balle',
+        grammar: [1],
     },
 ];
 

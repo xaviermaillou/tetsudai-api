@@ -265,4 +265,42 @@ module.exports = [
         ],
         translation: 'Que dis-tu d\'un restaurant italien ?',
     },
+    {
+        elements: [
+            {
+                word: 'どうして',
+                id: 310,
+            },
+            {
+                word: '窓',
+                id: 374,
+            },
+            {
+                word: 'が',
+                id: 280,
+            },
+            {
+                word: '開いた',
+                id: 107,
+            },
+        ],
+        translation: 'Pourquoi la fenêtre est ouverte ?',
+    },
+    {
+        elements: [
+            {
+                word: '電気',
+                id: 373,
+            },
+            {
+                word: 'が',
+                id: 280,
+            },
+            {
+                word: '付いた',
+                id: 370,
+            },
+        ],
+        translation: 'Les lumières sont allumées.',
+    },
 ];

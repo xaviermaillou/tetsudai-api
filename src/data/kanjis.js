@@ -1636,6 +1636,9 @@ module.exports = [
                     'kana': 'はい',
                 },
                 {
+                    'kana': 'い',
+                },
+                {
                     'kana': 'いり',
                 },
             ],
@@ -2889,6 +2892,9 @@ module.exports = [
             kunyomi: [
                 {
                     'kana': 'で',
+                },
+                {
+                    'kana': 'だ',
                 },
             ],
             onyomi: [],
@@ -6898,6 +6904,72 @@ module.exports = [
         },
         romaji: ['ki', 'ri'],
         translation: 'profit, avantage, bénéfice',
+    },
+    {
+        id: 294,
+        kanji: '付',
+        strokes: 5,
+        level: 'N3',
+        frequency: 322,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'つ',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'フ',
+                },
+            ],
+        },
+        romaji: ['tsu', 'fu'],
+        translation: 'coller, attacher, soumettre, ajouter',
+    },
+    {
+        id: 295,
+        kanji: '消',
+        strokes: 10,
+        level: 'N3',
+        frequency: 345,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'き',
+                },
+                {
+                    'kana': 'け',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'ショウ',
+                },
+            ],
+        },
+        romaji: ['ki', 'ke', 'shou'],
+        translation: 'éteindre, effacer, disparaître, neutraliser',
+    },
+    {
+        id: 296,
+        kanji: '窓',
+        strokes: 11,
+        level: 'N3',
+        frequency: 1186,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'まど',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'ソウ',
+                },
+            ],
+        },
+        romaji: ['mado', 'sou'],
+        translation: 'fenêtre, vitre',
     },
 ];
 
