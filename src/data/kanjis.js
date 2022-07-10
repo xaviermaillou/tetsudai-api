@@ -1095,7 +1095,7 @@ module.exports = [
             1,
         ],
         romaji: ['watashi'],
-        translation: 'je (moi), privé',
+        translation: 'je, moi, privé',
     },
     {
         id: 45,

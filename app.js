@@ -33,31 +33,39 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
         '\nOffset:', offset)
         
     const kanjiArray = []
+    const splittedSearch = search.split(' ')
 
-    kanjiList.forEach((kanji) => {
-        if (
-            (
-                (kanji.collections?.includes(collection) || collection === 0)
-                && (commonLib.levels[level] === kanji.level || !level) 
-                && (kanji.grammar.includes(grammar) || grammar === 0)
-            ) 
-            &&
-            (
-                filters.searchThroughKanji(kanji.vocabulary, kanji.romaji, kanji.translationArray, search)
-                || !search
-            )
-        ) {
-            kanjiArray.push({ 
-                id: kanji.id,
-                kanji: kanji.kanji,
-                readings: kanji.readings,
-                frequency: kanji.frequency,
-                translation: kanji.translation,
-                importance: filters
-                    .getKanjiImportance(kanji.vocabulary, kanji.romaji, kanji.translationArray, search)
-            })
-        }
+    splittedSearch.forEach((searchElement) => {
+        kanjiList.forEach((kanji) => {
+            if (
+                (
+                    (kanji.collections?.includes(collection) || collection === 0)
+                    && (commonLib.levels[level] === kanji.level || !level) 
+                    && (kanji.grammar.includes(grammar) || grammar === 0)
+                ) 
+                &&
+                (
+                    filters.searchThroughKanji(kanji, searchElement)
+                    || !searchElement
+                )
+                &&
+                (
+                    kanjiArray.find((element) => element.id === kanji.id) === undefined
+                )
+            ) {
+                kanjiArray.push({ 
+                    id: kanji.id,
+                    kanji: kanji.kanji,
+                    readings: kanji.readings,
+                    frequency: kanji.frequency,
+                    translation: kanji.translation,
+                    importance: filters
+                        .getKanjiImportance(kanji, searchElement)
+                })
+            }
+        })
     })
+
 
     const sortedByFrequencyData = kanjiArray.sort((a, b) => a.frequency - b.frequency)
     const sortedByLevel = commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
@@ -82,26 +90,31 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
         '\nOffset:', offset)
     
     const vocabularyArray = []
+    const splittedSearch = search.split(' ')
 
-    vocabularyList.forEach((word) => {
-        if (
-            (word.collections?.includes(collection) || collection === 0)
-            && (commonLib.levels[level] === word.level || !level) 
-            && (word.grammar.includes(grammar) || grammar === 0)
-            && (filters.searchThroughWord(word.romaji, word.translationArray, search)
-                || !search)
-        ) {
-            vocabularyArray.push({
-                id: word.id,
-                elements: word.elements,
-                jukujikun: word.jukujikun,
-                frequency: word.frequency,
-                translation: word.translation,
-                importance: filters
-                    .getWordImportance(word.romaji, word.translationArray, word.variants, search)
-            })
-        }
+    splittedSearch.forEach((searchElement) => {
+        vocabularyList.forEach((word) => {
+            if (
+                (word.collections?.includes(collection) || collection === 0)
+                && (commonLib.levels[level] === word.level || !level) 
+                && (word.grammar.includes(grammar) || grammar === 0)
+                && (filters.searchThroughWord(word, searchElement)
+                    || !searchElement)
+                && (vocabularyArray.find((element) => element.id === word.id) === undefined)
+            ) {
+                vocabularyArray.push({
+                    id: word.id,
+                    elements: word.elements,
+                    jukujikun: word.jukujikun,
+                    frequency: word.frequency,
+                    translation: word.translation,
+                    importance: filters
+                        .getWordImportance(word, searchElement)
+                })
+            }
+        })
     })
+
 
     const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
     const sortedByLevel = commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
