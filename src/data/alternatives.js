@@ -1449,7 +1449,7 @@ module.exports = [
     {
         id: 316,
         conjugation: {
-            nonPast: ['lève', 'lèves', 'levons', 'levez', 'lèvent', 'réveille', 'réveillez', 'téveillons', 'réveillez', 'réveillent'],
+            nonPast: ['lève', 'lèves', 'levons', 'levez', 'lèvent', 'réveille', 'réveillez', 'réveillons', 'réveillez', 'réveillent'],
             past: ['levais', 'levait', 'levions', 'leviez', 'levaient', 'réveillais', 'réveillait', ' réveillions', 'réveilliez', 'révaillaient', 'levé', 'levée', 'levés', 'levés', 'réveillé', 'réveillée', 'réveillés', 'réveillées']
         },
     },
@@ -1633,8 +1633,8 @@ module.exports = [
     {
         id: 356,
         conjugation: {
-            nonPast: ['prends', 'prend', 'prenons', 'prenez', 'prennent'],
-            past: ['prenais', 'prenait', 'prenions', 'preniez', 'prenaient', 'pris']
+            nonPast: ['prends', 'prend', 'prenons', 'prenez', 'prennent', 'apprends', 'apprend', 'apprenons', 'apprenez', 'apprennent'],
+            past: ['prenais', 'prenait', 'prenions', 'preniez', 'prenaient', 'apprenais', 'apprenait', 'apprenions', 'appreniez', 'apprenaient', 'pris', 'appris']
         },
     },
     {
@@ -1767,6 +1767,21 @@ module.exports = [
     {
         id: 382,
         alternatives: ['coréen'],
+    },
+    {
+        id: 383,
+        conjugation: {
+            nonPast: ['soulève', 'soulèves', 'soulevons', 'soulevez', 'soulèvent', 'élève', 'élèves', 'élevons', 'élevez', 'élèvent'],
+            past: ['soulevais', 'soulevait', 'soulevions', 'souleviez', 'soulevaient', 'élevais', 'élevait', 'élevions', 'éleviez', 'élevaient', 'soulevé', 'élevé']
+        },
+    },
+    {
+        id: 384,
+        alternatives: ['sommets', 'surfaces', 'sur'],
+    },
+    {
+        id: 384,
+        alternatives: ['sous'],
     },
 ];
 

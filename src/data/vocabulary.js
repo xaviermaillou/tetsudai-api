@@ -7968,6 +7968,63 @@ module.exports = [
         translation: 'Langue coréenne',
         grammar: [1],
     },
+    {
+        id: 383,
+        elements: [
+            {
+                kanji: '上',
+                kana: 'あ',
+            },
+            {
+                kanji: '',
+                kana: 'げ',
+            },
+            {
+                kanji: '',
+                kana: 'る',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 293,
+        romaji: 'ageru',
+        translation: 'soulever, élever',
+        grammar: [3],
+        verbPrecisions: {
+            type: 'ichidan',
+            grammar: 'transitive',
+        },
+    },
+    {
+        id: 384,
+        elements: [
+            {
+                kanji: '上',
+                kana: 'うえ',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 198,
+        romaji: 'ue',
+        translation: 'dessus, sommet, surface',
+        grammar: [1],
+    },
+    {
+        id: 384,
+        elements: [
+            {
+                kanji: '下',
+                kana: 'した',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 337,
+        romaji: 'shita',
+        translation: 'dessous',
+        grammar: [1],
+    },
 ];
 
 // Types grammaticaux:
