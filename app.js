@@ -7,6 +7,7 @@ const port = process.env.PORT || 8000
 const kanjiJSON = require('./src/data/kanjis')
 const vocabularyJSON = require('./src/data/vocabulary')
 const sentencesJSON = require('./src/data/sentences')
+const alternativesJSON = require('./src/data/alternatives')
 
 const commonLib = require('./src/lib/common')
 const filters = require('./src/lib/filters')
@@ -15,7 +16,7 @@ const inflexions = require('./src/lib/inflexions')
 
 app.use(cors())
 
-const { kanjiList, vocabularyList } = data.buildData(kanjiJSON, vocabularyJSON)
+const { kanjiList, vocabularyList } = data.buildData(kanjiJSON, vocabularyJSON, alternativesJSON)
 
 app.get('/', (req, res) => res.send('Tetsudai API running'))
 
@@ -33,7 +34,39 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
         '\nOffset:', offset)
         
     const kanjiArray = []
-    const splittedSearch = search.split(' ')
+
+    kanjiList.forEach((kanji) => {
+        if (
+            (
+                (kanji.collections?.includes(collection) || collection === 0)
+                && (commonLib.levels[level] === kanji.level || !level) 
+                && (kanji.grammar.includes(grammar) || grammar === 0)
+            ) 
+            &&
+            (
+                filters.searchThroughKanji(kanji, search)
+                || !search
+            )
+        ) {
+            const alreadyAddedItem = kanjiArray.find((element) => element.id === kanji.id)
+            if (alreadyAddedItem === undefined) {
+                kanjiArray.push({ 
+                    id: kanji.id,
+                    kanji: kanji.kanji,
+                    readings: kanji.readings,
+                    frequency: kanji.frequency,
+                    translation: kanji.translation,
+                    importance: filters
+                        .getKanjiImportance(kanji, search)
+                })
+            } else if (alreadyAddedItem.importance === 0) {
+                alreadyAddedItem.importance = filters
+                    .getKanjiImportance(kanji, search)
+            }
+        }
+    })
+
+    const splittedSearch = search.split(/['\s]+/)
 
     splittedSearch.forEach((searchElement) => {
         kanjiList.forEach((kanji) => {
@@ -48,20 +81,22 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
                     filters.searchThroughKanji(kanji, searchElement)
                     || !searchElement
                 )
-                &&
-                (
-                    kanjiArray.find((element) => element.id === kanji.id) === undefined
-                )
             ) {
-                kanjiArray.push({ 
-                    id: kanji.id,
-                    kanji: kanji.kanji,
-                    readings: kanji.readings,
-                    frequency: kanji.frequency,
-                    translation: kanji.translation,
-                    importance: filters
+                const alreadyAddedItem = kanjiArray.find((element) => element.id === kanji.id)
+                if (alreadyAddedItem === undefined) {
+                    kanjiArray.push({ 
+                        id: kanji.id,
+                        kanji: kanji.kanji,
+                        readings: kanji.readings,
+                        frequency: kanji.frequency,
+                        translation: kanji.translation,
+                        importance: filters
+                            .getKanjiImportance(kanji, searchElement)
+                    })
+                } else if (alreadyAddedItem.importance === 0) {
+                    alreadyAddedItem.importance = filters
                         .getKanjiImportance(kanji, searchElement)
-                })
+                }
             }
         })
     })
@@ -90,7 +125,34 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
         '\nOffset:', offset)
     
     const vocabularyArray = []
-    const splittedSearch = search.split(' ')
+
+    vocabularyList.forEach((word) => {
+        if (
+            (word.collections?.includes(collection) || collection === 0)
+            && (commonLib.levels[level] === word.level || !level) 
+            && (word.grammar.includes(grammar) || grammar === 0)
+            && (filters.searchThroughWord(word, search)
+                || !search)
+        ) {
+            const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
+            if (alreadyAddedItem === undefined) {
+                vocabularyArray.push({
+                    id: word.id,
+                    elements: word.elements,
+                    jukujikun: word.jukujikun,
+                    frequency: word.frequency,
+                    translation: word.translation,
+                    importance: filters
+                        .getWordImportance(word, search)
+                })
+            } else if (alreadyAddedItem.importance === 0) {
+                alreadyAddedItem.importance = filters
+                    .getWordImportance(word, search)
+            }
+        }
+    })
+
+    const splittedSearch = search.split(/['\s]+/)
 
     splittedSearch.forEach((searchElement) => {
         vocabularyList.forEach((word) => {
@@ -100,17 +162,22 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
                 && (word.grammar.includes(grammar) || grammar === 0)
                 && (filters.searchThroughWord(word, searchElement)
                     || !searchElement)
-                && (vocabularyArray.find((element) => element.id === word.id) === undefined)
             ) {
-                vocabularyArray.push({
-                    id: word.id,
-                    elements: word.elements,
-                    jukujikun: word.jukujikun,
-                    frequency: word.frequency,
-                    translation: word.translation,
-                    importance: filters
+                const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
+                if (alreadyAddedItem === undefined) {
+                    vocabularyArray.push({
+                        id: word.id,
+                        elements: word.elements,
+                        jukujikun: word.jukujikun,
+                        frequency: word.frequency,
+                        translation: word.translation,
+                        importance: filters
+                            .getWordImportance(word, searchElement)
+                    })
+                } else if (alreadyAddedItem.importance === 0) {
+                    alreadyAddedItem.importance = filters
                         .getWordImportance(word, searchElement)
-                })
+                }
             }
         })
     })

@@ -1,7 +1,7 @@
 const commonLib = require('./common')
 
 module.exports = {
-    buildData: (kanjiJSON, vocabularyJSON) => {
+    buildData: (kanjiJSON, vocabularyJSON, alternativesJSON) => {
         kanjiJSON.forEach((kanji) => {
             kanji.translationArray = commonLib.cutStringToArray(kanji.translation)
             kanji.vocabulary = []
@@ -28,6 +28,10 @@ module.exports = {
                     return false
                     }
                     return true
+                })
+                word.alternatives = []
+                alternativesJSON.forEach((alternative) => {
+                    if (alternative.id === word.id) word.alternatives = alternative.alternatives || [ ...alternative.conjugation.nonPast, ...alternative.conjugation.past ]
                 })
             })
         })

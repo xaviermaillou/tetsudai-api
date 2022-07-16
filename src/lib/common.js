@@ -51,6 +51,10 @@ module.exports = {
         1: "Kanjis",
         2: "Vocabulaire",
     },
+    verbGrammar: {
+        'transitive': 'transitif',
+        'intransitive': 'intransitif'
+    },
     shuffleArray: (array) => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));

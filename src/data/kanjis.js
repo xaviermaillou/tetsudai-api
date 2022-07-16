@@ -6971,6 +6971,110 @@ module.exports = [
         romaji: ['mado', 'sou'],
         translation: 'fenêtre, vitre',
     },
+    {
+        id: 297,
+        kanji: '取',
+        strokes: 8,
+        level: 'N3',
+        frequency: 122,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'と',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'シュ',
+                },
+            ],
+        },
+        romaji: ['to', 'shu'],
+        translation: 'prendre, saisir, attraper',
+    },
+    {
+        id: 298,
+        kanji: '写',
+        strokes: 5,
+        level: 'N4',
+        frequency: 453,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'うつ',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'シャ',
+                },
+                {
+                    'kana': 'ジャ',
+                },
+            ],
+        },
+        romaji: ['utsu', 'sha', 'ja'],
+        translation: 'copie, décrire',
+    },
+    {
+        id: 299,
+        kanji: '真',
+        strokes: 10,
+        level: 'N4',
+        frequency: 279,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'ま',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'シン',
+                },
+            ],
+        },
+        romaji: ['ma', 'shin'],
+        translation: 'exact, vrai, réalité',
+    },
+    {
+        id: 300,
+        kanji: '鮮',
+        strokes: 17,
+        level: 'N1',
+        frequency: 355,
+        readings: {
+            kunyomi: [
+                {
+                    'kana': 'あざ',
+                },
+            ],
+            onyomi: [
+                {
+                    'kana': 'セン',
+                },
+            ],
+        },
+        romaji: ['aza', 'sen'],
+        translation: 'vif, brillant, clair, Corée',
+    },
+    {
+        id: 301,
+        kanji: '韓',
+        strokes: 18,
+        level: null,
+        frequency: 445,
+        readings: {
+            kunyomi: [],
+            onyomi: [
+                {
+                    'kana': 'カン',
+                },
+            ],
+        },
+        romaji: ['kan'],
+        translation: 'Corée, ancienne région de Chine',
+    },
 ];
 
 // Collections:

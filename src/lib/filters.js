@@ -1,6 +1,7 @@
 const searchRegularization = (string) => {
     return string.split('\'').join('').split('é').join('e').split('è').join('e').split('ê').join('e')
-        .split('à').join('a').split('â').join('a').split('î').join('i').split('ô').join('o').split('û').join('u').split('-').join('')
+        .split('à').join('a').split('â').join('a').split('î').join('i').split('ô').join('o').split('û')
+        .join('u').split('-').join('').split('ç').join('c')
 }
 const romajiRegularization = (string) => {
     return string.split('ou').join('o').split('ei').join('e').split('aa').join('a').split('ii').join('i').split('uu').join('u')
@@ -78,8 +79,13 @@ module.exports = {
 
     searchThroughWord: (vocabularyWord, string) => {
         let includes = false
-
         vocabularyWord.translationArray?.forEach((word) => {
+            if (searchRegularization(word.toLowerCase())
+                .includes(searchRegularization(string.toLowerCase()))
+            ) includes = true
+        })
+
+        vocabularyWord.alternatives?.forEach((word) => {
             if (searchRegularization(word.toLowerCase())
                 .includes(searchRegularization(string.toLowerCase()))
             ) includes = true
@@ -99,12 +105,22 @@ module.exports = {
 
     getWordImportance: (vocabularyWord, string) => {
         let matchingScore = 0
-
+        console.log(vocabularyWord.romaji)
         if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
             === romajiRegularization(string.toLowerCase())
         ) matchingScore ++
 
         vocabularyWord.translationArray?.forEach((word) => {
+            if (vocabularyWord.id === 9) {
+                console.log(searchRegularization(word.toLowerCase()))
+                console.log(searchRegularization(string.toLowerCase()))
+            }
+            if (searchRegularization(word.toLowerCase())
+                === searchRegularization(string.toLowerCase())
+            ) matchingScore ++
+        })
+
+        vocabularyWord.alternatives?.forEach((word) => {
             if (searchRegularization(word.toLowerCase())
                 === searchRegularization(string.toLowerCase())
             ) matchingScore ++

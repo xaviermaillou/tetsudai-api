@@ -2367,7 +2367,7 @@ module.exports = [
         level: null,
         frequency: 10000,
         romaji: 'choushoku',
-        translation: 'petit-déjeuner',
+        translation: 'repas du matin, petit-déjeuner',
         grammar: [1],
     },
     {
@@ -2390,7 +2390,7 @@ module.exports = [
         level: 'N5',
         frequency: 10000,
         romaji: 'asagohan',
-        translation: 'petit-déjeuner',
+        translation: 'repas du matin, petit-déjeuner',
         grammar: [1],
     },
     {
@@ -2409,7 +2409,7 @@ module.exports = [
         level: 'N3',
         frequency: 10000,
         romaji: 'chuushoku',
-        translation: 'déjeuner',
+        translation: 'repas du midi, déjeuner',
         grammar: [1],
     },
     {
@@ -2432,7 +2432,7 @@ module.exports = [
         level: 'N5',
         frequency: 10000,
         romaji: 'hirugohan',
-        translation: 'déjeuner',
+        translation: 'repas du midi, déjeuner',
         grammar: [1],
     },
     {
@@ -3126,7 +3126,7 @@ module.exports = [
         frequency: 113,
         romaji: 'aida',
         translation: 'intervalle, pendant',
-        grammar: [1],
+        grammar: [1, 5],
     },
     {
         id: 149,
@@ -3239,7 +3239,7 @@ module.exports = [
         level: 'N5',
         frequency: 3143,
         romaji: 'asobu',
-        translation: 'jouer',
+        translation: 's\'amuser, sortir, jouer',
         grammar: [3],
         verbPrecisions: {
             type: 'godan',
@@ -3700,7 +3700,7 @@ module.exports = [
         level: 'N5',
         frequency: 386,
         romaji: 'hajimete',
-        translation: 'la première fois',
+        translation: 'première fois',
         grammar: [5],
     },
     {
@@ -4854,7 +4854,7 @@ module.exports = [
         level: 'N4',
         frequency: 3020,
         romaji: 'shumi',
-        translation: 'passe-temps, interêt',
+        translation: 'passe-temps, intérêt',
         grammar: [1],
     },
     {
@@ -6175,7 +6175,7 @@ module.exports = [
         level: 'N4',
         frequency: 32,
         romaji: 'okonau',
-        translation: 'réaliser, effectuer, se conduire',
+        translation: 'faire, réaliser, effectuer, se conduire',
         grammar: [3],
         verbPrecisions: {
             type: 'godan',
@@ -6346,7 +6346,7 @@ module.exports = [
         level: 'N5',
         frequency: 92,
         romaji: 'terebi',
-        translation: 'TV, télévision, téléviseur',
+        translation: 'télévision',
         grammar: [1],
     },
     {
@@ -6361,7 +6361,7 @@ module.exports = [
         level: 'N5',
         frequency: 95,
         romaji: 'machi',
-        translation: 'ville',
+        translation: 'ville, quartier',
         grammar: [1],
     },
     {
@@ -6738,7 +6738,7 @@ module.exports = [
         level: 'N5',
         frequency: 10000,
         romaji: 'iru',
-        translation: 'avoir besoin, vouloir',
+        translation: 'être voulu, être nécessité',
         grammar: [3],
         verbPrecisions: {
             type: 'godan',
@@ -7031,7 +7031,7 @@ module.exports = [
         level: 'N5',
         frequency: 4906,
         romaji: 'motto',
-        translation: 'encore plus',
+        translation: 'plus, encore plus',
         grammar: [5],
     },
     {
@@ -7816,6 +7816,156 @@ module.exports = [
         frequency: 2179,
         romaji: 'bouru',
         translation: 'balle',
+        grammar: [1],
+    },
+    {
+        id: 376,
+        elements: [
+            {
+                kanji: '取',
+                kana: 'と',
+            },
+            {
+                kanji: '',
+                kana: 'る',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 128,
+        romaji: 'toru',
+        translation: 'prendre, saisir, attraper',
+        grammar: [3],
+        verbPrecisions: {
+            type: 'godan',
+            ending: 'ru',
+            grammar: 'transitive',
+        },
+    },
+    {
+        id: 377,
+        elements: [
+            {
+                kanji: '写',
+                kana: 'シャ',
+            },
+            {
+                kanji: '真',
+                kana: 'シン',
+            },
+        ],
+        common: true,
+        level: 'N5',
+        frequency: 764,
+        romaji: 'shashin',
+        translation: 'photographie',
+        grammar: [1],
+    },
+    {
+        id: 378,
+        elements: [
+            {
+                kanji: '日',
+                kana: '二',
+            },
+            {
+                kanji: '本',
+                kana: 'ホン',
+            },
+            {
+                kanji: '語',
+                kana: 'ゴ',
+            },
+        ],
+        common: true,
+        level: null,
+        frequency: 10000,
+        romaji: 'nihongo',
+        translation: 'Langue japonaise',
+        grammar: [1],
+    },
+    {
+        id: 379,
+        elements: [
+            {
+                kanji: '朝',
+                kana: 'チョウ',
+            },
+            {
+                kanji: '鮮',
+                kana: 'セン',
+            },
+        ],
+        common: true,
+        level: null,
+        frequency: 911,
+        romaji: 'chousen',
+        translation: 'Corée',
+        grammar: [2],
+    },
+    {
+        id: 380,
+        elements: [
+            {
+                kanji: '韓',
+                kana: 'カン',
+            },
+            {
+                kanji: '国',
+                kana: 'コク',
+            },
+        ],
+        common: true,
+        level: null,
+        frequency: 665,
+        romaji: 'kankoku',
+        translation: 'Corée du Sud',
+        grammar: [2],
+    },
+    {
+        id: 381,
+        elements: [
+            {
+                kanji: '中',
+                kana: 'チュウ',
+            },
+            {
+                kanji: '国',
+                kana: 'ゴク',
+            },
+            {
+                kanji: '語',
+                kana: 'ゴ',
+            },
+        ],
+        common: true,
+        level: null,
+        frequency: 10000,
+        romaji: 'chuugokugo',
+        translation: 'Langue chinoise',
+        grammar: [1],
+    },
+    {
+        id: 382,
+        elements: [
+            {
+                kanji: '韓',
+                kana: 'カン',
+            },
+            {
+                kanji: '国',
+                kana: 'コク',
+            },
+            {
+                kanji: '語',
+                kana: 'ゴ',
+            },
+        ],
+        common: true,
+        level: null,
+        frequency: 10000,
+        romaji: 'kankokugo',
+        translation: 'Langue coréenne',
         grammar: [1],
     },
 ];
