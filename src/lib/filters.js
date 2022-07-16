@@ -95,6 +95,19 @@ module.exports = {
             .includes(romajiRegularization(string.toLowerCase()))
         ) includes = true
 
+        if (vocabularyWord.inflexions) {
+            const inflexionsArray = []
+            Object.values(vocabularyWord.inflexions).map((tense) => {
+                inflexionsArray.push(tense.affirmative.neutral.main + tense.affirmative.neutral.ending)
+                if (tense.affirmative.polite) inflexionsArray.push(tense.affirmative.polite.main + tense.affirmative.polite.ending) 
+                inflexionsArray.push(tense.negative.neutral.main + tense.negative.neutral.ending) 
+                if (tense.negative.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending) 
+            })
+            inflexionsArray.forEach((inflexion) => {
+                if (inflexion.includes(string) || string.includes(inflexion)) includes = true
+            })
+        }
+
         const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
             .map((element) => element.kanji || element.kana).join('')
 
@@ -125,6 +138,18 @@ module.exports = {
                 === searchRegularization(string.toLowerCase())
             ) matchingScore ++
         })
+        if (vocabularyWord.inflexions) {
+            const inflexionsArray = []
+            Object.values(vocabularyWord.inflexions).map((tense) => {
+                inflexionsArray.push(tense.affirmative.neutral.main + tense.affirmative.neutral.ending)
+                if (tense.affirmative.polite) inflexionsArray.push(tense.affirmative.polite.main + tense.affirmative.polite.ending) 
+                inflexionsArray.push(tense.negative.neutral.main + tense.negative.neutral.ending) 
+                if (tense.negative.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending) 
+            })
+            inflexionsArray.forEach((inflexion) => {
+                if (inflexion === string) matchingScore ++
+            })
+        }
 
         const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
             .map((element) => element.kanji || element.kana).join('')
