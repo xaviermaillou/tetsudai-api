@@ -33,7 +33,7 @@ module.exports = [
     },
     {
         id: 9,
-        alternatives: ['nippon', 'nipon', 'pays du soleil levant'],
+        alternatives: ['nippon', 'nipon', 'pays du soleil levant', 'japonais', 'japonaise', 'japonaises'],
     },
     {
         id: 10,

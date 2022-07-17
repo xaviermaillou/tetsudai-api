@@ -1,16 +1,80 @@
+const firebase = require('../Firebase')
+require( "firebase/firestore")
 const commonLib = require('./common')
-const kanjiJSON = require('../data/kanjis')
-const vocabularyJSON = require('../data/vocabulary')
-const alternativesJSON = require('../data/alternatives')
 const inflexions = require('../lib/inflexions')
 
 module.exports = {
-    buildData: () => {
-        kanjiJSON.forEach((kanji) => {
+    buildData: async () => {
+
+        let kanjiList = []
+        firebase.firestore().collection('Kanjis').onSnapshot((snapshot) => {
+            const data = snapshot.docs.map((doc) => ({
+                ...doc.data(),
+                 doc,
+            }))
+            kanjiList = data
+        })
+        /* const kanjiSnapshot = await firebase.firestore().collection('Kanjis').get()
+        kanjiSnapshot.forEach((doc) => {
+            kanjiList.push({
+                ...doc.data(),
+                doc,
+            })
+        }) */
+
+        let vocabularyList = []
+        firebase.firestore().collection('Vocabulary').onSnapshot((snapshot) => {
+            const data = snapshot.docs.map((doc) => ({
+                ...doc.data(),
+                 doc,
+            }))
+            vocabularyList = data
+        })
+        /* const vocabularySnapshot = await firebase.firestore().collection('Vocabulary').get()
+        vocabularySnapshot.forEach((doc) => {
+            vocabularyList.push({
+                ...doc.data(),
+                doc,
+            })
+        }) */
+
+        let alternativesList = []
+        firebase.firestore().collection('Alternatives').onSnapshot((snapshot) => {
+            const data = snapshot.docs.map((doc) => ({
+                ...doc.data(),
+                 doc,
+            }))
+            alternativesList = data
+        })
+        /* const alternativesSnapshot = await firebase.firestore().collection('Alternatives').get()
+        alternativesSnapshot.forEach((doc) => {
+            alternativesList.push({
+                ...doc.data(),
+                doc,
+            })
+        }) */
+
+        let sentencesList = []
+        firebase.firestore().collection('Sentences').onSnapshot((snapshot) => {
+            const data = snapshot.docs.map((doc) => ({
+                ...doc.data(),
+                 doc,
+            }))
+            sentencesList = data
+        })
+        /* const sentencesSnapshot = await firebase.firestore().collection('Sentences').get()
+        sentencesSnapshot.forEach((doc) => {
+            sentencesList.push({
+                ...doc.data(),
+                doc,
+            })
+        }) */
+
+        kanjiList.forEach((kanji) => {
             kanji.translationArray = commonLib.cutStringToArray(kanji.translation)
             kanji.vocabulary = []
             kanji.grammar = []
-            vocabularyJSON.forEach((word) => {
+            vocabularyList.forEach((word) => {
                 word.sentences = []
                 word.translationArray = commonLib.cutStringToArray(word.translation)
                 word.elements.every((element) => {
@@ -35,14 +99,16 @@ module.exports = {
                 })
                 word.inflexions = inflexions.dispatchInflexion(word)
                 word.alternatives = []
-                alternativesJSON.forEach((alternative) => {
+                alternativesList.forEach((alternative) => {
                     if (alternative.id === word.id) word.alternatives = alternative.alternatives || [ ...alternative.conjugation.nonPast, ...alternative.conjugation.past ]
                 })
             })
         })
+
         return {
-            kanjiList: kanjiJSON,
-            vocabularyList: vocabularyJSON
+            kanjiList: kanjiList,
+            vocabularyList: vocabularyList,
+            sentencesList: sentencesList
         }
     }
 }

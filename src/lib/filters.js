@@ -118,16 +118,11 @@ module.exports = {
 
     getWordImportance: (vocabularyWord, string) => {
         let matchingScore = 0
-        console.log(vocabularyWord.romaji)
         if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
             === romajiRegularization(string.toLowerCase())
         ) matchingScore ++
 
         vocabularyWord.translationArray?.forEach((word) => {
-            if (vocabularyWord.id === 9) {
-                console.log(searchRegularization(word.toLowerCase()))
-                console.log(searchRegularization(string.toLowerCase()))
-            }
             if (searchRegularization(word.toLowerCase())
                 === searchRegularization(string.toLowerCase())
             ) matchingScore ++

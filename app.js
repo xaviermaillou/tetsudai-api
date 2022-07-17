@@ -4,15 +4,19 @@ const cors = require('cors')
 const app = express()
 const port = process.env.PORT || 8000
 
-const sentencesJSON = require('./src/data/sentences')
-
 const commonLib = require('./src/lib/common')
 const filters = require('./src/lib/filters')
 const data = require('./src/lib/data')
 
 app.use(cors())
 
-const { kanjiList, vocabularyList } = data.buildData()
+let kanjiList
+let vocabularyList
+data.buildData().then((response) => {
+    kanjiList = response.kanjiList
+    vocabularyList = response.vocabularyList
+    sentencesList = response.sentencesList
+})
 
 app.get('/', (req, res) => res.send('Tetsudai API running'))
 
@@ -30,7 +34,7 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
         '\nOffset:', offset)
         
     const kanjiArray = []
-
+    console.log('Kanji filtrés:', kanjiList)
     kanjiList.forEach((kanji) => {
         if (
             (
@@ -195,7 +199,7 @@ app.get('/sentences/:id', (req, res) => {
 
     const sentencesArray = []
 
-    sentencesJSON.forEach((sentence) => {
+    sentencesList.forEach((sentence) => {
         sentence.elements.forEach((element) => {
             if (element.id === id) sentencesArray.push(sentence)
         })
