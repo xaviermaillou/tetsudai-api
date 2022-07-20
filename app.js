@@ -34,7 +34,6 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
         '\nOffset:', offset)
         
     const kanjiArray = []
-    console.log('Kanji filtrés:', kanjiList)
     kanjiList.forEach((kanji) => {
         if (
             (

@@ -7,70 +7,43 @@ module.exports = {
     buildData: async () => {
 
         let kanjiList = []
-        firebase.firestore().collection('Kanjis').onSnapshot((snapshot) => {
-            const data = snapshot.docs.map((doc) => ({
-                ...doc.data(),
-                 doc,
-            }))
-            kanjiList = data
-        })
-        /* const kanjiSnapshot = await firebase.firestore().collection('Kanjis').get()
+        const kanjiSnapshot = await firebase.firestore().collection('Kanjis').get()
         kanjiSnapshot.forEach((doc) => {
             kanjiList.push({
                 ...doc.data(),
                 doc,
             })
-        }) */
+        })
 
         let vocabularyList = []
-        firebase.firestore().collection('Vocabulary').onSnapshot((snapshot) => {
-            const data = snapshot.docs.map((doc) => ({
-                ...doc.data(),
-                 doc,
-            }))
-            vocabularyList = data
-        })
-        /* const vocabularySnapshot = await firebase.firestore().collection('Vocabulary').get()
+        const vocabularySnapshot = await firebase.firestore().collection('Vocabulary').get()
         vocabularySnapshot.forEach((doc) => {
             vocabularyList.push({
                 ...doc.data(),
                 doc,
             })
-        }) */
+        })
 
         let alternativesList = []
-        firebase.firestore().collection('Alternatives').onSnapshot((snapshot) => {
-            const data = snapshot.docs.map((doc) => ({
-                ...doc.data(),
-                 doc,
-            }))
-            alternativesList = data
-        })
-        /* const alternativesSnapshot = await firebase.firestore().collection('Alternatives').get()
+        const alternativesSnapshot = await firebase.firestore().collection('Alternatives').get()
         alternativesSnapshot.forEach((doc) => {
             alternativesList.push({
                 ...doc.data(),
                 doc,
             })
-        }) */
+        })
 
         let sentencesList = []
-        firebase.firestore().collection('Sentences').onSnapshot((snapshot) => {
-            const data = snapshot.docs.map((doc) => ({
-                ...doc.data(),
-                 doc,
-            }))
-            sentencesList = data
-        })
-        /* const sentencesSnapshot = await firebase.firestore().collection('Sentences').get()
+        const sentencesSnapshot = await firebase.firestore().collection('Sentences').get()
         sentencesSnapshot.forEach((doc) => {
             sentencesList.push({
                 ...doc.data(),
                 doc,
             })
-        }) */
+        })
 
         kanjiList.forEach((kanji) => {
+            console.log(kanji)
             kanji.translationArray = commonLib.cutStringToArray(kanji.translation)
             kanji.vocabulary = []
             kanji.grammar = []
