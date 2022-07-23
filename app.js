@@ -141,6 +141,7 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
                     jukujikun: word.jukujikun,
                     frequency: word.frequency,
                     translation: word.translation,
+                    rareKanji: word.rareKanji,
                     importance: filters
                         .getWordImportance(word, search)
                 })

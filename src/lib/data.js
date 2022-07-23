@@ -43,7 +43,6 @@ module.exports = {
         })
 
         kanjiList.forEach((kanji) => {
-            console.log(kanji)
             kanji.translationArray = commonLib.cutStringToArray(kanji.translation)
             kanji.vocabulary = []
             kanji.grammar = []
