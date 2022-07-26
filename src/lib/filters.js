@@ -1,4 +1,4 @@
-const searchRegularization = (string) => {
+const frenchRegularization = (string) => {
     return string.split('\'').join('').split('é').join('e').split('è').join('e').split('ê').join('e')
         .split('à').join('a').split('â').join('a').split('î').join('i').split('ô').join('o').split('û')
         .join('u').split('-').join('').split('ç').join('c')
@@ -11,22 +11,27 @@ module.exports = {
     searchThroughKanji: (kanji, string) => {
         let includes = false
 
+        if (string.length > 1) {
+            kanji.translationArray?.forEach((word) => {
+                if (frenchRegularization(word.toLowerCase())
+                    .includes(frenchRegularization(string.toLowerCase()))
+                ) includes = true
+            })
+    
+            kanji.vocabulary.forEach((word) => {
+                if (frenchRegularization(word.translation.toLowerCase())
+                    .includes(frenchRegularization(string.toLowerCase()))
+                ) includes = true
+            })
+        }
+
         kanji.romaji?.forEach((word) => {
             if (romajiRegularization(word.toLowerCase())
                 .includes(romajiRegularization(string.toLowerCase()))
             ) includes = true
         })
 
-        kanji.translationArray?.forEach((word) => {
-            if (searchRegularization(word.toLowerCase())
-                .includes(searchRegularization(string.toLowerCase()))
-            ) includes = true
-        })
-
         kanji.vocabulary.forEach((word) => {
-            if (searchRegularization(word.translation.toLowerCase())
-                .includes(searchRegularization(string.toLowerCase()))
-            ) includes = true
             if (romajiRegularization(word.romaji.toLowerCase())
                 .includes(romajiRegularization(string.toLowerCase()))
             ) includes = true
@@ -48,48 +53,53 @@ module.exports = {
 
     getKanjiImportance: (kanji, string) => {
         let matchingScore = 0
+
+        if (string.length > 1) {
+            kanji.translationArray?.forEach((word) => {
+                if (frenchRegularization(word.toLowerCase())
+                    === frenchRegularization(string.toLowerCase())
+                ) matchingScore = 1
+            })
+        }
+
         kanji.romaji?.forEach((word) => {
             if (romajiRegularization(word.toLowerCase())
                 === romajiRegularization(string.toLowerCase())
-            ) matchingScore ++
+            ) matchingScore = 1
         })
 
-        kanji.translationArray?.forEach((word) => {
-            if (searchRegularization(word.toLowerCase())
-                === searchRegularization(string.toLowerCase())
-            ) matchingScore ++
-        })
-
-        if (kanji.kanji === string) matchingScore ++
+        if (kanji.kanji === string) matchingScore = 1
 
         kanji.readings.kunyomi.forEach((word) => {
-            if (word === string) matchingScore ++
+            if (word === string) matchingScore = 1
         })
 
         kanji.readings.onyomi.forEach((word) => {
-            if (word === string) matchingScore ++
+            if (word === string) matchingScore = 1
         })
 
         /* vocabulary.forEach((word) => {
-            if (word.translation.toLowerCase() === string.toLowerCase()) matchingScore ++
-            if (word.romaji.toLowerCase() === string.toLowerCase()) matchingScore ++
+            if (word.translation.toLowerCase() === string.toLowerCase()) matchingScore = 1
+            if (word.romaji.toLowerCase() === string.toLowerCase()) matchingScore = 1
         }) */
         return matchingScore
     },
 
     searchThroughWord: (vocabularyWord, string) => {
         let includes = false
-        vocabularyWord.translationArray?.forEach((word) => {
-            if (searchRegularization(word.toLowerCase())
-                .includes(searchRegularization(string.toLowerCase()))
-            ) includes = true
-        })
-
-        vocabularyWord.alternatives?.forEach((word) => {
-            if (searchRegularization(word.toLowerCase())
-                .includes(searchRegularization(string.toLowerCase()))
-            ) includes = true
-        })
+        if (string.length > 1) {
+            vocabularyWord.translationArray?.forEach((word) => {
+                if (frenchRegularization(word.toLowerCase())
+                    .includes(frenchRegularization(string.toLowerCase()))
+                ) includes = true
+            })
+    
+            vocabularyWord.alternatives?.forEach((word) => {
+                if (frenchRegularization(word.toLowerCase())
+                    .includes(frenchRegularization(string.toLowerCase()))
+                ) includes = true
+            })
+        }
         
         if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
             .includes(romajiRegularization(string.toLowerCase()))
@@ -118,21 +128,24 @@ module.exports = {
 
     getWordImportance: (vocabularyWord, string) => {
         let matchingScore = 0
+        if (string.length > 1) {
+            vocabularyWord.translationArray?.forEach((word) => {
+                if (frenchRegularization(word.toLowerCase())
+                    === frenchRegularization(string.toLowerCase())
+                ) matchingScore = 1
+            })
+    
+            vocabularyWord.alternatives?.forEach((word) => {
+                if (frenchRegularization(word.toLowerCase())
+                    === frenchRegularization(string.toLowerCase())
+                ) matchingScore = 1
+            })
+        }
+
         if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
-            === romajiRegularization(string.toLowerCase())
-        ) matchingScore ++
+                === romajiRegularization(string.toLowerCase())
+            ) matchingScore = 1
 
-        vocabularyWord.translationArray?.forEach((word) => {
-            if (searchRegularization(word.toLowerCase())
-                === searchRegularization(string.toLowerCase())
-            ) matchingScore ++
-        })
-
-        vocabularyWord.alternatives?.forEach((word) => {
-            if (searchRegularization(word.toLowerCase())
-                === searchRegularization(string.toLowerCase())
-            ) matchingScore ++
-        })
         if (vocabularyWord.inflexions) {
             const inflexionsArray = []
             Object.values(vocabularyWord.inflexions).map((tense) => {
@@ -142,14 +155,14 @@ module.exports = {
                 if (tense.negative.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending) 
             })
             inflexionsArray.forEach((inflexion) => {
-                if (inflexion === string) matchingScore ++
+                if (inflexion === string) matchingScore = 1
             })
         }
 
         const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
             .map((element) => element.kanji || element.kana).join('')
 
-        if (japaneseWord === string) matchingScore ++
+        if (japaneseWord === string) matchingScore = 1
 
         return matchingScore
     }
