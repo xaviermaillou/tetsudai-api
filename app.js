@@ -12,13 +12,23 @@ app.use(cors())
 
 let kanjiList
 let vocabularyList
+let sentencesList
 data.buildData().then((response) => {
     kanjiList = response.kanjiList
     vocabularyList = response.vocabularyList
     sentencesList = response.sentencesList
 })
 
-app.get('/', (req, res) => res.send('Tetsudai API running'))
+app.get('/', (req, res) => res.send(`
+:: Tetsudai API ::
+
+Available endpoints:
+    - /kanjiList/:offset/:level/:grammar/:collection/:search?
+    - /vocabularyList/:offset/:level/:grammar/:collection/:search?
+    - /kanji/:id
+    - /word/:id
+
+`))
 
 app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) => {
     const level = Number(req.params.level)

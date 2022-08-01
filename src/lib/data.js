@@ -76,7 +76,9 @@ module.exports = {
                 })
             })
         })
-
+        console.log(kanjiList.length, 'kanji chargés')
+        console.log(vocabularyList.length, 'mots chargés')
+        console.log(sentencesList.length, 'phrases chargées')
         return {
             kanjiList: kanjiList,
             vocabularyList: vocabularyList,
