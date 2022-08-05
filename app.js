@@ -8,7 +8,15 @@ const commonLib = require('./src/lib/common')
 const filters = require('./src/lib/filters')
 const data = require('./src/lib/data')
 
-app.use(cors())
+const corsOptions = {
+    origin: [
+        "https://kuramae-8baba.web.app/",
+        "http://localhost:3000",
+        "http://localhost:9000"
+    ],
+    optionsSuccessStatus: 200
+}
+app.use(cors(corsOptions))
 
 let kanjiList
 let vocabularyList
