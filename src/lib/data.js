@@ -43,12 +43,12 @@ module.exports = {
         })
 
         kanjiList.forEach((kanji) => {
-            kanji.translationArray = commonLib.cutStringToArray(kanji.translation)
+            kanji.translationArray = libFunctions.cutStringToArray(kanji.translation)
             kanji.vocabulary = []
             kanji.grammar = []
             vocabularyList.forEach((word) => {
                 word.sentences = []
-                word.translationArray = commonLib.cutStringToArray(word.translation)
+                word.translationArray = libFunctions.cutStringToArray(word.translation)
                 word.elements.every((element) => {
                     if (kanji.kanji === element.kanji) {
                     kanji.vocabulary.push({
