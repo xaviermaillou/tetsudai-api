@@ -1,6 +1,6 @@
 const firebase = require('../Firebase')
 require( "firebase/firestore")
-const commonLib = require('./common')
+const libFunctions = require('./common')
 const inflexions = require('../lib/inflexions')
 
 module.exports = {

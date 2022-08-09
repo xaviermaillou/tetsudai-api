@@ -4,7 +4,8 @@ const cors = require('cors')
 const app = express()
 const port = process.env.PORT || 8000
 
-const commonLib = require('./src/lib/common')
+const commonLib = require('tetsudai-common')
+const libFunctions = require('./src/lib/common')
 const filters = require('./src/lib/filters')
 const data = require('./src/lib/data')
 
@@ -112,7 +113,7 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
 
 
     const sortedByFrequencyData = kanjiArray.sort((a, b) => a.frequency - b.frequency)
-    const sortedByLevel = commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
+    const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
 
     const slicedKanjiArray = sortedByLevel.slice(offset, offset + 100)
 
@@ -194,12 +195,12 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
 
 
     const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
-    const sortedByLevel = commonLib.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
+    const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
 
     const slicedVocabularyArray = sortedByLevel.slice(offset, offset + 100)
 
     console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
-    res.json(commonLib.sortByObjectKey(slicedVocabularyArray, commonLib.levels))
+    res.json(libFunctions.sortByObjectKey(slicedVocabularyArray, commonLib.levels))
 })
 
 app.get('/sentences/:id', (req, res) => {
