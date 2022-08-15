@@ -211,8 +211,12 @@ app.get('/sentences/:id', (req, res) => {
     const sentencesArray = []
 
     sentencesList.forEach((sentence) => {
-        sentence.elements.forEach((element) => {
-            if (element.id === id) sentencesArray.push(sentence)
+        sentence.elements.every((element) => {
+            if (element.id === id) {
+                sentencesArray.push(sentence)
+                return false
+            }
+            return true
         })
     })
 

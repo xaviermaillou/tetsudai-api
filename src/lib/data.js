@@ -51,21 +51,21 @@ module.exports = {
                 word.translationArray = libFunctions.cutStringToArray(word.translation)
                 word.elements.every((element) => {
                     if (kanji.kanji === element.kanji) {
-                    kanji.vocabulary.push({
-                        id: word.id,
-                        elements: word.elements,
-                        romaji: word.romaji,
-                        translation: word.translation
-                    })
-                    kanji.grammar.push(...word.grammar)
-                    element.details = {
-                        id: kanji.id,
-                        kanji: kanji.kanji,
-                        readings: kanji.readings,
-                        romaji: kanji.romaji,
-                        translation: kanji.translation
-                    }
-                    return false
+                        kanji.vocabulary.push({
+                            id: word.id,
+                            elements: word.elements,
+                            romaji: word.romaji,
+                            translation: word.translation
+                        })
+                        kanji.grammar.push(...word.grammar)
+                        element.details = {
+                            id: kanji.id,
+                            kanji: kanji.kanji,
+                            readings: kanji.readings,
+                            romaji: kanji.romaji,
+                            translation: kanji.translation
+                        }
+                        return false
                     }
                     return true
                 })
