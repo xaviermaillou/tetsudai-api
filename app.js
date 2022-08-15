@@ -8,6 +8,7 @@ const commonLib = require('tetsudai-common')
 const libFunctions = require('./src/lib/common')
 const filters = require('./src/lib/filters')
 const data = require('./src/lib/data')
+const schedule = require('node-schedule')
 
 app.use(cors())
 
@@ -18,6 +19,13 @@ data.buildData().then((response) => {
     kanjiList = response.kanjiList
     vocabularyList = response.vocabularyList
     sentencesList = response.sentencesList
+})
+schedule.scheduleJob('0 0 * * *', () => {
+    data.buildData().then((response) => {
+        kanjiList = response.kanjiList
+        vocabularyList = response.vocabularyList
+        sentencesList = response.sentencesList
+    })
 })
 
 app.get('/', (req, res) => res.send(`
