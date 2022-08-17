@@ -228,7 +228,7 @@ app.get('/sentences/:id', (req, res) => {
         })
     })
 
-    res.json(sentencesArray)
+    res.json(sentencesArray.sort((a, b) => a.elements.length - b.elements.length))
 })
 
 app.get('/kanji/:id', (req, res) => {

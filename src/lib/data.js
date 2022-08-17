@@ -76,9 +76,9 @@ module.exports = {
                 })
             })
         })
-        console.log(kanjiList.length, 'kanji chargés à', new Date().toLocaleString())
-        console.log(vocabularyList.length, 'mots chargés à', new Date().toLocaleString())
-        console.log(sentencesList.length, 'phrases chargées à', new Date().toLocaleString())
+        console.log(kanjiList.length, 'kanji chargés le', new Date().toLocaleString('fr-FR'))
+        console.log(vocabularyList.length, 'mots chargés le', new Date().toLocaleString('fr-FR'))
+        console.log(sentencesList.length, 'phrases chargées le', new Date().toLocaleString('fr-FR'))
         return {
             kanjiList: kanjiList,
             vocabularyList: vocabularyList,
