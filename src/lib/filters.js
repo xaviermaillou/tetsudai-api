@@ -11,13 +11,13 @@ module.exports = {
     searchThroughKanji: (kanji, string) => {
         let includes = false
 
+        // French filtering
         if (string.length > 1) {
             kanji.translationArray?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
                     .includes(frenchRegularization(string.toLowerCase()))
                 ) includes = true
             })
-    
             kanji.vocabulary.forEach((word) => {
                 if (frenchRegularization(word.translation.toLowerCase())
                     .includes(frenchRegularization(string.toLowerCase()))
@@ -25,25 +25,27 @@ module.exports = {
             })
         }
 
+        // Romaji filtering
         kanji.romaji?.forEach((word) => {
             if (romajiRegularization(word.toLowerCase())
                 .includes(romajiRegularization(string.toLowerCase()))
             ) includes = true
         })
-
         kanji.vocabulary.forEach((word) => {
             if (romajiRegularization(word.romaji.toLowerCase())
                 .includes(romajiRegularization(string.toLowerCase()))
             ) includes = true
         })
 
+        // Kanji filtering
         if (kanji.kanji === string) includes = true
         if (string.includes(kanji.kanji)) includes = true
 
+
+        // Kanas filtering
         kanji.readings.kunyomi.forEach((reading) => {
             if (reading.kana.includes(string)) includes = true
         })
-
         kanji.readings.onyomi.forEach((reading) => {
             if (reading.kana.includes(string)) includes = true
         })
@@ -54,6 +56,7 @@ module.exports = {
     getKanjiImportance: (kanji, string) => {
         let matchingScore = 0
 
+        // French filtering
         if (string.length > 1) {
             kanji.translationArray?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
@@ -62,38 +65,36 @@ module.exports = {
             })
         }
 
+        // Romaji filtering
         kanji.romaji?.forEach((word) => {
             if (romajiRegularization(word.toLowerCase())
                 === romajiRegularization(string.toLowerCase())
             ) matchingScore = 1
         })
 
+        // Kanji filtering
         if (kanji.kanji === string) matchingScore = 1
 
+        // Kanas filtering
         kanji.readings.kunyomi.forEach((word) => {
             if (word === string) matchingScore = 1
         })
-
         kanji.readings.onyomi.forEach((word) => {
             if (word === string) matchingScore = 1
         })
-
-        /* vocabulary.forEach((word) => {
-            if (word.translation.toLowerCase() === string.toLowerCase()) matchingScore = 1
-            if (word.romaji.toLowerCase() === string.toLowerCase()) matchingScore = 1
-        }) */
         return matchingScore
     },
 
     searchThroughWord: (vocabularyWord, string) => {
         let includes = false
+
+        // French filtering
         if (string.length > 1) {
             vocabularyWord.translationArray?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
                     .includes(frenchRegularization(string.toLowerCase()))
                 ) includes = true
             })
-    
             vocabularyWord.alternatives?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
                     .includes(frenchRegularization(string.toLowerCase()))
@@ -101,10 +102,12 @@ module.exports = {
             })
         }
         
+        // Romaji filtering
         if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
             .includes(romajiRegularization(string.toLowerCase()))
         ) includes = true
 
+        // Inflexions filtering
         if (vocabularyWord.inflexions) {
             const inflexionsArray = []
             Object.values(vocabularyWord.inflexions).map((tense) => {
@@ -118,9 +121,9 @@ module.exports = {
             })
         }
 
+        // Main word filtering
         const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
             .map((element) => element.kanji || element.kana).join('')
-
         if (japaneseWord.includes(string) || string.includes(japaneseWord)) includes = true
 
         return includes
@@ -128,6 +131,8 @@ module.exports = {
 
     getWordImportance: (vocabularyWord, string) => {
         let matchingScore = 0
+
+        // French filtering
         if (string.length > 1) {
             vocabularyWord.translationArray?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
@@ -142,10 +147,12 @@ module.exports = {
             })
         }
 
+        // Romaji filtering
         if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
                 === romajiRegularization(string.toLowerCase())
             ) matchingScore = 1
 
+        // Inflexions filtering
         if (vocabularyWord.inflexions) {
             const inflexionsArray = []
             Object.values(vocabularyWord.inflexions).map((tense) => {
@@ -159,9 +166,9 @@ module.exports = {
             })
         }
 
+        // Main word filtering
         const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
             .map((element) => element.kanji || element.kana).join('')
-
         if (japaneseWord === string) matchingScore = 1
 
         return matchingScore
