@@ -91,6 +91,14 @@ const copuleConjugationStructure = (adjective) => {
                     ending: 'ありませんでした',
                 }
             }
+        },
+        adverb: adjective && {
+            affirmative: {
+                neutral: {
+                    main: adjective,
+                    ending: 'に',
+                }
+            }
         }
     }
 }
@@ -271,6 +279,12 @@ const adjectiveConjugationStructure = (base) => {
                     ending: 'くなかった',
                 }
             } 
+        },
+        adverb: {
+            affirmative: {
+                main: base,
+                ending: 'く',
+            }
         }
     }
 }
