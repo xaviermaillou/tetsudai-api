@@ -103,10 +103,11 @@ const copuleConjugationStructure = (adjective) => {
     }
 }
 const getVerbConjugation = (word) => {
-    const base = word.rareKanji ?
-        word.elements.map((element) => element.kana).join('').slice(0, -1)
+    let base = word.rareKanji ?
+        (word.jukujikun || word.elements.map((element) => element.kana).join('')).slice(0, -1)
         :
         word.elements.map((element) => element.kanji || element.kana).join('').slice(0, -1);
+
     const info = word.verbPrecisions;
 
     if (info.type === 'ichidan') {
@@ -272,7 +273,7 @@ const adjectiveConjugationStructure = (base) => {
                     main: base,
                     ending: 'かった',
                 },
-            } ,
+            },
             negative: {
                 neutral: {
                     main: base,
@@ -286,12 +287,21 @@ const adjectiveConjugationStructure = (base) => {
                     main: base,
                     ending: 'く',
                 }
-            }
+            },
+            /* negative: {
+                neutral: {
+                    main: base,
+                    ending: 'くなく',
+                }
+            } */
         }
     }
 }
 const getAdjectiveConjugation = (word) => {
-    let base = word.elements.map((element) => element.kanji || element.kana).join('');
+    let base = word.rareKanji ?
+        (word.jukujikun || word.elements.map((element) => element.kana).join(''))
+        :
+        word.elements.map((element) => element.kanji || element.kana).join('');
     const info = word.adjectivePrecisions;
 
     if (info.type === 'na') {
