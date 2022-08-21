@@ -111,10 +111,10 @@ module.exports = {
         if (vocabularyWord.inflexions) {
             const inflexionsArray = []
             Object.values(vocabularyWord.inflexions).map((tense) => {
-                if (tense.affirmative.neutral) inflexionsArray.push(tense.affirmative.neutral.main + tense.affirmative.neutral.ending)
-                if (tense.affirmative.polite) inflexionsArray.push(tense.affirmative.polite.main + tense.affirmative.polite.ending) 
-                if (tense.negative.neutral) inflexionsArray.push(tense.negative.neutral.main + tense.negative.neutral.ending) 
-                if (tense.negative.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending) 
+                if (tense.affirmative?.neutral) inflexionsArray.push(tense.affirmative.neutral.main + tense.affirmative.neutral.ending)
+                if (tense.affirmative?.polite) inflexionsArray.push(tense.affirmative.polite.main + tense.affirmative.polite.ending) 
+                if (tense.negative?.neutral) inflexionsArray.push(tense.negative.neutral.main + tense.negative.neutral.ending) 
+                if (tense.negative?.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending) 
             })
             inflexionsArray.forEach((inflexion) => {
                 if (inflexion.includes(string) || string.includes(inflexion)) includes = true
