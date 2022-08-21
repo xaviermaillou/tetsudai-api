@@ -282,8 +282,10 @@ const adjectiveConjugationStructure = (base) => {
         },
         adverb: {
             affirmative: {
-                main: base,
-                ending: 'く',
+                neutral: {
+                    main: base,
+                    ending: 'く',
+                }
             }
         }
     }
