@@ -62,7 +62,8 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
             ) 
             &&
             (
-                filters.searchThroughKanji(kanji, search) || !search
+                filters.searchThroughKanji(kanji, search)
+                || !search
             )
         ) {
             const alreadyAddedItem = kanjiArray.find((element) => element.id === kanji.id)
@@ -88,7 +89,16 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
     splittedSearch.forEach((searchElement) => {
         kanjiList.forEach((kanji) => {
             if (
-                filters.searchThroughKanji(kanji, searchElement) || !searchElement
+                (
+                    (kanji.collections?.includes(collection) || collection === 0)
+                    && (commonLib.levels[level] === kanji.level || !level) 
+                    && (kanji.grammar.includes(grammar) || grammar === 0)
+                ) 
+                &&
+                (
+                    filters.searchThroughKanji(kanji, searchElement)
+                    || !searchElement
+                )
             ) {
                 const alreadyAddedItem = kanjiArray.find((element) => element.id === kanji.id)
                 if (alreadyAddedItem === undefined) {
@@ -139,7 +149,8 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
             (word.collections?.includes(collection) || collection === 0)
             && (commonLib.levels[level] === word.level || !level) 
             && (word.grammar.includes(grammar) || grammar === 0)
-            && (filters.searchThroughWord(word, search) || !search)
+            && (filters.searchThroughWord(word, search)
+                || !search)
         ) {
             const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
             if (alreadyAddedItem === undefined) {
@@ -165,7 +176,11 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
     splittedSearch.forEach((searchElement) => {
         vocabularyList.forEach((word) => {
             if (
-                filters.searchThroughWord(word, searchElement) || !searchElement
+                (word.collections?.includes(collection) || collection === 0)
+                && (commonLib.levels[level] === word.level || !level) 
+                && (word.grammar.includes(grammar) || grammar === 0)
+                && (filters.searchThroughWord(word, searchElement)
+                    || !searchElement)
             ) {
                 const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
                 if (alreadyAddedItem === undefined) {
