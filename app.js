@@ -122,8 +122,9 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
 
     const sortedByFrequencyData = kanjiArray.sort((a, b) => a.frequency - b.frequency)
     const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
+    const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)
 
-    const slicedKanjiArray = sortedByLevel.slice(offset, offset + 100)
+    const slicedKanjiArray = sortedByImportance.slice(offset, offset + 100)
 
     console.log('Kanji envoyés:', slicedKanjiArray.length)
     res.json(slicedKanjiArray)
@@ -204,8 +205,9 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
 
     const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
     const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
+    const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)
 
-    const slicedVocabularyArray = sortedByLevel.slice(offset, offset + 100)
+    const slicedVocabularyArray = sortedByImportance.slice(offset, offset + 100)
 
     console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
     res.json(libFunctions.sortByObjectKey(slicedVocabularyArray, commonLib.levels))
