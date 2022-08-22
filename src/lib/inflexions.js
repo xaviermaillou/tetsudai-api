@@ -91,14 +91,6 @@ const copuleConjugationStructure = (adjective) => {
                     ending: 'ありませんでした',
                 }
             }
-        },
-        adverb: adjective && {
-            affirmative: {
-                neutral: {
-                    main: adjective,
-                    ending: 'に',
-                }
-            }
         }
     }
 }
@@ -251,7 +243,64 @@ const getVerbConjugation = (word) => {
     }
 }
 
-const adjectiveConjugationStructure = (base) => {
+const naAdjectiveConjugationStructure = (adjective) => {
+    return {
+        nonPast: {
+            affirmative: {
+                neutral: {
+                    main: adjective,
+                    ending: ' だ',
+                },
+                polite: {
+                    main: adjective,
+                    ending: ' です',
+                }
+            },
+            negative: {
+                neutral: {
+                    main: adjective,
+                    ending: ' ではない',
+                },
+                polite: {
+                    main: adjective,
+                    ending: ' ではないです',
+                }
+            }
+        },
+        past: {
+            affirmative: {
+                neutral: {
+                    main: adjective,
+                    ending: ' だった',
+                },
+                polite: {
+                    main: adjective,
+                    ending: ' でした',
+                }
+            },
+            negative: {
+                neutral: {
+                    main: adjective,
+                    ending: ' ではなかった',
+                },
+                polite: {
+                    main: adjective ,
+                    ending: ' ではなかったです',
+                }
+            }
+        },
+        adverb: {
+            affirmative: {
+                neutral: {
+                    main: adjective,
+                    ending: 'に',
+                }
+            }
+        }
+    }
+}
+
+const iAdjectiveConjugationStructure = (base) => {
     return {
         nonPast: {
             affirmative: {
@@ -259,11 +308,19 @@ const adjectiveConjugationStructure = (base) => {
                     main: base,
                     ending: 'い',
                 },
+                polite: {
+                    main: base,
+                    ending: 'いです',
+                }
             },
             negative: {
                 neutral: {
                     main: base,
                     ending: 'くない',
+                },
+                polite: {
+                    main: base,
+                    ending: 'くないです',
                 }
             } 
         },
@@ -273,11 +330,19 @@ const adjectiveConjugationStructure = (base) => {
                     main: base,
                     ending: 'かった',
                 },
+                polite: {
+                    main: base,
+                    ending: 'かったです',
+                }
             },
             negative: {
                 neutral: {
                     main: base,
                     ending: 'くなかった',
+                },
+                polite: {
+                    main: base,
+                    ending: 'くなかったです',
                 }
             } 
         },
@@ -309,7 +374,7 @@ const getAdjectiveConjugation = (word) => {
     }
     if (info.type === 'i') {
         base = base.slice(0, -1);
-        return adjectiveConjugationStructure(base);
+        return iAdjectiveConjugationStructure(base);
     }
 }
 
