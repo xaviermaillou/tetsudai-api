@@ -46,26 +46,26 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
         }
     }
 }
-const copuleConjugationStructure = (adjective) => {
+const copuleConjugationStructure = () => {
     return {
         nonPast: {
             affirmative: {
                 neutral: {
-                    main: (adjective ?? '') + 'だ',
+                    main: 'だ',
                     ending: '',
                 },
                 polite: {
-                    main: (adjective ?? '') + 'で',
+                    main: 'で',
                     ending: 'す',
                 }
             },
             negative: {
                 neutral: {
-                    main: (adjective ?? '') + 'では',
+                    main: 'では',
                     ending: 'ない',
                 },
                 polite: {
-                    main: (adjective ?? '') + 'では',
+                    main: 'では',
                     ending: 'ありません',
                 }
             }
@@ -73,21 +73,21 @@ const copuleConjugationStructure = (adjective) => {
         past: {
             affirmative: {
                 neutral: {
-                    main: (adjective ?? '') + 'だ',
+                    main: 'だ',
                     ending: 'った',
                 },
                 polite: {
-                    main: (adjective ?? '') + 'で',
+                    main: 'で',
                     ending: 'した',
                 }
             },
             negative: {
                 neutral: {
-                    main: (adjective ?? '') + 'では',
+                    main: 'では',
                     ending: 'なかった',
                 },
                 polite: {
-                    main: (adjective ?? '') + 'では',
+                    main: 'では',
                     ending: 'ありませんでした',
                 }
             }
@@ -370,7 +370,7 @@ const getAdjectiveConjugation = (word) => {
     const info = word.adjectivePrecisions;
 
     if (info.type === 'na') {
-        return copuleConjugationStructure(base);
+        return naAdjectiveConjugationStructure(base);
     }
     if (info.type === 'i') {
         base = base.slice(0, -1);
