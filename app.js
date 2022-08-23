@@ -4,7 +4,7 @@ const cors = require('cors')
 const app = express()
 const port = process.env.PORT || 8000
 
-const commonLib = require('tetsudai-common')
+const { dictionnary } = require('tetsudai-common')
 const libFunctions = require('./src/lib/common')
 const filters = require('./src/lib/filters')
 const data = require('./src/lib/data')
@@ -48,8 +48,8 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
     const offset = Number(req.params.offset)
 
     console.log('\nKanji requêtés \n',
-        'Niveau:', commonLib.levels[level], 'Grammaire:', commonLib.pluralClasses[grammar],
-        'Collection:', commonLib.collections[collection], 'Recherche:', search,
+        'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
+        'Collection:', dictionnary.collections[collection], 'Recherche:', search,
         '\nOffset:', offset)
         
     const kanjiArray = []
@@ -57,7 +57,7 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
         if (
             (
                 (kanji.collections?.includes(collection) || collection === 0)
-                && (commonLib.levels[level] === kanji.level || !level) 
+                && (dictionnary.levels[level] === kanji.level || !level) 
                 && (kanji.grammar.includes(grammar) || grammar === 0)
             ) 
             &&
@@ -91,7 +91,7 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
             if (
                 (
                     (kanji.collections?.includes(collection) || collection === 0)
-                    && (commonLib.levels[level] === kanji.level || !level) 
+                    && (dictionnary.levels[level] === kanji.level || !level) 
                     && (kanji.grammar.includes(grammar) || grammar === 0)
                 ) 
                 &&
@@ -121,7 +121,7 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
 
 
     const sortedByFrequencyData = kanjiArray.sort((a, b) => a.frequency - b.frequency)
-    const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
+    const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.levels)
     const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)
 
     const slicedKanjiArray = sortedByImportance.slice(offset, offset + 100)
@@ -139,8 +139,8 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
     const offset = Number(req.params.offset)
 
     console.log('\nVocabulaire requêté \n',
-        'Niveau:', commonLib.levels[level], 'Grammaire:', commonLib.pluralClasses[grammar],
-        'Collection:', commonLib.collections[collection], 'Recherche:', search,
+        'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
+        'Collection:', dictionnary.collections[collection], 'Recherche:', search,
         '\nOffset:', offset)
     
     const vocabularyArray = []
@@ -148,7 +148,7 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
     vocabularyList.forEach((word) => {
         if (
             (word.collections?.includes(collection) || collection === 0)
-            && (commonLib.levels[level] === word.level || !level) 
+            && (dictionnary.levels[level] === word.level || !level) 
             && (word.grammar.includes(grammar) || grammar === 0)
             && (filters.searchThroughWord(word, search)
                 || !search)
@@ -178,7 +178,7 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
         vocabularyList.forEach((word) => {
             if (
                 (word.collections?.includes(collection) || collection === 0)
-                && (commonLib.levels[level] === word.level || !level) 
+                && (dictionnary.levels[level] === word.level || !level) 
                 && (word.grammar.includes(grammar) || grammar === 0)
                 && (filters.searchThroughWord(word, searchElement)
                     || !searchElement)
@@ -204,13 +204,13 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
 
 
     const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
-    const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, commonLib.levels)
+    const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.levels)
     const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)
 
     const slicedVocabularyArray = sortedByImportance.slice(offset, offset + 100)
 
     console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
-    res.json(libFunctions.sortByObjectKey(slicedVocabularyArray, commonLib.levels))
+    res.json(libFunctions.sortByObjectKey(slicedVocabularyArray, dictionnary.levels))
 })
 
 app.get('/sentences/:id', (req, res) => {
@@ -267,15 +267,15 @@ app.get('/kanjiTrainingList/:level/:grammar/:collection', (req, res) => {
     const collection = Number(req.params.collection)
 
     console.log('\nKanji requêtés pour l\'entraînement \n',
-        'Niveau:', commonLib.levels[level], 'Grammaire:', commonLib.pluralClasses[grammar],
-        'Collection:', commonLib.collections[collection])
+        'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
+        'Collection:', dictionnary.collections[collection])
         
     const kanjiArray = []
 
     kanjiList.forEach((kanji) => {
         if (
             (kanji.collections?.includes(collection) || collection === 0)
-            && (commonLib.levels[level] === kanji.level || !level) 
+            && (dictionnary.levels[level] === kanji.level || !level) 
             && (kanji.grammar.includes(grammar) || grammar === 0)
         ) {
             kanjiArray.push({ 
@@ -294,15 +294,15 @@ app.get('/vocabularyTrainingList/:level/:grammar/:collection', (req, res) => {
     const collection = Number(req.params.collection)
 
     console.log('\nVocabulaire requêté pour l\'entraînement \n',
-        'Niveau:', commonLib.levels[level], 'Grammaire:', commonLib.pluralClasses[grammar],
-        'Collection:', commonLib.collections[collection])
+        'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
+        'Collection:', dictionnary.collections[collection])
         
     const vocabularyArray = []
 
     vocabularyList.forEach((word) => {
         if (
             (word.collections?.includes(collection) || collection === 0)
-            && (commonLib.levels[level] === word.level || !level) 
+            && (dictionnary.levels[level] === word.level || !level) 
             && (word.grammar.includes(grammar) || grammar === 0)
         ) {
             vocabularyArray.push({ 
