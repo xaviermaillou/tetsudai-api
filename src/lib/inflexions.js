@@ -185,7 +185,11 @@ const getVerbConjugation = (word) => {
         }
     }
     if (info.type === 'suru') {
-        const noun = base.slice(0, -1);
+        const noun = word.rareKanji ?
+        (word.jukujikun || word.elements.map((element) => element.kana).join(''))
+        :
+        word.elements.map((element) => element.kanji || element.kana).join('')
+
         return verbConjugationStructure(base, {
             okurigana: 'る',
             politeInterm: '',

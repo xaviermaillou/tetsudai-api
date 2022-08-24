@@ -191,6 +191,7 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
                         jukujikun: word.jukujikun,
                         frequency: word.frequency,
                         translation: word.translation,
+                        rareKanji: word.rareKanji,
                         importance: filters
                             .getWordImportance(word, searchElement)
                     })
@@ -201,7 +202,6 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
             }
         })
     })
-
 
     const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
     const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.levels)
