@@ -130,7 +130,7 @@ module.exports = {
         const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
             .map((element) => element.kanji || element.kana).join('')
         if (japaneseWord.includes(string) || string.includes(japaneseWord)) includes = true
-        if (vocabularyWord.grammar.includes(14) && (japaneseWord + 'する'.includes(string) || string.includes(japaneseWord + 'する'))) includes = true
+        if (vocabularyWord.grammar.includes(14) && ((japaneseWord + 'する').includes(string) || string.includes(japaneseWord + 'する'))) includes = true
 
         return includes
     },
