@@ -106,6 +106,11 @@ module.exports = {
         if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
             .includes(romajiRegularization(string.toLowerCase()))
         ) includes = true
+        // Taking in account suru verbs
+        if (vocabularyWord.grammar.includes(14) &&
+            romajiRegularization(vocabularyWord.romaji.toLowerCase() + 'suru')
+            .includes(romajiRegularization(string.toLowerCase()))
+        ) includes = true
 
         // Inflexions filtering
         if (vocabularyWord.inflexions) {
@@ -125,6 +130,7 @@ module.exports = {
         const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
             .map((element) => element.kanji || element.kana).join('')
         if (japaneseWord.includes(string) || string.includes(japaneseWord)) includes = true
+        if (vocabularyWord.grammar.includes(14) && (japaneseWord + 'する'.includes(string) || string.includes(japaneseWord + 'する'))) includes = true
 
         return includes
     },
@@ -149,8 +155,13 @@ module.exports = {
 
         // Romaji filtering
         if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
-                === romajiRegularization(string.toLowerCase())
-            ) matchingScore = 1
+            === romajiRegularization(string.toLowerCase())
+        ) matchingScore = 1
+        // Taking in account suru verbs
+        if (vocabularyWord.grammar.includes(14) &&
+            romajiRegularization(vocabularyWord.romaji.toLowerCase() + 'suru')
+            === romajiRegularization(string.toLowerCase())
+        ) matchingScore = 1
 
         // Inflexions filtering
         if (vocabularyWord.inflexions) {
@@ -170,6 +181,8 @@ module.exports = {
         const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
             .map((element) => element.kanji || element.kana).join('')
         if (japaneseWord === string) matchingScore = 1
+        // Taking in account suru verbs
+        if (vocabularyWord.grammar.includes(14) && japaneseWord + 'する' === string) matchingScore = 1
 
         return matchingScore
     }
