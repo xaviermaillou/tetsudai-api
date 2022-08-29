@@ -2,6 +2,7 @@ const firebase = require('../Firebase')
 require( "firebase/firestore")
 const libFunctions = require('./common')
 const inflexions = require('../lib/inflexions')
+const { kanasDictionnary } = require('tetsudai-common')
 
 module.exports = {
     buildData: async () => {
@@ -74,6 +75,15 @@ module.exports = {
                 alternativesList.forEach((alternative) => {
                     if (alternative.id === word.id) word.alternatives = alternative.alternatives || [ ...alternative.conjugation.nonPast, ...alternative.conjugation.past ]
                 })
+            })
+        })
+        vocabularyList.forEach((word) => {
+            word.elements.forEach((element) => {
+                if (word.forceHiragana) {
+                    const katakana = element.kana
+                    element.kana = kanasDictionnary.translateToHiragana(katakana)
+                    if (word.id === 611) console.log(word.translation, katakana, element.kana)
+                }
             })
         })
         console.log(kanjiList.length, 'kanji chargés le', new Date().toLocaleString('fr-FR'))

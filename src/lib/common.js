@@ -1,5 +1,3 @@
-const { kanasDictionnary } = require('tetsudai-common')
-
 module.exports = {
     sortByObjectKey: (array, object) => {
         return array?.sort((a, b) => (
@@ -9,14 +7,4 @@ module.exports = {
     cutStringToArray: (string) => {
         return string.toLowerCase().split(', ')
     },
-    katakanaToHiraganaForWords: (array) => {
-        array.forEach((word) => {
-            if (word.rareKanji) {
-                word.elements.forEach((element) => {
-                    element.kana = kanasDictionnary[element.kana]
-                })
-            }
-        })
-        return array
-    }
 }
