@@ -75,14 +75,42 @@ module.exports = {
                 alternativesList.forEach((alternative) => {
                     if (alternative.id === word.id) word.alternatives = alternative.alternatives || [ ...alternative.conjugation.nonPast, ...alternative.conjugation.past ]
                 })
+                word.relatedWords = {}
             })
         })
         vocabularyList.forEach((word) => {
+            const base = word.rareKanji ?
+                (word.jukujikun || word.elements.map((element) => element.kana).join(''))
+                :
+                word.elements.map((element) => element.kanji || element.kana).join('')
+
             word.elements.forEach((element) => {
                 if (word.forceHiragana) {
                     const katakana = element.kana
                     element.kana = kanasDictionnary.translateToHiragana(katakana)
-                    if (word.id === 611) console.log(word.translation, katakana, element.kana)
+                }
+                if (element.kana === "する") {
+                    const wordWithoutSuru = base.slice(0, -2)
+                    vocabularyList.forEach((word2) => {
+                        const base2 = word2.rareKanji ?
+                            (word2.jukujikun || word2.elements.map((element) => element.kana).join(''))
+                            :
+                            word2.elements.map((element) => element.kanji || element.kana).join('')
+                        if (base2 === wordWithoutSuru) {
+                            word.relatedWords.baseWord = {
+                                id: word2.id,
+                                elements: word2.elements,
+                                romaji: word2.romaji,
+                                translation: word2.translation
+                            }
+                            word2.relatedWords.suruForm = {
+                                id: word.id,
+                                elements: word.elements,
+                                romaji: word.romaji,
+                                translation: word.translation
+                            }
+                        }
+                    })
                 }
             })
         })
