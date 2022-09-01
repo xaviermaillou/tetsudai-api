@@ -307,21 +307,21 @@ const naAdjectiveConjugationStructure = (adjective) => {
             affirmative: {
                 neutral: {
                     main: adjective,
-                    ending: ' だ',
+                    ending: 'だ',
                 },
                 polite: {
                     main: adjective,
-                    ending: ' です',
+                    ending: 'です',
                 }
             },
             negative: {
                 neutral: {
                     main: adjective,
-                    ending: ' ではない',
+                    ending: 'ではない',
                 },
                 polite: {
                     main: adjective,
-                    ending: ' ではないです',
+                    ending: 'ではないです',
                 }
             }
         },
@@ -329,21 +329,21 @@ const naAdjectiveConjugationStructure = (adjective) => {
             affirmative: {
                 neutral: {
                     main: adjective,
-                    ending: ' だった',
+                    ending: 'だった',
                 },
                 polite: {
                     main: adjective,
-                    ending: ' でした',
+                    ending: 'でした',
                 }
             },
             negative: {
                 neutral: {
                     main: adjective,
-                    ending: ' ではなかった',
+                    ending: 'ではなかった',
                 },
                 polite: {
                     main: adjective ,
-                    ending: ' ではなかったです',
+                    ending: 'ではなかったです',
                 }
             }
         },

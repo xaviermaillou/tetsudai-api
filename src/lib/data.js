@@ -123,7 +123,6 @@ module.exports = {
                         :
                         word2.elements.map((element) => element.kanji || element.kana).join('')
                     if (base2 === stem) {
-                        console.log(stem, base2)
                         word.relatedWords.stem = {
                             id: word2.id,
                             elements: word2.elements,
