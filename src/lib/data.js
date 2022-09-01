@@ -91,7 +91,7 @@ module.exports = {
                 }
                 if (element.kana === "する") {
                     const wordWithoutSuru = base.slice(0, -2)
-                    vocabularyList.forEach((word2) => {
+                    vocabularyList.every((word2) => {
                         const base2 = word2.rareKanji ?
                             (word2.jukujikun || word2.elements.map((element) => element.kana).join(''))
                             :
@@ -109,10 +109,38 @@ module.exports = {
                                 romaji: word.romaji,
                                 translation: word.translation
                             }
+                            return false
                         }
+                        return true
                     })
                 }
             })
+            if (word.verbPrecisions) {
+                const stem = inflexions.dispatchBaseWord(word)
+                vocabularyList.every((word2) => {
+                    const base2 = word2.rareKanji ?
+                        (word2.jukujikun || word2.elements.map((element) => element.kana).join(''))
+                        :
+                        word2.elements.map((element) => element.kanji || element.kana).join('')
+                    if (base2 === stem) {
+                        console.log(stem, base2)
+                        word.relatedWords.stem = {
+                            id: word2.id,
+                            elements: word2.elements,
+                            romaji: word2.romaji,
+                            translation: word2.translation
+                        }
+                        word2.relatedWords.verbForm = {
+                            id: word.id,
+                            elements: word.elements,
+                            romaji: word.romaji,
+                            translation: word.translation
+                        }
+                        return false
+                    }
+                    return true
+                })
+            }
         })
         console.log(kanjiList.length, 'kanji chargés le', new Date().toLocaleString('fr-FR'))
         console.log(vocabularyList.length, 'mots chargés le', new Date().toLocaleString('fr-FR'))

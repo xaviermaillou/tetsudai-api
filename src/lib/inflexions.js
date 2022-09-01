@@ -244,6 +244,63 @@ const getVerbConjugation = (word) => {
     }
 }
 
+const getVerbStem = (word) => {
+    let base = word.rareKanji ?
+        (word.jukujikun || word.elements.map((element) => element.kana).join('')).slice(0, -1)
+        :
+        word.elements.map((element) => element.kanji || element.kana).join('').slice(0, -1);
+
+    const info = word.verbPrecisions;
+
+    if (info.type === 'ichidan') {
+        return base;
+    }
+    if (info.type === 'godan') {
+        if (info.ending === 'u') {
+            return base + 'い';
+        }
+        if (info.ending === 'ku') {
+            return base + 'き';
+        }
+        if (info.ending === 'gu') {
+            return base + 'ぎ';
+        }
+        if (info.ending === 'su') {
+            return base + 'し';
+        }
+        if (info.ending === 'mu') {
+            return base + 'み';
+        }
+        if (info.ending === 'bu') {
+            return base + 'び';
+        }
+        if (info.ending === 'nu') {
+            return base + 'に';
+        }
+        if (info.ending === 'ru') {
+            return base + 'り';
+        }
+        if (info.ending === 'tsu') {
+            return base + 'ち';
+        }
+    }
+    if (info.type === 'suru') {
+        return;
+    }
+    if (info.type === 'kuru') {
+        return;
+    }
+    if (info.type === 'iku') {
+        return;
+    }
+    if (info.type === 'aru') {
+        return;
+    }
+    if (info.type === 'desu') {
+        return;
+    }
+}
+
 const naAdjectiveConjugationStructure = (adjective) => {
     return {
         nonPast: {
@@ -388,4 +445,9 @@ module.exports = {
             return getAdjectiveConjugation(word);
         }
     },
+    dispatchBaseWord: (word) => {
+        if (word.verbPrecisions) {
+            return getVerbStem(word);
+        }
+    }
 }
