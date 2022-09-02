@@ -32,9 +32,18 @@ module.exports = {
             ) includes = true
         })
         kanji.vocabulary.forEach((word) => {
-            if (romajiRegularization(word.romaji.toLowerCase())
-                .includes(romajiRegularization(string.toLowerCase()))
-            ) includes = true
+            if (typeof word.romaji === 'string') {
+                // This part is to remove when all the romaji are arrays and not strings anymore
+                if (romajiRegularization(word.romaji.toLowerCase())
+                    .includes(romajiRegularization(string.toLowerCase()))
+                ) includes = true
+            } else {
+                word.romaji?.forEach((word) => {
+                    if (romajiRegularization(word.toLowerCase())
+                        .includes(romajiRegularization(string.toLowerCase()))
+                    ) includes = true
+                })
+            }
         })
 
         // Kanji filtering
@@ -103,14 +112,18 @@ module.exports = {
         }
         
         // Romaji filtering
-        if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
-            .includes(romajiRegularization(string.toLowerCase()))
-        ) includes = true
-        // Taking in account suru verbs
-        if (vocabularyWord.grammar.includes(14) &&
-            romajiRegularization(vocabularyWord.romaji.toLowerCase() + 'suru')
-            .includes(romajiRegularization(string.toLowerCase()))
-        ) includes = true
+        if (typeof vocabularyWord.romaji === 'string') {
+            // This part is to remove when all the romaji are arrays and not strings anymore
+            if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
+                .includes(romajiRegularization(string.toLowerCase()))
+            ) includes = true
+        } else {
+            vocabularyWord.romaji?.forEach((word) => {
+                if (romajiRegularization(word.toLowerCase())
+                    .includes(romajiRegularization(string.toLowerCase()))
+                ) includes = true
+            })
+        }
 
         // Inflexions filtering
         if (vocabularyWord.inflexions) {
@@ -154,14 +167,18 @@ module.exports = {
         }
 
         // Romaji filtering
-        if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
-            === romajiRegularization(string.toLowerCase())
-        ) matchingScore = 1
-        // Taking in account suru verbs
-        if (vocabularyWord.grammar.includes(14) &&
-            romajiRegularization(vocabularyWord.romaji.toLowerCase() + 'suru')
-            === romajiRegularization(string.toLowerCase())
-        ) matchingScore = 1
+        if (typeof vocabularyWord.romaji === 'string') {
+            // This part is to remove when all the romaji are arrays and not strings anymore
+            if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
+                === romajiRegularization(string.toLowerCase())
+            ) matchingScore = 1
+        } else {
+            vocabularyWord.romaji?.forEach((word) => {
+                if (romajiRegularization(word.toLowerCase())
+                    === romajiRegularization(string.toLowerCase())
+                ) matchingScore = 1
+            })
+        }
 
         // Inflexions filtering
         if (vocabularyWord.inflexions) {
