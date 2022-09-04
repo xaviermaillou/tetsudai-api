@@ -52,12 +52,7 @@ module.exports = {
                 word.translationArray = libFunctions.cutStringToArray(word.translation)
                 word.elements.every((element) => {
                     if (kanji.kanji === element.kanji) {
-                        kanji.vocabulary.push({
-                            id: word.id,
-                            elements: word.elements,
-                            romaji: word.romaji,
-                            translation: word.translation
-                        })
+                        kanji.vocabulary.push(libFunctions.getBasicWordElements(word))
                         kanji.grammar.push(...word.grammar)
                         element.details = {
                             id: kanji.id,
@@ -70,19 +65,61 @@ module.exports = {
                     }
                     return true
                 })
-                word.inflexions = inflexions.dispatchInflexion(word)
-                word.alternatives = []
-                alternativesList.forEach((alternative) => {
-                    if (alternative.id === word.id) word.alternatives = alternative.alternatives || [ ...alternative.conjugation.nonPast, ...alternative.conjugation.past ]
-                })
-                word.relatedWords = {}
             })
         })
+
         vocabularyList.forEach((word) => {
-            const base = word.rareKanji ?
-                (word.jukujikun || word.elements.map((element) => element.kana).join(''))
-                :
-                word.elements.map((element) => element.kanji || element.kana).join('')
+            word.completeWord = word.rareKanji ?
+            (word.jukujikun || word.elements.map((element) => element.kana).join(''))
+            :
+            word.elements.map((element) => element.kanji || element.kana).join('')
+
+            word.inflexions = inflexions.dispatchInflexion(word)
+
+            word.alternatives = []
+            alternativesList.forEach((alternative) => {
+                if (alternative.id === word.id) word.alternatives = alternative.alternatives || [ ...alternative.conjugation.nonPast, ...alternative.conjugation.past ]
+            })
+
+            word.relatedWords = {
+                stem: [],
+                verbForm: [],
+                stemUsedIn: [],
+                stemTakenFrom: [],
+                wordUsedIn: [],
+                wordTakenFrom: [],
+                baseWord: [],
+                suruForm: [],
+            }
+        })
+        
+        vocabularyList.forEach((word) => {
+            const base = word.completeWord
+
+            const stem = inflexions.dispatchBaseWord(word)
+            vocabularyList.forEach((word2) => {
+                const base2 = word2.completeWord
+                if (!!stem
+                    && base2 === stem
+                ) {
+                    word.relatedWords.stem.push(libFunctions.getBasicWordElements(word2))
+                    word2.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word))
+                }
+                else if (!!stem
+                    && stem.length > 1
+                    && base2.includes(stem)
+                ) {
+                    word.relatedWords.stemUsedIn.push(libFunctions.getBasicWordElements(word2))
+                    word2.relatedWords.stemTakenFrom.push(libFunctions.getBasicWordElements(word))
+                }
+                else if (base2.includes(base)
+                    && base.length > 1
+                    && word.id !== word2.id
+                ) {
+                    word.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word2))
+                    word2.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word))
+                }
+            })
 
             word.elements.forEach((element) => {
                 if (word.forceHiragana) {
@@ -92,55 +129,18 @@ module.exports = {
                 if (element.kana === "する") {
                     const wordWithoutSuru = base.slice(0, -2)
                     vocabularyList.every((word2) => {
-                        const base2 = word2.rareKanji ?
-                            (word2.jukujikun || word2.elements.map((element) => element.kana).join(''))
-                            :
-                            word2.elements.map((element) => element.kanji || element.kana).join('')
+                        const base2 = word2.base
                         if (base2 === wordWithoutSuru) {
-                            word.relatedWords.baseWord = {
-                                id: word2.id,
-                                elements: word2.elements,
-                                romaji: word2.romaji,
-                                translation: word2.translation
-                            }
-                            word2.relatedWords.suruForm = {
-                                id: word.id,
-                                elements: word.elements,
-                                romaji: word.romaji,
-                                translation: word.translation
-                            }
+                            word.relatedWords.baseWord.push(libFunctions.getBasicWordElements(word2))
+                            word2.relatedWords.suruForm.push(libFunctions.getBasicWordElements(word))
                             return false
                         }
                         return true
                     })
                 }
             })
-            if (word.verbPrecisions) {
-                const stem = inflexions.dispatchBaseWord(word)
-                vocabularyList.every((word2) => {
-                    const base2 = word2.rareKanji ?
-                        (word2.jukujikun || word2.elements.map((element) => element.kana).join(''))
-                        :
-                        word2.elements.map((element) => element.kanji || element.kana).join('')
-                    if (base2 === stem) {
-                        word.relatedWords.stem = {
-                            id: word2.id,
-                            elements: word2.elements,
-                            romaji: word2.romaji,
-                            translation: word2.translation
-                        }
-                        word2.relatedWords.verbForm = {
-                            id: word.id,
-                            elements: word.elements,
-                            romaji: word.romaji,
-                            translation: word.translation
-                        }
-                        return false
-                    }
-                    return true
-                })
-            }
         })
+
         console.log(kanjiList.length, 'kanji chargés le', new Date().toLocaleString('fr-FR'))
         console.log(vocabularyList.length, 'mots chargés le', new Date().toLocaleString('fr-FR'))
         console.log(sentencesList.length, 'phrases chargées le', new Date().toLocaleString('fr-FR'))

@@ -7,4 +7,14 @@ module.exports = {
     cutStringToArray: (string) => {
         return string.toLowerCase().split(', ')
     },
+    getBasicWordElements: (word) => {
+        return {
+            id: word.id,
+            elements: word.elements,
+            romaji: word.romaji,
+            translation: word.translation,
+            rareKanji: word.rareKanji,
+            jukujikun: word.jukujikun
+        }
+    }
 }

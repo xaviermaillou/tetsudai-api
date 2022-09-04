@@ -95,10 +95,7 @@ const copuleConjugationStructure = () => {
     }
 }
 const getVerbConjugation = (word) => {
-    let base = word.rareKanji ?
-        (word.jukujikun || word.elements.map((element) => element.kana).join('')).slice(0, -1)
-        :
-        word.elements.map((element) => element.kanji || element.kana).join('').slice(0, -1);
+    let base = word.completeWord.slice(0, -1);
 
     const info = word.verbPrecisions;
 
@@ -245,10 +242,7 @@ const getVerbConjugation = (word) => {
 }
 
 const getVerbStem = (word) => {
-    let base = word.rareKanji ?
-        (word.jukujikun || word.elements.map((element) => element.kana).join('')).slice(0, -1)
-        :
-        word.elements.map((element) => element.kanji || element.kana).join('').slice(0, -1);
+    let base = word.completeWord.slice(0, -1);
 
     const info = word.verbPrecisions;
 
@@ -285,16 +279,16 @@ const getVerbStem = (word) => {
         }
     }
     if (info.type === 'suru') {
-        return;
+        return 'し';
     }
     if (info.type === 'kuru') {
-        return;
+        return '来';
     }
     if (info.type === 'iku') {
-        return;
+        return '行き';
     }
     if (info.type === 'aru') {
-        return;
+        return 'あり';
     }
     if (info.type === 'desu') {
         return;
@@ -421,10 +415,7 @@ const iAdjectiveConjugationStructure = (base) => {
     }
 }
 const getAdjectiveConjugation = (word) => {
-    let base = word.rareKanji ?
-        (word.jukujikun || word.elements.map((element) => element.kana).join(''))
-        :
-        word.elements.map((element) => element.kanji || element.kana).join('');
+    let base = word.completeWord;
     const info = word.adjectivePrecisions;
 
     if (info.type === 'na') {

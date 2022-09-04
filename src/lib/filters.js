@@ -140,8 +140,7 @@ module.exports = {
         }
 
         // Main word filtering
-        const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
-            .map((element) => element.kanji || element.kana).join('')
+        const japaneseWord = vocabularyWord.completeWord
         if (japaneseWord.includes(string) || string.includes(japaneseWord)) includes = true
         if (vocabularyWord.grammar.includes(14) && ((japaneseWord + 'する').includes(string) || string.includes(japaneseWord + 'する'))) includes = true
 
