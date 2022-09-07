@@ -95,10 +95,12 @@ module.exports = {
         
         vocabularyList.forEach((word) => {
             const base = word.completeWord
+            const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
 
             const stem = inflexions.dispatchBaseWord(word)
             vocabularyList.forEach((word2) => {
                 const base2 = word2.completeWord
+                const baseWrittenInKana2 = word2.elements.map((element) => element.kana).join('')
                 if (!!stem
                     && base2 === stem
                 ) {
@@ -113,6 +115,7 @@ module.exports = {
                     word2.relatedWords.stemTakenFrom.push(libFunctions.getBasicWordElements(word))
                 }
                 else if (base2.includes(base)
+                    && baseWrittenInKana2.includes(baseWrittenInKana)
                     && base.length > 1
                     && word.id !== word2.id
                 ) {
