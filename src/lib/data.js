@@ -72,7 +72,7 @@ module.exports = {
             word.completeWord = word.rareKanji ?
             (word.jukujikun || word.elements.map((element) => element.kana).join(''))
             :
-            word.elements.map((element) => element.kanji || element.kana).join('')
+            word.elements.map((element) => element.option === "rareKanji" ? element.kana : element.kanji || element.kana).join('')
 
             word.inflexions = inflexions.dispatchInflexion(word)
 
