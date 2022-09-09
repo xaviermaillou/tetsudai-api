@@ -194,8 +194,7 @@ module.exports = {
         }
 
         // Main word filtering
-        const japaneseWord = vocabularyWord.jukujikun || vocabularyWord.elements
-            .map((element) => element.kanji || element.kana).join('')
+        const japaneseWord = vocabularyWord.completeWord
         if (japaneseWord === string) matchingScore = 1
         // Taking in account suru verbs
         if (vocabularyWord.grammar.includes(14) && japaneseWord + 'する' === string) matchingScore = 1
