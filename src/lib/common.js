@@ -13,7 +13,7 @@ module.exports = {
             elements: word.elements,
             romaji: word.romaji,
             translation: word.translation,
-            rareKanji: word.rareKanji,
+            jukujikunAsMain: word.jukujikunAsMain,
             jukujikun: word.jukujikun
         }
     }
