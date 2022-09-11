@@ -27,7 +27,7 @@ module.exports = {
 
         // Romaji filtering
         kanji.romaji?.forEach((word) => {
-            if (romajiRegularization(word.toLowerCase())
+            if (word && romajiRegularization(word.toLowerCase())
                 .includes(romajiRegularization(string.toLowerCase()))
             ) includes = true
         })
@@ -53,10 +53,10 @@ module.exports = {
 
         // Kanas filtering
         kanji.readings.kunyomi.forEach((reading) => {
-            if (reading.kana.includes(string)) includes = true
+            if (reading && reading.kana.includes(string)) includes = true
         })
         kanji.readings.onyomi.forEach((reading) => {
-            if (reading.kana.includes(string)) includes = true
+            if (reading && reading.kana.includes(string)) includes = true
         })
 
         return includes
@@ -76,7 +76,7 @@ module.exports = {
 
         // Romaji filtering
         kanji.romaji?.forEach((word) => {
-            if (romajiRegularization(word.toLowerCase())
+            if (word && romajiRegularization(word.toLowerCase())
                 === romajiRegularization(string.toLowerCase())
             ) matchingScore = 1
         })
@@ -85,11 +85,11 @@ module.exports = {
         if (kanji.kanji === string) matchingScore = 1
 
         // Kanas filtering
-        kanji.readings.kunyomi.forEach((word) => {
-            if (word === string) matchingScore = 1
+        kanji.readings.kunyomi.forEach((reading) => {
+            if (reading && reading === string) matchingScore = 1
         })
-        kanji.readings.onyomi.forEach((word) => {
-            if (word === string) matchingScore = 1
+        kanji.readings.onyomi.forEach((reading) => {
+            if (reading && reading === string) matchingScore = 1
         })
         return matchingScore
     },

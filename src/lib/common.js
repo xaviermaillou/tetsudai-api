@@ -7,6 +7,14 @@ module.exports = {
     cutStringToArray: (string) => {
         return string.toLowerCase().split(', ')
     },
+    getBasicKanjiElements: (kanji) => {
+        return {
+            id: kanji.id,
+            kanji: kanji.kanji,
+            readings: kanji.readings,
+            translation: kanji.translation
+        }
+    },
     getBasicWordElements: (word) => {
         return {
             id: word.id,

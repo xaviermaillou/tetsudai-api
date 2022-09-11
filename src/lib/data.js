@@ -66,6 +66,19 @@ module.exports = {
                     return true
                 })
             })
+            kanji.kanjiUsedAsPartIn = []
+            kanji.kanjiTakenAsPartFrom = []
+        })
+
+        kanjiList.forEach((kanji) => {
+            kanjiList.forEach((kanji2) => {
+                kanji2.kanjiParts?.forEach((part) => {
+                    if (kanji.kanji === part || kanji.kanjiVariations?.includes(part)) {
+                        kanji.kanjiUsedAsPartIn.push(libFunctions.getBasicKanjiElements(kanji2))
+                        kanji2.kanjiTakenAsPartFrom.push(libFunctions.getBasicKanjiElements(kanji))
+                    }
+                })
+            })
         })
 
         vocabularyList.forEach((word) => {
