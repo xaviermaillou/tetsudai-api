@@ -46,13 +46,17 @@ module.exports = {
         kanjiList.forEach((kanji) => {
             kanji.translationArray = libFunctions.cutStringToArray(kanji.translation)
             kanji.vocabulary = []
+            kanji.relatedJukujikun = []
             kanji.grammar = []
             vocabularyList.forEach((word) => {
                 word.sentences = []
                 word.translationArray = libFunctions.cutStringToArray(word.translation)
                 word.elements.every((element) => {
                     if (kanji.kanji === element.kanji) {
+                        element.kana ?
                         kanji.vocabulary.push(libFunctions.getBasicWordElements(word))
+                        :
+                        kanji.relatedJukujikun.push(libFunctions.getBasicWordElements(word))
                         kanji.grammar.push(...word.grammar)
                         element.details = {
                             id: kanji.id,
@@ -108,32 +112,37 @@ module.exports = {
         
         vocabularyList.forEach((word) => {
             const base = word.completeWord
+            const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
-
             const stem = inflexions.dispatchBaseWord(word)
+            
             vocabularyList.forEach((word2) => {
                 const base2 = word2.completeWord
+                const kanjiOnly2 = word2.elements.map((element) => element.kanji).join('')
                 const baseWrittenInKana2 = word2.elements.map((element) => element.kana).join('')
-                if (!!stem
-                    && base2 === stem
-                ) {
-                    word.relatedWords.stem.push(libFunctions.getBasicWordElements(word2))
-                    word2.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word))
-                }
-                else if (!!stem
-                    && stem.length > 1
-                    && base2.includes(stem)
-                ) {
-                    word.relatedWords.stemUsedIn.push(libFunctions.getBasicWordElements(word2))
-                    word2.relatedWords.stemTakenFrom.push(libFunctions.getBasicWordElements(word))
-                }
-                else if (base2.includes(base)
-                    && baseWrittenInKana2.includes(baseWrittenInKana)
-                    && base.length > 1
-                    && word.id !== word2.id
-                ) {
-                    word.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word2))
-                    word2.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word))
+
+                if (kanjiOnly2.includes(kanjiOnly)) {
+                    if (!!stem
+                        && base2 === stem
+                    ) {
+                        word.relatedWords.stem.push(libFunctions.getBasicWordElements(word2))
+                        word2.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word))
+                    }
+                    else if (!!stem
+                        && stem.length > 1
+                        && base2.includes(stem)
+                    ) {
+                        word.relatedWords.stemUsedIn.push(libFunctions.getBasicWordElements(word2))
+                        word2.relatedWords.stemTakenFrom.push(libFunctions.getBasicWordElements(word))
+                    }
+                    else if (base2.includes(base)
+                        && baseWrittenInKana2.includes(baseWrittenInKana)
+                        && base.length > 1
+                        && word.id !== word2.id
+                    ) {
+                        word.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word2))
+                        word2.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word))
+                    }
                 }
             })
 
