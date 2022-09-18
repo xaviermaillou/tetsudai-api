@@ -139,6 +139,7 @@ module.exports = {
                         && baseWrittenInKana2.includes(baseWrittenInKana)
                         && base.length > 1
                         && word.id !== word2.id
+                        && !base2.includes("する")
                     ) {
                         word.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word2))
                         word2.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word))
@@ -154,7 +155,7 @@ module.exports = {
                 if (element.kana === "する") {
                     const wordWithoutSuru = base.slice(0, -2)
                     vocabularyList.every((word2) => {
-                        const base2 = word2.base
+                        const base2 = word2.completeWord
                         if (base2 === wordWithoutSuru) {
                             word.relatedWords.baseWord.push(libFunctions.getBasicWordElements(word2))
                             word2.relatedWords.suruForm.push(libFunctions.getBasicWordElements(word))
