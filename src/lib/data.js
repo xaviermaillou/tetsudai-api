@@ -131,6 +131,7 @@ module.exports = {
                     else if (!!stem
                         && stem.length > 1
                         && base2.includes(stem)
+                        && word.id !== word2.id
                     ) {
                         word.relatedWords.stemUsedIn.push(libFunctions.getBasicWordElements(word2))
                         word2.relatedWords.stemTakenFrom.push(libFunctions.getBasicWordElements(word))
