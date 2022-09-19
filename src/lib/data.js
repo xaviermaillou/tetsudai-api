@@ -138,7 +138,6 @@ module.exports = {
                     }
                     else if (base2.includes(base)
                         && baseWrittenInKana2.includes(baseWrittenInKana)
-                        && base.length > 1
                         && word.id !== word2.id
                         && !base2.includes("する")
                     ) {
