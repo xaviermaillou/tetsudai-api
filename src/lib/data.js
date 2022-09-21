@@ -137,6 +137,7 @@ module.exports = {
                         word2.relatedWords.stemTakenFrom.push(libFunctions.getBasicWordElements(word))
                     }
                     else if (base2.includes(base)
+                        && (!word.grammar.includes(9) || word2.includesParticle)
                         && baseWrittenInKana2.includes(baseWrittenInKana)
                         && word.id !== word2.id
                         && !base2.includes("する")
