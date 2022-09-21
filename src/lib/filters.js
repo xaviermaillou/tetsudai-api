@@ -126,7 +126,7 @@ module.exports = {
         }
 
         // Inflexions filtering
-        if (vocabularyWord.inflexions) {
+        if (vocabularyWord.inflexions && (string.length > 1 || string === "だ")) {
             const inflexionsArray = []
             Object.values(vocabularyWord.inflexions).map((tense) => {
                 if (tense?.affirmative?.neutral) inflexionsArray.push(tense.affirmative.neutral.main + tense.affirmative.neutral.ending)
