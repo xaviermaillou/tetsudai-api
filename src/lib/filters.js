@@ -49,6 +49,7 @@ module.exports = {
         // Kanji filtering
         if (kanji.kanji === string) includes = true
         if (string.includes(kanji.kanji)) includes = true
+        if (kanji.kanjiVariations.includes(string)) includes = true
 
 
         // Kanas filtering
@@ -83,6 +84,9 @@ module.exports = {
 
         // Kanji filtering
         if (kanji.kanji === string) matchingScore = 1
+        kanji.kanjiVariations.forEach((variation) => {
+            if (variation === string) matchingScore = 1
+        })
 
         // Kanas filtering
         kanji.readings.kunyomi.forEach((reading) => {

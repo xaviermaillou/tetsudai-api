@@ -75,13 +75,16 @@ module.exports = {
         })
 
         kanjiList.forEach((kanji) => {
-            kanjiList.forEach((kanji2) => {
-                kanji2.kanjiParts?.forEach((part) => {
-                    if (kanji.kanji === part || kanji.kanjiVariations?.includes(part)) {
-                        kanji.kanjiUsedAsPartIn.push(libFunctions.getBasicKanjiElements(kanji2))
-                        kanji2.kanjiTakenAsPartFrom.push(libFunctions.getBasicKanjiElements(kanji))
+            kanji.kanjiParts?.forEach((part) => {
+                let partKanjiFound = false
+                kanjiList.forEach((kanji2) => {
+                    if (kanji2.kanji === part || kanji2.kanjiVariations?.includes(part)) {
+                        kanji2.kanjiUsedAsPartIn.push(libFunctions.getBasicKanjiElements(kanji))
+                        kanji.kanjiTakenAsPartFrom.push(libFunctions.getBasicKanjiElements(kanji2))
+                        partKanjiFound = true
                     }
                 })
+                if (!partKanjiFound) console.log('Undefined part:', part, 'in', kanji.kanji)
             })
         })
 
