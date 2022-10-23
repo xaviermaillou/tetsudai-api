@@ -85,8 +85,16 @@ module.exports = {
                             id: kanji.id,
                             kanji: kanji.kanji,
                             readings: {
-                                kunyomi: kanji.readings.kunyomi.map((reading) => reading.kana),
-                                onyomi: kanji.readings.onyomi.map((reading) => reading.kana)
+                                kunyomi: kanji.readings.kunyomi.map((reading) => {
+                                    return {
+                                        kana: reading.kana
+                                    }
+                                }),
+                                onyomi: kanji.readings.onyomi.map((reading) => {
+                                    return {
+                                        kana: reading.kana
+                                    }
+                                })
                             },
                             romaji: kanji.romaji,
                             translation: kanji.translation
