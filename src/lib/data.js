@@ -4,64 +4,90 @@ const libFunctions = require('./common')
 const inflexions = require('../lib/inflexions')
 const { kanasDictionnary } = require('tetsudai-common')
 
+const localKanji = require('../localDatabase/kanji.json')
+const localVocabulary = require('../localDatabase/vocabulary.json')
+const localAlternatives = require('../localDatabase/alternatives.json')
+const localSentences = require('../localDatabase/sentences.json')
+
 module.exports = {
     buildData: async () => {
 
         let kanjiList = []
-        const kanjiSnapshot = await firebase.firestore().collection('Kanjis').get()
-        kanjiSnapshot.forEach((doc) => {
-            kanjiList.push({
-                ...doc.data(),
-                doc,
+        if (process.env.NODE_ENV === 'production') {
+            const kanjiSnapshot = await firebase.firestore().collection('Kanjis').get()
+            kanjiSnapshot.forEach((doc) => {
+                kanjiList.push({
+                    ...doc.data(),
+                    doc,
+                })
             })
-        })
+        } else kanjiList = localKanji
 
         let vocabularyList = []
-        const vocabularySnapshot = await firebase.firestore().collection('Vocabulary').get()
-        vocabularySnapshot.forEach((doc) => {
-            vocabularyList.push({
-                ...doc.data(),
-                doc,
+        if (process.env.NODE_ENV === 'production') {
+            const vocabularySnapshot = await firebase.firestore().collection('Vocabulary').get()
+            vocabularySnapshot.forEach((doc) => {
+                vocabularyList.push({
+                    ...doc.data(),
+                    doc,
+                })
             })
-        })
+        } else vocabularyList = localVocabulary
 
         let alternativesList = []
-        const alternativesSnapshot = await firebase.firestore().collection('Alternatives').get()
-        alternativesSnapshot.forEach((doc) => {
-            alternativesList.push({
-                ...doc.data(),
-                doc,
+        if (process.env.NODE_ENV === 'production') {
+            const alternativesSnapshot = await firebase.firestore().collection('Alternatives').get()
+            alternativesSnapshot.forEach((doc) => {
+                alternativesList.push({
+                    ...doc.data(),
+                    doc,
+                })
             })
-        })
+        } else alternativesList = localAlternatives
 
         let sentencesList = []
-        const sentencesSnapshot = await firebase.firestore().collection('Sentences').get()
-        sentencesSnapshot.forEach((doc) => {
-            sentencesList.push({
-                ...doc.data(),
-                doc,
+        if (process.env.NODE_ENV === 'production') {
+            const sentencesSnapshot = await firebase.firestore().collection('Sentences').get()
+            sentencesSnapshot.forEach((doc) => {
+                sentencesList.push({
+                    ...doc.data(),
+                    doc,
+                })
             })
-        })
+        } else sentencesList = localSentences
 
         kanjiList.forEach((kanji) => {
             kanji.translationArray = libFunctions.cutStringToArray(kanji.translation)
-            kanji.vocabulary = []
             kanji.relatedJukujikun = []
             kanji.grammar = []
+            kanji.readings.kunyomi.forEach((yomi) => yomi.examples = [])
+            kanji.readings.onyomi.forEach((yomi) => yomi.examples = [])
             vocabularyList.forEach((word) => {
                 word.sentences = []
                 word.translationArray = libFunctions.cutStringToArray(word.translation)
                 word.elements.every((element) => {
                     if (kanji.kanji === element.kanji) {
                         element.kana ?
-                        kanji.vocabulary.push(libFunctions.getBasicWordElements(word))
+                            kanasDictionnary.isKatakana(element.kana) ?
+                            kanji.readings.onyomi.forEach((yomi) => {
+                                if (kanji.id === 52) console.log('onyomi', element.kana)
+                                if (yomi.kana === element.kana) yomi.examples.push(libFunctions.getBasicWordElements(word))
+                            })
+                            :
+                            kanji.readings.kunyomi.forEach((yomi) => {
+                                if (kanji.id === 52) console.log('kunyomi', element.kana)
+                                if (yomi.kana === element.kana) yomi.examples.push(libFunctions.getBasicWordElements(word))
+                            })
                         :
                         kanji.relatedJukujikun.push(libFunctions.getBasicWordElements(word))
                         kanji.grammar.push(...word.grammar)
                         element.details = {
                             id: kanji.id,
                             kanji: kanji.kanji,
-                            readings: kanji.readings,
+                            readings: {
+                                kunyomi: kanji.readings.kunyomi.map((reading) => reading.kana),
+                                onyomi: kanji.readings.onyomi.map((reading) => reading.kana)
+                            },
                             romaji: kanji.romaji,
                             translation: kanji.translation
                         }

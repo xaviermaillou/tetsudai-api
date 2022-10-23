@@ -18,10 +18,19 @@ module.exports = {
                     .includes(frenchRegularization(string.toLowerCase()))
                 ) includes = true
             })
-            kanji.vocabulary.forEach((word) => {
-                if (frenchRegularization(word.translation.toLowerCase())
-                    .includes(frenchRegularization(string.toLowerCase()))
-                ) includes = true
+            kanji.readings.kunyomi.forEach((yomi) => {
+                yomi.examples.forEach((word) => {
+                    if (frenchRegularization(word.translation.toLowerCase())
+                        .includes(frenchRegularization(string.toLowerCase()))
+                    ) includes = true
+                })
+            })
+            kanji.readings.onyomi.forEach((yomi) => {
+                yomi.examples.forEach((word) => {
+                    if (frenchRegularization(word.translation.toLowerCase())
+                        .includes(frenchRegularization(string.toLowerCase()))
+                    ) includes = true
+                })
             })
         }
 
@@ -31,19 +40,37 @@ module.exports = {
                 .includes(romajiRegularization(string.toLowerCase()))
             ) includes = true
         })
-        kanji.vocabulary.forEach((word) => {
-            if (typeof word.romaji === 'string') {
-                // This part is to remove when all the romaji are arrays and not strings anymore
-                if (romajiRegularization(word.romaji.toLowerCase())
-                    .includes(romajiRegularization(string.toLowerCase()))
-                ) includes = true
-            } else {
-                word.romaji?.forEach((word) => {
-                    if (romajiRegularization(word.toLowerCase())
+        kanji.readings.kunyomi.forEach((yomi) => {
+            yomi.examples.forEach((word) => {
+                if (typeof word.romaji === 'string') {
+                    // This part is to remove when all the romaji are arrays and not strings anymore
+                    if (romajiRegularization(word.romaji.toLowerCase())
                         .includes(romajiRegularization(string.toLowerCase()))
                     ) includes = true
-                })
-            }
+                } else {
+                    word.romaji?.forEach((word) => {
+                        if (romajiRegularization(word.toLowerCase())
+                            .includes(romajiRegularization(string.toLowerCase()))
+                        ) includes = true
+                    })
+                }
+            })
+        })
+        kanji.readings.onyomi.forEach((yomi) => {
+            yomi.examples.forEach((word) => {
+                if (typeof word.romaji === 'string') {
+                    // This part is to remove when all the romaji are arrays and not strings anymore
+                    if (romajiRegularization(word.romaji.toLowerCase())
+                        .includes(romajiRegularization(string.toLowerCase()))
+                    ) includes = true
+                } else {
+                    word.romaji?.forEach((word) => {
+                        if (romajiRegularization(word.toLowerCase())
+                            .includes(romajiRegularization(string.toLowerCase()))
+                        ) includes = true
+                    })
+                }
+            })
         })
 
         // Kanji filtering
