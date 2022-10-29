@@ -161,14 +161,6 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
 
     const slicedKanjiArray = sortedByImportance.slice(offset, offset + 100)
 
-    if (slicedKanjiArray.length === 0) {
-        offset > 0 ?
-        res.status(404).json('Tous les kanji ont été envoyés.')
-        :
-        res.status(404).json('Aucun kanji ne correspond à ces critères.')
-        return
-    }
-
     console.log('Kanji envoyés:', slicedKanjiArray.length)
     res.json(slicedKanjiArray)
 })
@@ -279,14 +271,6 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
 
     const slicedVocabularyArray = sortedByImportance.slice(offset, offset + 100)
 
-    if (slicedVocabularyArray.length === 0) {
-        offset > 0 ?
-        res.status(404).json('Tous les mots ont été envoyés.')
-        :
-        res.status(404).json('Aucun mot ne correspond à ces critères.')
-        return
-    }
-
     console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
     res.json(libFunctions.sortByObjectKey(slicedVocabularyArray, dictionnary.levels))
 })
@@ -310,11 +294,6 @@ app.get('/sentences/:id', (req, res) => {
             return true
         })
     })
-
-    if (sentencesArray.length === 0) {
-        res.status(404).json('Aucune phrase associée à ce mot n\'a été trouvée.')
-        return
-    }
 
     res.json(sentencesArray.sort((a, b) => a.elements.length - b.elements.length))
 })
@@ -408,11 +387,6 @@ app.get('/kanjiTrainingList/:level/:grammar/:collection', (req, res) => {
         }
     })
 
-    if (kanjiArray.length === 0) {
-        res.status(404).json('Aucun kanji ne correspond à ces critères.')
-        return
-    }
-
     console.log('Kanji d\'entraînement envoyés:', kanjiArray.length)
     res.json(kanjiArray)
 })
@@ -461,11 +435,6 @@ app.get('/vocabularyTrainingList/:level/:grammar/:collection', (req, res) => {
             })
         }
     })
-
-    if (vocabularyArray.length === 0) {
-        res.status(404).json('Aucun mot ne correspond à ces critères.')
-        return
-    }
 
     console.log('Vocabulaire d\'entraînement envoyé:', vocabularyArray.length)
     res.json(vocabularyArray)
