@@ -55,6 +55,33 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
 
     const offset = Number(req.params.offset)
 
+    if (isNaN(offset)) {
+        res.status(400).json('Offset must be a number')
+        return
+    }
+
+    if (!dictionnary.levels[level]) {
+        res.status(400).json(`Level query must be a number between 0 and ${
+            Object.keys(dictionnary.levels)
+                [Object.keys(dictionnary.levels).length - 1]
+        }`)
+        return
+    }
+    if (!dictionnary.pluralClasses[grammar]) {
+        res.status(400).json(`Grammar query must be a number between 0 and ${
+            Object.keys(dictionnary.pluralClasses)
+                [Object.keys(dictionnary.pluralClasses).length - 1]
+        }`)
+        return
+    }
+    if (!dictionnary.collections[collection]) {
+        res.status(400).json(`Collection query must be a number between 0 and ${
+            Object.keys(dictionnary.collections)
+                [Object.keys(dictionnary.collections).length - 1]
+        }`)
+        return
+    }
+
     console.log('\nKanji requêtés \n',
         'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
         'Collection:', dictionnary.collections[collection], 'Recherche:', search,
@@ -134,6 +161,13 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
 
     const slicedKanjiArray = sortedByImportance.slice(offset, offset + 100)
 
+    if (slicedKanjiArray.length === 0) {
+        offset > 0 ?
+        res.status(404).json('Tous les kanji ont été envoyés.')
+        :
+        res.status(404).json('Aucun kanji ne correspond à ces critères.')
+    }
+
     console.log('Kanji envoyés:', slicedKanjiArray.length)
     res.json(slicedKanjiArray)
 })
@@ -145,6 +179,33 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
     const search = req.params.search || ""
 
     const offset = Number(req.params.offset)
+
+    if (isNaN(offset)) {
+        res.status(400).json('Offset must be a number')
+        return
+    }
+
+    if (!dictionnary.levels[level]) {
+        res.status(400).json(`Level query must be a number between 0 and ${
+            Object.keys(dictionnary.levels)
+                [Object.keys(dictionnary.levels).length - 1]
+        }`)
+        return
+    }
+    if (!dictionnary.pluralClasses[grammar]) {
+        res.status(400).json(`Grammar query must be a number between 0 and ${
+            Object.keys(dictionnary.pluralClasses)
+                [Object.keys(dictionnary.pluralClasses).length - 1]
+        }`)
+        return
+    }
+    if (!dictionnary.collections[collection]) {
+        res.status(400).json(`Collection query must be a number between 0 and ${
+            Object.keys(dictionnary.collections)
+                [Object.keys(dictionnary.collections).length - 1]
+        }`)
+        return
+    }
 
     console.log('\nVocabulaire requêté \n',
         'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
@@ -217,12 +278,24 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
 
     const slicedVocabularyArray = sortedByImportance.slice(offset, offset + 100)
 
+    if (slicedVocabularyArray.length === 0) {
+        offset > 0 ?
+        res.status(404).json('Tous les mots ont été envoyés.')
+        :
+        res.status(404).json('Aucun mot ne correspond à ces critères.')
+    }
+
     console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
     res.json(libFunctions.sortByObjectKey(slicedVocabularyArray, dictionnary.levels))
 })
 
 app.get('/sentences/:id', (req, res) => {
     const id = Number(req.params.id)
+
+    if (isNaN(id)) {
+        res.status(400).json('Requested id must be a number')
+        return
+    }
 
     const sentencesArray = []
 
@@ -236,11 +309,20 @@ app.get('/sentences/:id', (req, res) => {
         })
     })
 
+    if (slicedVocabsentencesArrayularyArray.length === 0) {
+        res.status(404).json('Aucune phrase associée à ce mot n\'a été trouvée.')
+    }
+
     res.json(sentencesArray.sort((a, b) => a.elements.length - b.elements.length))
 })
 
 app.get('/kanji/:id', (req, res) => {
     const id = Number(req.params.id)
+
+    if (isNaN(id)) {
+        res.status(400).json('Requested id must be a number')
+        return
+    }
 
     let foundKanji
 
@@ -248,17 +330,30 @@ app.get('/kanji/:id', (req, res) => {
         if (kanji.id === id) foundKanji = kanji
     })
 
+    if (!foundKanji) {
+        res.status(404).json('Aucun kanji ne correspond à cet id.')
+    }
+
     res.json(foundKanji)
 })
 
 app.get('/word/:id', (req, res) => {
     const id = Number(req.params.id)
 
+    if (isNaN(id)) {
+        res.status(400).json('Requested id must be a number')
+        return
+    }
+
     let foundWord
 
     vocabularyList.forEach((word) => {
         if (word.id === id) foundWord = word
     })
+
+    if (!foundWord) {
+        res.status(404).json('Aucun mot ne correspond à cet id.')
+    }
 
     res.json(foundWord)
 })
@@ -267,6 +362,28 @@ app.get('/kanjiTrainingList/:level/:grammar/:collection', (req, res) => {
     const level = Number(req.params.level)
     const grammar = Number(req.params.grammar)
     const collection = Number(req.params.collection)
+
+    if (!dictionnary.levels[level]) {
+        res.status(400).json(`Level query must be a number between 0 and ${
+            Object.keys(dictionnary.levels)
+                [Object.keys(dictionnary.levels).length - 1]
+        }`)
+        return
+    }
+    if (!dictionnary.pluralClasses[grammar]) {
+        res.status(400).json(`Grammar query must be a number between 0 and ${
+            Object.keys(dictionnary.pluralClasses)
+                [Object.keys(dictionnary.pluralClasses).length - 1]
+        }`)
+        return
+    }
+    if (!dictionnary.collections[collection]) {
+        res.status(400).json(`Collection query must be a number between 0 and ${
+            Object.keys(dictionnary.collections)
+                [Object.keys(dictionnary.collections).length - 1]
+        }`)
+        return
+    }
 
     console.log('\nKanji requêtés pour l\'entraînement \n',
         'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
@@ -286,6 +403,10 @@ app.get('/kanjiTrainingList/:level/:grammar/:collection', (req, res) => {
         }
     })
 
+    if (kanjiArray.length === 0) {
+        res.status(404).json('Aucun kanji ne correspond à ces critères.')
+    }
+
     console.log('Kanji d\'entraînement envoyés:', kanjiArray.length)
     res.json(kanjiArray)
 })
@@ -294,6 +415,28 @@ app.get('/vocabularyTrainingList/:level/:grammar/:collection', (req, res) => {
     const level = Number(req.params.level)
     const grammar = Number(req.params.grammar)
     const collection = Number(req.params.collection)
+
+    if (!dictionnary.levels[level]) {
+        res.status(400).json(`Level query must be a number between 0 and ${
+            Object.keys(dictionnary.levels)
+                [Object.keys(dictionnary.levels).length - 1]
+        }`)
+        return
+    }
+    if (!dictionnary.pluralClasses[grammar]) {
+        res.status(400).json(`Grammar query must be a number between 0 and ${
+            Object.keys(dictionnary.pluralClasses)
+                [Object.keys(dictionnary.pluralClasses).length - 1]
+        }`)
+        return
+    }
+    if (!dictionnary.collections[collection]) {
+        res.status(400).json(`Collection query must be a number between 0 and ${
+            Object.keys(dictionnary.collections)
+                [Object.keys(dictionnary.collections).length - 1]
+        }`)
+        return
+    }
 
     console.log('\nVocabulaire requêté pour l\'entraînement \n',
         'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
@@ -312,6 +455,10 @@ app.get('/vocabularyTrainingList/:level/:grammar/:collection', (req, res) => {
             })
         }
     })
+
+    if (vocabularyArray.length === 0) {
+        res.status(404).json('Aucun mot ne correspond à ces critères.')
+    }
 
     console.log('Vocabulaire d\'entraînement envoyé:', vocabularyArray.length)
     res.json(vocabularyArray)
