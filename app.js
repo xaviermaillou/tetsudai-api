@@ -309,7 +309,7 @@ app.get('/sentences/:id', (req, res) => {
         })
     })
 
-    if (slicedVocabsentencesArrayularyArray.length === 0) {
+    if (sentencesArray.length === 0) {
         res.status(404).json('Aucune phrase associée à ce mot n\'a été trouvée.')
     }
 
