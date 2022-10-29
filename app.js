@@ -10,6 +10,10 @@ const filters = require('./src/lib/filters')
 const data = require('./src/lib/data')
 const schedule = require('node-schedule')
 
+// Middlewares
+const morgan = require('morgan')
+const favicon = require('serve-favicon')
+
 app.use(cors())
 
 let kanjiList
@@ -27,6 +31,10 @@ schedule.scheduleJob('0 0 * * *', () => {
         sentencesList = response.sentencesList
     })
 })
+
+app
+    .use(morgan('dev'))
+    .use(favicon(__dirname + '/favicon.ico'))
 
 app.get('/', (req, res) => res.send(`
 :: Tetsudai API ::
@@ -216,8 +224,6 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
 app.get('/sentences/:id', (req, res) => {
     const id = Number(req.params.id)
 
-    console.log('\nPhrases requêtées\n')
-
     const sentencesArray = []
 
     sentencesList.forEach((sentence) => {
@@ -236,8 +242,6 @@ app.get('/sentences/:id', (req, res) => {
 app.get('/kanji/:id', (req, res) => {
     const id = Number(req.params.id)
 
-    console.log('\nKanji spécifique requêté\n')
-
     let foundKanji
 
     kanjiList.forEach((kanji) => {
@@ -249,8 +253,6 @@ app.get('/kanji/:id', (req, res) => {
 
 app.get('/word/:id', (req, res) => {
     const id = Number(req.params.id)
-
-    console.log('\nMot spécifique requêté\n')
 
     let foundWord
 
