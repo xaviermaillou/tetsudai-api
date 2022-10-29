@@ -166,6 +166,7 @@ app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) =>
         res.status(404).json('Tous les kanji ont été envoyés.')
         :
         res.status(404).json('Aucun kanji ne correspond à ces critères.')
+        return
     }
 
     console.log('Kanji envoyés:', slicedKanjiArray.length)
@@ -283,6 +284,7 @@ app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, re
         res.status(404).json('Tous les mots ont été envoyés.')
         :
         res.status(404).json('Aucun mot ne correspond à ces critères.')
+        return
     }
 
     console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
@@ -311,6 +313,7 @@ app.get('/sentences/:id', (req, res) => {
 
     if (sentencesArray.length === 0) {
         res.status(404).json('Aucune phrase associée à ce mot n\'a été trouvée.')
+        return
     }
 
     res.json(sentencesArray.sort((a, b) => a.elements.length - b.elements.length))
@@ -332,6 +335,7 @@ app.get('/kanji/:id', (req, res) => {
 
     if (!foundKanji) {
         res.status(404).json('Aucun kanji ne correspond à cet id.')
+        return
     }
 
     res.json(foundKanji)
@@ -353,6 +357,7 @@ app.get('/word/:id', (req, res) => {
 
     if (!foundWord) {
         res.status(404).json('Aucun mot ne correspond à cet id.')
+        return
     }
 
     res.json(foundWord)
@@ -405,6 +410,7 @@ app.get('/kanjiTrainingList/:level/:grammar/:collection', (req, res) => {
 
     if (kanjiArray.length === 0) {
         res.status(404).json('Aucun kanji ne correspond à ces critères.')
+        return
     }
 
     console.log('Kanji d\'entraînement envoyés:', kanjiArray.length)
@@ -458,6 +464,7 @@ app.get('/vocabularyTrainingList/:level/:grammar/:collection', (req, res) => {
 
     if (vocabularyArray.length === 0) {
         res.status(404).json('Aucun mot ne correspond à ces critères.')
+        return
     }
 
     console.log('Vocabulaire d\'entraînement envoyé:', vocabularyArray.length)
