@@ -237,5 +237,30 @@ module.exports = {
         if (vocabularyWord.grammar.includes(14) && japaneseWord + 'する' === string) matchingScore = 1
 
         return matchingScore
+    },
+
+    findSentence: (foundJapaneseWordsArray, string) => {
+        // We create a copy of 'search' string, which will be sliced from the beginning at each found word
+        let searchCopy = string
+        const foundSentence = []
+        for (let i = 0; i < searchCopy.length; i++) {
+            // 'stringToCompare' value is equal to 'searchCopy' with an 'i' amount of letters removed from its ending
+            const stringToCompare = i === 0 ? searchCopy : searchCopy.slice(0, -i)
+            // The current word 'stringToCompare' (a slice of 'searchCopy') matches one of the found words
+            if (foundJapaneseWordsArray.includes(stringToCompare)) {
+                foundSentence.push(stringToCompare)
+                searchCopy = searchCopy.slice(-i)
+                if (searchCopy === stringToCompare) break
+                else i = -1
+            }
+            // No match has been found between any of the 'stringToCompare' variables (slices of 'searchCopy') and the found words
+            // so we remove one letter from the beginning of 'searchCopy' and start a new loop with this new value of 'searchCopy'
+            else if (i === (searchCopy.length - 1)) {
+                searchCopy = searchCopy.slice(-i)
+                if (searchCopy === stringToCompare) break
+                else i = -1
+            }
+        }
+        return foundSentence
     }
 }

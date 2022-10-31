@@ -45,7 +45,6 @@ module.exports = (app, vocabularyList, sentencesList) => {
         
         const vocabularyArray = []
         const foundJapaneseWordsArray = []
-        const foundSentence = []
     
         vocabularyList.forEach((word) => {
             const searchThroughWordResult = filters.searchThroughWord(word, search)
@@ -78,21 +77,11 @@ module.exports = (app, vocabularyList, sentencesList) => {
             }
         })
 
-
+        let foundSentence = []
+        // If one of the found words is not the whole search string, we can assume there are several words in the search
         if (!foundJapaneseWordsArray.includes(search)) {
-            let searchCopy = search
-            for (let i = 0; i < searchCopy.length; i++) {
-                const stringToCompare = i === 0 ? searchCopy : searchCopy.slice(0, -i)
-                if (foundJapaneseWordsArray.includes(stringToCompare)) {
-                    foundSentence.push(stringToCompare)
-                    searchCopy = searchCopy.slice(-i)
-                    if (searchCopy === stringToCompare) break
-                    else i = -1
-                }
-            }
+            foundSentence = filters.findSentence(foundJapaneseWordsArray, search)
         }
-
-        console.log('foundSentence', foundSentence)
     
         const splittedSearch = [ ...search.split(/['\s]+/), ...foundSentence ]
 
