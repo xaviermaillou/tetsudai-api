@@ -92,13 +92,16 @@ module.exports = (app, vocabularyList, sentencesList) => {
         // so that we can compare exact strings and get word importance
         foundSentence.forEach((sentenceElement) => {
             vocabularyList.forEach((word) => {
-                const searchThroughWordResult = filters.searchThroughWord(word, sentenceElement)
-                if (searchThroughWordResult.includes) {
+                if (filters.getWordImportance(word, sentenceElement)) {
                     const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
-                    if (alreadyAddedItem?.importance === 0) {
+                    if (alreadyAddedItem.importance === 0) {
                         alreadyAddedItem.importance = filters
                             .getWordImportance(word, sentenceElement)
                     }
+                    fullSentence.push({
+                        id: word.id,
+                        word: sentenceElement
+                    })
                 }
             })
         })
@@ -110,7 +113,10 @@ module.exports = (app, vocabularyList, sentencesList) => {
         const slicedVocabularyArray = sortedByImportance.slice(offset, offset + 100)
     
         console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
-        res.json(libFunctions.sortByObjectKey(slicedVocabularyArray, dictionnary.levels))
+        res.json({
+            results: libFunctions.sortByObjectKey(slicedVocabularyArray, dictionnary.levels),
+            sentence: (search && foundSentence.join('').length === search.length) ? fullSentence : null
+        })
     })
     
     app.get('/word/:id', (req, res) => {
