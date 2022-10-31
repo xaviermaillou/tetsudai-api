@@ -127,6 +127,7 @@ module.exports = {
 
     searchThroughWord: (vocabularyWord, string) => {
         let includes = false
+        let foundWord
 
         // French filtering
         if (string.length > 1) {
@@ -166,16 +167,21 @@ module.exports = {
                 if (tense?.negative?.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending) 
             })
             inflexionsArray.forEach((inflexion) => {
-                if (inflexion.includes(string) || string.includes(inflexion)) includes = true
+                if (inflexion.includes(string) || string.includes(inflexion)) {
+                    includes = true
+                    foundWord = inflexion
+                }
             })
         }
 
         // Main word filtering
         const japaneseWord = vocabularyWord.completeWord
-        if (japaneseWord.includes(string) || string.includes(japaneseWord)) includes = true
-        if (vocabularyWord.grammar.includes(14) && ((japaneseWord + 'する').includes(string) || string.includes(japaneseWord + 'する'))) includes = true
+        if (japaneseWord.includes(string) || string.includes(japaneseWord)) {
+            includes = true
+            foundWord = vocabularyWord.completeWord
+        }
 
-        return includes
+        return { includes, foundWord }
     },
 
     getWordImportance: (vocabularyWord, string) => {

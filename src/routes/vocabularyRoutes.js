@@ -44,13 +44,16 @@ module.exports = (app, vocabularyList, sentencesList) => {
             '\nOffset:', offset)
         
         const vocabularyArray = []
+        const foundJapaneseWordsArray = []
+        const foundSentence = []
     
         vocabularyList.forEach((word) => {
+            const searchThroughWordResult = filters.searchThroughWord(word, search)
             if (
                 (word.collections?.includes(collection) || collection === 0)
                 && (dictionnary.levels[level] === word.level || !level) 
                 && (word.grammar.includes(grammar) || grammar === 0)
-                && (filters.searchThroughWord(word, search)
+                && (searchThroughWordResult.includes
                     || !search)
             ) {
                 const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
@@ -69,18 +72,38 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     alreadyAddedItem.importance = filters
                         .getWordImportance(word, search)
                 }
+
+                if (search && searchThroughWordResult.foundWord && search.length >= searchThroughWordResult.foundWord.length)
+                    foundJapaneseWordsArray.push(searchThroughWordResult.foundWord)
             }
         })
+
+
+        if (!foundJapaneseWordsArray.includes(search)) {
+            let searchCopy = search
+            for (let i = 0; i < searchCopy.length; i++) {
+                const stringToCompare = i === 0 ? searchCopy : searchCopy.slice(0, -i)
+                if (foundJapaneseWordsArray.includes(stringToCompare)) {
+                    foundSentence.push(stringToCompare)
+                    searchCopy = searchCopy.slice(-i)
+                    if (searchCopy === stringToCompare) break
+                    else i = -1
+                }
+            }
+        }
+
+        console.log('foundSentence', foundSentence)
     
-        const splittedSearch = search.split(/['\s]+/)
-    
+        const splittedSearch = [ ...search.split(/['\s]+/), ...foundSentence ]
+
         splittedSearch.forEach((searchElement) => {
             vocabularyList.forEach((word) => {
+                const searchThroughWordResult = filters.searchThroughWord(word, searchElement)
                 if (
                     (word.collections?.includes(collection) || collection === 0)
                     && (dictionnary.levels[level] === word.level || !level) 
                     && (word.grammar.includes(grammar) || grammar === 0)
-                    && (filters.searchThroughWord(word, searchElement)
+                    && (searchThroughWordResult.includes
                         || !searchElement)
                 ) {
                     const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
