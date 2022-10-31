@@ -46,44 +46,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         const vocabularyArray = []
         const foundJapaneseWordsArray = []
     
-        vocabularyList.forEach((word) => {
-            const searchThroughWordResult = filters.searchThroughWord(word, search)
-            if (
-                (word.collections?.includes(collection) || collection === 0)
-                && (dictionnary.levels[level] === word.level || !level) 
-                && (word.grammar.includes(grammar) || grammar === 0)
-                && (searchThroughWordResult.includes
-                    || !search)
-            ) {
-                const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
-                if (alreadyAddedItem === undefined) {
-                    vocabularyArray.push({
-                        id: word.id,
-                        elements: word.elements,
-                        jukujikun: word.jukujikun,
-                        frequency: word.frequency,
-                        translation: word.translation,
-                        jukujikunAsMain: word.jukujikunAsMain,
-                        importance: filters
-                            .getWordImportance(word, search)
-                    })
-                } else if (alreadyAddedItem.importance === 0) {
-                    alreadyAddedItem.importance = filters
-                        .getWordImportance(word, search)
-                }
-
-                if (search && searchThroughWordResult.foundWord && search.length >= searchThroughWordResult.foundWord.length)
-                    foundJapaneseWordsArray.push(searchThroughWordResult.foundWord)
-            }
-        })
-
-        let foundSentence = []
-        // If one of the found words is not the whole search string, we can assume there are several words in the search
-        if (!foundJapaneseWordsArray.includes(search)) {
-            foundSentence = filters.findSentence(foundJapaneseWordsArray, search)
-        }
-    
-        const splittedSearch = [ ...search.split(/['\s]+/), ...foundSentence ]
+        const splittedSearch = [ search, ...search.split(/['\s]+/) ]
 
         splittedSearch.forEach((searchElement) => {
             vocabularyList.forEach((word) => {
@@ -110,6 +73,31 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     } else if (alreadyAddedItem.importance === 0) {
                         alreadyAddedItem.importance = filters
                             .getWordImportance(word, searchElement)
+                    }
+
+                    if (searchElement && searchThroughWordResult.foundWord && searchElement.length >= searchThroughWordResult.foundWord.length)
+                        foundJapaneseWordsArray.push(searchThroughWordResult.foundWord)
+                }
+            })
+        })
+
+        let foundSentence = []
+        // If one of the found words is not the whole search string, we can assume there are several words in the search
+        if (!foundJapaneseWordsArray.includes(search)) {
+            foundSentence = filters.findSentence(foundJapaneseWordsArray, search)
+        }
+
+        const fullSentence = []
+        // With the found japanese sentence, we execute a new search loop with the separated words
+        // so that we can compare exact strings and get word importance
+        foundSentence.forEach((sentenceElement) => {
+            vocabularyList.forEach((word) => {
+                const searchThroughWordResult = filters.searchThroughWord(word, sentenceElement)
+                if (searchThroughWordResult.includes) {
+                    const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
+                    if (alreadyAddedItem?.importance === 0) {
+                        alreadyAddedItem.importance = filters
+                            .getWordImportance(word, sentenceElement)
                     }
                 }
             })

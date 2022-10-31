@@ -44,39 +44,9 @@ module.exports = (app, kanjiList) => {
             '\nOffset:', offset)
             
         const kanjiArray = []
-        kanjiList.forEach((kanji) => {
-            if (
-                (
-                    (kanji.collections?.includes(collection) || collection === 0)
-                    && (dictionnary.levels[level] === kanji.level || !level) 
-                    && (kanji.grammar.includes(grammar) || grammar === 0)
-                ) 
-                &&
-                (
-                    filters.searchThroughKanji(kanji, search)
-                    || !search
-                )
-            ) {
-                const alreadyAddedItem = kanjiArray.find((element) => element.id === kanji.id)
-                if (alreadyAddedItem === undefined) {
-                    kanjiArray.push({ 
-                        id: kanji.id,
-                        kanji: kanji.kanji,
-                        readings: kanji.readings,
-                        frequency: kanji.frequency,
-                        translation: kanji.translation,
-                        importance: filters
-                            .getKanjiImportance(kanji, search)
-                    })
-                } else if (alreadyAddedItem.importance === 0) {
-                    alreadyAddedItem.importance = filters
-                        .getKanjiImportance(kanji, search)
-                }
-            }
-        })
-    
-        const splittedSearch = search.split(/['\s]+/)
-    
+
+        const splittedSearch = [ search, ...search.split(/['\s]+/) ]
+
         splittedSearch.forEach((searchElement) => {
             kanjiList.forEach((kanji) => {
                 if (
