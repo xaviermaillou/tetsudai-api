@@ -75,9 +75,13 @@ module.exports = (app, vocabularyList, sentencesList) => {
                             .getWordImportance(word, searchElement)
                     }
 
-                    if (searchElement && searchThroughWordResult.foundWord && searchElement.length >= searchThroughWordResult.foundWord.length)
-                        foundJapaneseWordsArray.push(searchThroughWordResult.foundWord)
                 }
+                if (searchElement
+                    && searchThroughWordResult.includes
+                    && searchThroughWordResult.foundWord
+                    && searchElement.length >= searchThroughWordResult.foundWord.length
+                )
+                    foundJapaneseWordsArray.push(searchThroughWordResult.foundWord)
             })
         })
 
@@ -93,15 +97,15 @@ module.exports = (app, vocabularyList, sentencesList) => {
         foundSentence.forEach((sentenceElement) => {
             vocabularyList.forEach((word) => {
                 if (filters.getWordImportance(word, sentenceElement)) {
-                    const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
-                    if (alreadyAddedItem.importance === 0) {
-                        alreadyAddedItem.importance = filters
-                            .getWordImportance(word, sentenceElement)
-                    }
                     fullSentence.push({
                         id: word.id,
                         word: sentenceElement
                     })
+                    const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
+                    if (alreadyAddedItem?.importance === 0) {
+                        alreadyAddedItem.importance = filters
+                            .getWordImportance(word, sentenceElement)
+                    }
                 }
             })
         })
