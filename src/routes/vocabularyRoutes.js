@@ -167,6 +167,34 @@ module.exports = (app, vocabularyList, sentencesList) => {
     
         res.json(sentencesArray.sort((a, b) => a.elements.length - b.elements.length))
     })
+
+    app.post('/sentence', (req, res) => {
+        const body = req.body
+        const sentenceElements = []
+
+        body.elements.forEach((element) => {
+            if (!element.id) {
+                sentenceElements.push({
+                    id: element.id,
+                    word: element.word,
+                })
+            } else {
+                vocabularyList.forEach((word) => {
+                    if (word.id === element.id) sentenceElements.push({
+                        id: element.id,
+                        word: element.word,
+                        importance: libFunctions.getImportanceWithinSentence(word.grammar[0])
+                    })
+                })
+            }
+        })
+
+        res.json({
+            elements: sentenceElements,
+            translation: req.body.translation,
+            id: req.body.id
+        })
+    })
     
     app.get('/vocabularyTrainingList/:level/:grammar/:collection', (req, res) => {
         const level = Number(req.params.level)

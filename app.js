@@ -15,11 +15,11 @@ const schedule = require('node-schedule')
 const morgan = require('morgan')
 const favicon = require('serve-favicon')
 
-app.use(cors())
-
 app
+    .use(cors())
     .use(morgan('dev'))
     .use(favicon(__dirname + '/favicon.ico'))
+    .use(express.json())
 
 const launchRoutes = (response) => {
     explanationRoutes(app)
