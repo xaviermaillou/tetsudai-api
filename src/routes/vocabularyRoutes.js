@@ -74,7 +74,6 @@ module.exports = (app, vocabularyList, sentencesList) => {
                         alreadyAddedItem.importance = filters
                             .getWordImportance(word, searchElement)
                     }
-
                 }
                 if (searchElement
                     && searchThroughWordResult.includes
@@ -93,21 +92,29 @@ module.exports = (app, vocabularyList, sentencesList) => {
 
         const fullSentence = []
         // With the found japanese sentence, we execute a new search loop with the separated words
-        // so that we can compare exact strings and get word importance
+        // so that we can reinject needed data
         foundSentence.forEach((sentenceElement) => {
-            vocabularyList.forEach((word) => {
-                if (filters.getWordImportance(word, sentenceElement)) {
-                    fullSentence.push({
-                        id: word.id,
-                        word: sentenceElement
-                    })
-                    const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
-                    if (alreadyAddedItem?.importance === 0) {
-                        alreadyAddedItem.importance = filters
-                            .getWordImportance(word, sentenceElement)
+            if (sentenceElement === "。" || sentenceElement === "、" || sentenceElement === "？") {
+                fullSentence.push({
+                    word: sentenceElement
+                })
+            }
+            else {
+                vocabularyList.forEach((word) => {
+                    if (filters.getWordImportance(word, sentenceElement)) {
+                        fullSentence.push({
+                            id: word.id,
+                            word: sentenceElement
+                        })
+                        // Here we add importance to the found word for the words results
+                        const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
+                        if (alreadyAddedItem?.importance === 0) {
+                            alreadyAddedItem.importance = filters
+                                .getWordImportance(word, sentenceElement)
+                        }
                     }
-                }
-            })
+                })
+            }
         })
     
         const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
@@ -183,6 +190,14 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     if (word.id === element.id) sentenceElements.push({
                         id: element.id,
                         word: element.word,
+                        elements: word.elements,
+                        jukujikun: word.jukujikun,
+                        translation: word.translation,
+                        jukujikunAsMain: word.jukujikunAsMain,
+                        verbPrecisions: word.verbPrecisions,
+                        grammar: {
+                            class: word.grammar
+                        },
                         importance: libFunctions.getImportanceWithinSentence(word.grammar[0])
                     })
                 })

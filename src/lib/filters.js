@@ -256,6 +256,9 @@ module.exports = {
             // No match has been found between any of the 'stringToCompare' variables (slices of 'searchCopy') and the found words
             // so we remove one letter from the beginning of 'searchCopy' and start a new loop with this new value of 'searchCopy'
             else if (i === (searchCopy.length - 1)) {
+                if (stringToCompare === "。" || stringToCompare === "、" || stringToCompare === "？") {
+                    foundSentence.push(stringToCompare)
+                }
                 searchCopy = searchCopy.slice(-i)
                 if (searchCopy === stringToCompare) break
                 else i = -1
