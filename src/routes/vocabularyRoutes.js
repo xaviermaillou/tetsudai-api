@@ -48,6 +48,12 @@ module.exports = (app, vocabularyList, sentencesList) => {
     
         const splittedSearch = [ search, ...search.split(/['\s]+/) ]
 
+        let previousWord
+        splittedSearch.forEach((searchElement, i) => {
+            if (i > 1) splittedSearch.push(previousWord + ' ' + searchElement)
+            previousWord = searchElement
+        })
+
         splittedSearch.forEach((searchElement) => {
             vocabularyList.forEach((word) => {
                 const searchThroughWordResult = filters.searchThroughWord(word, searchElement)

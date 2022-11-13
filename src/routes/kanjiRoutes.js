@@ -46,6 +46,11 @@ module.exports = (app, kanjiList) => {
         const kanjiArray = []
 
         const splittedSearch = [ search, ...search.split(/['\s]+/) ]
+        let previousWord
+        splittedSearch.forEach((searchElement) => {
+            if (previousWord) splittedSearch.push(previousWord + ' ' + searchElement)
+            previousWord = searchElement
+        })
 
         splittedSearch.forEach((searchElement) => {
             kanjiList.forEach((kanji) => {
