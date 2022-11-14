@@ -123,6 +123,12 @@ module.exports = {
         })
 
         vocabularyList.forEach((word) => {
+            word.elements.forEach((element) => {
+                if (word.forceHiragana) {
+                    const katakana = element.kana
+                    element.kana = kanasDictionnary.translateToHiragana(katakana)
+                }
+            })
             word.completeWord = word.jukujikunAsMain ?
                 (word.jukujikun || word.elements.map((element) => element.kana).join(''))
                 :
@@ -186,10 +192,6 @@ module.exports = {
             })
 
             word.elements.forEach((element) => {
-                if (word.forceHiragana) {
-                    const katakana = element.kana
-                    element.kana = kanasDictionnary.translateToHiragana(katakana)
-                }
                 if (element.kana === "する") {
                     const wordWithoutSuru = base.slice(0, -2)
                     vocabularyList.every((word2) => {
