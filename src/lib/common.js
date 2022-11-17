@@ -42,5 +42,10 @@ module.exports = {
             13: 0,
         }
         return importance[grammar]
-    }
+    },
+    sentenceExceptionCharacters: [
+        "。",
+        "、",
+        "？",
+    ]
 }

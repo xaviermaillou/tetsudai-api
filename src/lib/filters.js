@@ -1,3 +1,5 @@
+const libFunctions = require('../lib/common')
+
 const frenchRegularization = (string) => {
     return string.split('\'').join(' ').split('é').join('e').split('è').join('e').split('ê').join('e')
         .split('à').join('a').split('â').join('a').split('î').join('i').split('ô').join('o').split('û')
@@ -157,6 +159,16 @@ module.exports = {
             })
         }
 
+        // Main word filtering
+        const japaneseWord = vocabularyWord.completeWord
+        if (japaneseWord.includes(string) || string.includes(japaneseWord)) {
+            includes = true
+            if (string.includes(japaneseWord)) foundWord = vocabularyWord.completeWord
+            if (vocabularyWord.adjectivePrecisions?.type === "na" && string.includes(japaneseWord + "な")) {
+                foundWord = vocabularyWord.completeWord+ "な"
+            }
+        }
+
         // Inflexions filtering
         if (vocabularyWord.inflexions && (string.length > 1 || string === "だ")) {
             const inflexionsArray = []
@@ -164,21 +176,14 @@ module.exports = {
                 if (tense?.affirmative?.neutral) inflexionsArray.push(tense.affirmative.neutral.main + tense.affirmative.neutral.ending)
                 if (tense?.affirmative?.polite) inflexionsArray.push(tense.affirmative.polite.main + tense.affirmative.polite.ending) 
                 if (tense?.negative?.neutral) inflexionsArray.push(tense.negative.neutral.main + tense.negative.neutral.ending) 
-                if (tense?.negative?.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending) 
+                if (tense?.negative?.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending)
             })
             inflexionsArray.forEach((inflexion) => {
                 if (inflexion.includes(string) || string.includes(inflexion)) {
                     includes = true
-                    foundWord = inflexion
+                    if (string.includes(inflexion)) foundWord = inflexion
                 }
             })
-        }
-
-        // Main word filtering
-        const japaneseWord = vocabularyWord.completeWord
-        if (japaneseWord.includes(string) || string.includes(japaneseWord)) {
-            includes = true
-            foundWord = vocabularyWord.completeWord
         }
 
         return { includes, foundWord }
@@ -216,6 +221,13 @@ module.exports = {
             })
         }
 
+        // Main word filtering
+        const japaneseWord = vocabularyWord.completeWord
+        if (japaneseWord === string) matchingScore = 1
+        // Taking in account suru verbs
+        if (vocabularyWord.grammar.includes(14) && japaneseWord + 'する' === string) matchingScore = 1
+        if (vocabularyWord.adjectivePrecisions?.type === "na" && japaneseWord + "な" === string) matchingScore = 1
+
         // Inflexions filtering
         if (vocabularyWord.inflexions) {
             const inflexionsArray = []
@@ -229,12 +241,6 @@ module.exports = {
                 if (inflexion === string) matchingScore = 1
             })
         }
-
-        // Main word filtering
-        const japaneseWord = vocabularyWord.completeWord
-        if (japaneseWord === string) matchingScore = 1
-        // Taking in account suru verbs
-        if (vocabularyWord.grammar.includes(14) && japaneseWord + 'する' === string) matchingScore = 1
 
         return matchingScore
     },
@@ -256,7 +262,7 @@ module.exports = {
             // No match has been found between any of the 'stringToCompare' variables (slices of 'searchCopy') and the found words
             // so we remove one letter from the beginning of 'searchCopy' and start a new loop with this new value of 'searchCopy'
             else if (i === (searchCopy.length - 1)) {
-                if (stringToCompare === "。" || stringToCompare === "、" || stringToCompare === "？") {
+                if (libFunctions.sentenceExceptionCharacters.includes(stringToCompare)) {
                     foundSentence.push(stringToCompare)
                 }
                 searchCopy = searchCopy.slice(-i)

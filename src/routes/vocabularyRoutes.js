@@ -100,7 +100,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         // With the found japanese sentence, we execute a new search loop with the separated words
         // so that we can reinject needed data
         foundSentence.forEach((sentenceElement) => {
-            if (sentenceElement === "。" || sentenceElement === "、" || sentenceElement === "？") {
+            if (libFunctions.sentenceExceptionCharacters.includes(sentenceElement)) {
                 fullSentence.push({
                     word: sentenceElement
                 })
