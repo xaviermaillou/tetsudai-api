@@ -440,5 +440,24 @@ module.exports = {
         if (word.verbPrecisions) {
             return getVerbStem(word);
         }
+    },
+    dispatchFoundTense: (word, foundString) => {
+        if (word.verbPrecisions || word.adjectivePrecisions) {
+            let foundTense
+            Object.entries(word.inflexions).forEach(([tense, tenseValues]) => {
+                Object.entries(tenseValues).forEach(([sign, signValues]) => {
+                    Object.entries(signValues).forEach(([form, formValues]) => {
+                        if ((formValues.main + formValues.ending) === foundString) {
+                            foundTense = {
+                                tense,
+                                form,
+                                sign
+                            }
+                        }
+                    })
+                })
+            })
+            return foundTense
+        }
     }
 }

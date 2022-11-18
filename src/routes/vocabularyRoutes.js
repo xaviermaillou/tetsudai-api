@@ -1,6 +1,7 @@
 const { dictionnary } = require('tetsudai-common')
 const libFunctions = require('../lib/common')
 const filters = require('../lib/filters')
+const inflexions = require('../lib/inflexions')
 
 module.exports = (app, vocabularyList, sentencesList) => {
     app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, res) => {
@@ -192,19 +193,24 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 })
             } else {
                 vocabularyList.forEach((word) => {
-                    if (word.id === element.id) sentenceElements.push({
-                        id: element.id,
-                        word: element.word,
-                        elements: word.elements,
-                        jukujikun: word.jukujikun,
-                        translation: word.translation,
-                        jukujikunAsMain: word.jukujikunAsMain,
-                        verbPrecisions: word.verbPrecisions,
-                        grammar: {
-                            class: word.grammar
-                        },
-                        importance: libFunctions.getImportanceWithinSentence(word.grammar[0])
-                    })
+                    if (word.id === element.id) {
+                        const foundTense = inflexions.dispatchFoundTense(word, element.word)
+                        if (foundTense) console.log(foundTense)
+                        sentenceElements.push({
+                            id: element.id,
+                            word: element.word,
+                            elements: word.elements,
+                            jukujikun: word.jukujikun,
+                            translation: word.translation,
+                            jukujikunAsMain: word.jukujikunAsMain,
+                            verbPrecisions: word.verbPrecisions,
+                            grammar: {
+                                class: word.grammar,
+                                tense: foundTense
+                            },
+                            importance: libFunctions.getImportanceWithinSentence(word.grammar[0])
+                        })
+                    }
                 })
             }
         })
