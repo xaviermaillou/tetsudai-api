@@ -129,7 +129,7 @@ module.exports = {
 
     searchThroughWord: (vocabularyWord, string) => {
         let includes = false
-        let foundWord
+        let foundWords = []
 
         // French filtering
         if (string.length > 1) {
@@ -163,9 +163,9 @@ module.exports = {
         const japaneseWord = vocabularyWord.completeWord
         if (japaneseWord.includes(string) || string.includes(japaneseWord)) {
             includes = true
-            if (string.includes(japaneseWord)) foundWord = vocabularyWord.completeWord
+            if (string.includes(japaneseWord)) foundWords.push(vocabularyWord.completeWord)
             if (vocabularyWord.adjectivePrecisions?.type === "na" && string.includes(japaneseWord + "な")) {
-                foundWord = vocabularyWord.completeWord+ "な"
+                foundWords.push(vocabularyWord.completeWord + "な")
             }
         }
 
@@ -181,12 +181,12 @@ module.exports = {
             inflexionsArray.forEach((inflexion) => {
                 if (inflexion.includes(string) || string.includes(inflexion)) {
                     includes = true
-                    if (string.includes(inflexion)) foundWord = inflexion
+                    if (string.includes(inflexion)) foundWords.push(inflexion)
                 }
             })
         }
 
-        return { includes, foundWord }
+        return { includes, foundWords }
     },
 
     getWordImportance: (vocabularyWord, string) => {

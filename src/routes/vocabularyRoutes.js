@@ -83,10 +83,9 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 }
                 if (searchElement
                     && searchThroughWordResult.includes
-                    && searchThroughWordResult.foundWord
-                    && searchElement.length >= searchThroughWordResult.foundWord.length
+                    && searchThroughWordResult.foundWords.length > 0
                 )
-                    foundJapaneseWordsArray.push(searchThroughWordResult.foundWord)
+                    foundJapaneseWordsArray.push( ...searchThroughWordResult.foundWords )
             })
         })
 
