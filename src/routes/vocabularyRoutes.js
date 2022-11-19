@@ -96,19 +96,25 @@ module.exports = (app, vocabularyList, sentencesList) => {
             foundSentence = filters.findSentence(foundJapaneseWordsArray, search)
         }
 
-        const fullSentence = []
+        const foundSentenceWithIds = []
         // With the found japanese sentence, we execute a new search loop with the separated words
         // so that we can reinject the word id
         foundSentence.forEach((sentenceElement) => {
             if (libFunctions.sentenceExceptionCharacters.includes(sentenceElement)) {
-                fullSentence.push({
-                    word: sentenceElement
+                foundSentenceWithIds.push({
+                    ambiguity: false,
+                    foundElements: [
+                        {
+                            word: sentenceElement
+                        }
+                    ]
                 })
             }
             else {
+                const matchingWords = []
                 vocabularyList.forEach((word) => {
                     if (filters.getWordImportance(word, sentenceElement)) {
-                        fullSentence.push({
+                        matchingWords.push({
                             id: word.id,
                             word: sentenceElement
                         })
@@ -120,9 +126,13 @@ module.exports = (app, vocabularyList, sentencesList) => {
                         }
                     }
                 })
+                foundSentenceWithIds.push({
+                    ambiguity: matchingWords.length > 1,
+                    foundElements: matchingWords
+                })
             }
         })
-    
+    foundSentenceWithIds.forEach((element) => console.log(element.foundElements))
         const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
         const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.levels)
         const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)
@@ -132,7 +142,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
         res.json({
             results: libFunctions.sortByObjectKey(slicedVocabularyArray, dictionnary.levels),
-            sentence: (search && foundSentence.join('').length === search.length) ? fullSentence : null
+            sentence: (search && foundSentence.join('').length === search.length) ? foundSentenceWithIds : null
         })
     })
     
@@ -182,42 +192,36 @@ module.exports = (app, vocabularyList, sentencesList) => {
     })
 
     app.post('/sentence', (req, res) => {
-        const body = req.body
-        const sentenceElements = []
-
-        body.elements.forEach((element) => {
-            if (!element.id) {
-                sentenceElements.push({
-                    word: element.word,
-                })
-            } else {
-                vocabularyList.forEach((word, i) => {
-                    if (word.id === element.id) {
-                        sentenceElements.push({
-                            id: element.id,
-                            word: element.word,
-                            elements: word.elements,
-                            jukujikun: word.jukujikun,
-                            translation: word.translation,
-                            jukujikunAsMain: word.jukujikunAsMain,
-                            verbPrecisions: word.verbPrecisions,
-                            grammar: word.grammar,
-                            inflexions: word.inflexions,
-                            sentenceGrammar: undefined,
-                            importance: libFunctions.getImportanceWithinSentence(word.grammar[0])
-                        })
-                    }
-                })
-            }
+        const fullDataElements = [ ...req.body.elements ]
+        fullDataElements.forEach((fullDataElement) => {
+            fullDataElement.foundElements.forEach((element) => {
+                if (element.id) {
+                    vocabularyList.forEach((word, i) => {
+                        if (word.id === element.id) {
+                            element.elements = word.elements
+                            element.jukujikun = word.jukujikun
+                            element.translation = word.translation
+                            element.jukujikunAsMain = word.jukujikunAsMain
+                            element.verbPrecisions = word.verbPrecisions
+                            element.grammar = word.grammar
+                            element.inflexions = word.inflexions
+                            element.sentenceGrammar = undefined
+                            element.importance = libFunctions.getImportanceWithinSentence(word.grammar[0])
+                        }
+                    })
+                }
+            })
         })
 
-        sentenceElements.forEach((element, i) => {
-            element.sentenceGrammar = grammar
-                .dispatchFunctionInSentence(element, element.word, sentenceElements[i - 1], sentenceElements[i + 1])
+        fullDataElements.forEach((fullDataElement) => {
+            fullDataElement.foundElements.forEach((element, i) => {
+                element.sentenceGrammar = grammar
+                    .dispatchFunctionInSentence(element, element.word, fullDataElements[i - 1], fullDataElements[i + 1])
+            })
         })
 
         res.json({
-            elements: sentenceElements,
+            elements: fullDataElements,
             translation: req.body.translation,
             id: req.body.id
         })
