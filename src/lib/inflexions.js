@@ -457,6 +457,13 @@ module.exports = {
                     })
                 })
             })
+            if (!foundTense && word.adjectivePrecisions.type === "na") {
+                foundTense = {
+                    tense: "nonPast",
+                    form: "neutral",
+                    sign: "affirmative"
+                }
+            }
             return foundTense
         }
     }
