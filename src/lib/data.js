@@ -208,8 +208,8 @@ module.exports = {
             })
         })
 
-        // TO REMOVE
-        const manyFunctionsCases = {
+        // To use to monitor words with more than one grammar class
+        /* const manyFunctionsCases = {
             "1and4": {
                 number: 0,
                 elements: []
@@ -280,8 +280,7 @@ module.exports = {
             }
         })
 
-        console.log(manyFunctionsCases)
-        //
+        console.log(manyFunctionsCases) */
 
         console.log(kanjiList.length, 'kanji chargés le', new Date().toLocaleString('fr-FR'))
         console.log(vocabularyList.length, 'mots chargés le', new Date().toLocaleString('fr-FR'))

@@ -98,7 +98,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
 
         const fullSentence = []
         // With the found japanese sentence, we execute a new search loop with the separated words
-        // so that we can reinject needed data
+        // so that we can reinject the word id
         foundSentence.forEach((sentenceElement) => {
             if (libFunctions.sentenceExceptionCharacters.includes(sentenceElement)) {
                 fullSentence.push({
@@ -112,7 +112,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                             id: word.id,
                             word: sentenceElement
                         })
-                        // Here we add importance to the found word for the words results
+                        // Here we add importance to the found word in vocabulary array for classic results
                         const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
                         if (alreadyAddedItem?.importance === 0) {
                             alreadyAddedItem.importance = filters

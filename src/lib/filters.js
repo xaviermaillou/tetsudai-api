@@ -248,7 +248,7 @@ module.exports = {
     findSentence: (foundJapaneseWordsArray, string) => {
         // We create a copy of 'search' string, which will be sliced from the beginning at each found word
         let searchCopy = string
-        const foundSentence = []
+        let foundSentence = []
         for (let i = 0; i < searchCopy.length; i++) {
             // 'stringToCompare' value is equal to 'searchCopy' with an 'i' amount of letters removed from its ending
             const stringToCompare = i === 0 ? searchCopy : searchCopy.slice(0, -i)
@@ -257,6 +257,7 @@ module.exports = {
                 foundSentence.push(stringToCompare)
                 searchCopy = searchCopy.slice(-i)
                 if (searchCopy === stringToCompare) break
+                // Loop is reset
                 else i = -1
             }
             // No match has been found between any of the 'stringToCompare' variables (slices of 'searchCopy') and the found words
@@ -267,7 +268,30 @@ module.exports = {
                 }
                 searchCopy = searchCopy.slice(-i)
                 if (searchCopy === stringToCompare) break
+                // Loop is reset
                 else i = -1
+            }
+        }
+        // If an element has been skipped, we redo the loop in reverse
+        if (foundSentence.join("").length < string.length) {
+            searchCopy = string
+            foundSentence = []
+            for (let i = 0; i < searchCopy.length; i++) {
+                const stringToCompare = i === 0 ? searchCopy : searchCopy.slice(-i)
+                if (foundJapaneseWordsArray.includes(stringToCompare)) {
+                    foundSentence.unshift(stringToCompare)
+                    searchCopy = searchCopy.slice(0, -i)
+                    if (searchCopy === stringToCompare) break
+                    else i = -1
+                }
+                else if (i === (searchCopy.length - 1)) {
+                    if (libFunctions.sentenceExceptionCharacters.includes(stringToCompare)) {
+                        foundSentence.unshift(stringToCompare)
+                    }
+                    searchCopy = searchCopy.slice(0, -i)
+                    if (searchCopy === stringToCompare) break
+                    else i = -1
+                }
             }
         }
         return foundSentence
