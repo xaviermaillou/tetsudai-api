@@ -427,6 +427,91 @@ const getAdjectiveConjugation = (word) => {
     }
 }
 
+const getUniqueFunction = (word, foundString, previousWord, nextWord) => {
+    switch (word.grammar.join("&")) {
+        // Common noun + adjective
+        case "1&4":
+            if (nextWord?.grammar?.includes(3)) return 4
+            if (!nextWord?.id) return 4
+            if (foundString.slice(-1) === "な") return 4
+            if (nextWord?.word === "て" || nextWord?.word === "で") return 4
+            return 1
+        // Common noun + adjective + adverb
+        case "1&4&5":
+            if (!nextWord?.id) return 4
+            if (foundString.slice(-1) === "な") return 4
+            if (nextWord?.word === "て" || nextWord?.word === "で") return 4
+            return 1
+        // Common noun + adverb
+        case "1&5":
+            return 1
+        // Common noun + adjective + pronoun
+        case "1&5&8":
+            if (nextWord?.grammar?.includes(3)) return 5
+            return 8
+        // Common noun + adjective + suffix
+        case "1&5&13":
+            if (previousWord?.grammar?.includes(1)) return 13
+            return 1
+        // Common noun + pronoun
+        case "1&8":
+            if (previousWord?.grammar?.includes(9) && previousWord?.word !== "と") return 1
+            return 8
+        // Common noun + suffix
+        case "1&13":
+            if (previousWord?.grammar?.includes(1)) return 13
+            return 1
+        // Adjective + adverb
+        case "4&5":
+            if (!nextWord?.id) return 4
+            if (foundString.slice(-1) === "な") return 4
+            if (nextWord?.word === "て" || nextWord?.word === "で") return 4
+            return 5
+        // Adjective + expression
+        case "4&10":
+            return 4
+        // Adverb + conjunction
+        case "5&6":
+            return 5
+        // Adverb + expression
+        case "5&10":
+            return 5
+        // Conjunction + particle
+        case "6&9":
+            if (previousWord?.grammar?.includes(1) && nextWord?.grammar?.includes(1)) return 6
+            return 9
+        // Conjunction + expression
+        case "6&10":
+            return 6
+        default:
+            console.log("Multiple grammar functions not taken in account for: ", word.word, word.grammar)
+    }
+}
+const getTense = (word, foundString) => {
+    let foundTense
+    Object.entries(word.inflexions).forEach(([tense, tenseValues]) => {
+        Object.entries(tenseValues).forEach(([sign, signValues]) => {
+            Object.entries(signValues).forEach(([form, formValues]) => {
+                if ((formValues.main + formValues.ending) === foundString) {
+                    foundTense = {
+                        tense,
+                        form,
+                        sign
+                    }
+                }
+            })
+        })
+    })
+    if (!foundTense && word.adjectivePrecisions?.type === "na") {
+        foundTense = {
+            tense: "nonPast",
+            form: "neutral",
+            sign: "affirmative"
+        }
+    }
+    return foundTense
+}
+
 module.exports = {
     dispatchInflexion: (word) => {
         if (word.verbPrecisions) {
@@ -441,30 +526,21 @@ module.exports = {
             return getVerbStem(word);
         }
     },
-    dispatchFoundTense: (word, foundString) => {
-        if (word.verbPrecisions || word.adjectivePrecisions) {
-            let foundTense
-            Object.entries(word.inflexions).forEach(([tense, tenseValues]) => {
-                Object.entries(tenseValues).forEach(([sign, signValues]) => {
-                    Object.entries(signValues).forEach(([form, formValues]) => {
-                        if ((formValues.main + formValues.ending) === foundString) {
-                            foundTense = {
-                                tense,
-                                form,
-                                sign
-                            }
-                        }
-                    })
-                })
-            })
-            if (!foundTense && word.adjectivePrecisions.type === "na") {
-                foundTense = {
-                    tense: "nonPast",
-                    form: "neutral",
-                    sign: "affirmative"
-                }
+    dispatchFunctionInSentence: (word, foundString, previousWord, nextWord) => {
+        if (word.grammar) {
+            let grammarFunction
+            let tense
+            if (word.grammar.length > 1) {
+                grammarFunction = getUniqueFunction(word, foundString, previousWord, nextWord)
+            } else grammarFunction = word.grammar[0]
+            if (grammarFunction === 3 || grammarFunction === 4) {
+                tense = getTense(word, foundString)
             }
-            return foundTense
+    
+            return {
+                function: grammarFunction,
+                tense
+            }
         }
     }
 }

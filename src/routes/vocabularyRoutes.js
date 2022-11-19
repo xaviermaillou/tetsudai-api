@@ -1,7 +1,7 @@
 const { dictionnary } = require('tetsudai-common')
 const libFunctions = require('../lib/common')
 const filters = require('../lib/filters')
-const inflexions = require('../lib/inflexions')
+const grammar = require('../lib/grammar')
 
 module.exports = (app, vocabularyList, sentencesList) => {
     app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, res) => {
@@ -188,14 +188,11 @@ module.exports = (app, vocabularyList, sentencesList) => {
         body.elements.forEach((element) => {
             if (!element.id) {
                 sentenceElements.push({
-                    id: element.id,
                     word: element.word,
                 })
             } else {
-                vocabularyList.forEach((word) => {
+                vocabularyList.forEach((word, i) => {
                     if (word.id === element.id) {
-                        const foundTense = inflexions.dispatchFoundTense(word, element.word)
-                        if (foundTense) console.log(foundTense)
                         sentenceElements.push({
                             id: element.id,
                             word: element.word,
@@ -204,15 +201,19 @@ module.exports = (app, vocabularyList, sentencesList) => {
                             translation: word.translation,
                             jukujikunAsMain: word.jukujikunAsMain,
                             verbPrecisions: word.verbPrecisions,
-                            grammar: {
-                                class: word.grammar,
-                                tense: foundTense
-                            },
+                            grammar: word.grammar,
+                            inflexions: word.inflexions,
+                            sentenceGrammar: undefined,
                             importance: libFunctions.getImportanceWithinSentence(word.grammar[0])
                         })
                     }
                 })
             }
+        })
+
+        sentenceElements.forEach((element, i) => {
+            element.sentenceGrammar = grammar
+                .dispatchFunctionInSentence(element, element.word, sentenceElements[i - 1], sentenceElements[i + 1])
         })
 
         res.json({

@@ -1,13 +1,14 @@
 const firebase = require('../Firebase')
 require( "firebase/firestore")
 const libFunctions = require('./common')
-const inflexions = require('../lib/inflexions')
+const grammar = require('../lib/grammar')
 const { kanasDictionnary } = require('tetsudai-common')
 
 const localKanji = require('../localDatabase/kanji.json')
 const localVocabulary = require('../localDatabase/vocabulary.json')
 const localAlternatives = require('../localDatabase/alternatives.json')
 const localSentences = require('../localDatabase/sentences.json')
+const { dispatchFunctionInSentence } = require('../lib/grammar')
 
 module.exports = {
     buildData: async () => {
@@ -134,7 +135,7 @@ module.exports = {
                 :
                 word.elements.map((element) => element.option === "rareKanji" ? element.kana : element.kanji || element.kana).join('')
 
-            word.inflexions = inflexions.dispatchInflexion(word)
+            word.inflexions = grammar.dispatchInflexion(word)
 
             word.alternatives = []
             alternativesList.forEach((alternative) => {
@@ -157,7 +158,7 @@ module.exports = {
             const base = word.completeWord
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
-            const stem = inflexions.dispatchBaseWord(word)
+            const stem = grammar.dispatchBaseWord(word)
             
             vocabularyList.forEach((word2) => {
                 const base2 = word2.completeWord
@@ -206,6 +207,81 @@ module.exports = {
                 }
             })
         })
+
+        // TO REMOVE
+        const manyFunctionsCases = {
+            "1and4": {
+                number: 0,
+                elements: []
+            },
+            "1and4and5": {
+                number: 0,
+                elements: []
+            },
+            "1and5": {
+                number: 0,
+                elements: []
+            },
+            "1and5and8": {
+                number: 0,
+                elements: []
+            },
+            "1and5and13": {
+                number: 0,
+                elements: []
+            },
+            "1and8": {
+                number: 0,
+                elements: []
+            },
+            "1and13": {
+                number: 0,
+                elements: []
+            },
+            "4and5": {
+                number: 0,
+                elements: []
+            },
+            "4and10": {
+                number: 0,
+                elements: []
+            },
+            "5and6": {
+                number: 0,
+                elements: []
+            },
+            "5and10": {
+                number: 0,
+                elements: []
+            },
+            "6and9": {
+                number: 0,
+                elements: []
+            },
+            "6and10": {
+                number: 0,
+                elements: []
+            },
+        }
+
+        vocabularyList.forEach((word) => {
+            const manyFunctionsCase = word.grammar.length > 1 ? word.grammar : undefined
+            if (manyFunctionsCase) {
+                const keyString = manyFunctionsCase.map((key, i) => {
+                    let result = ""
+                    if (i > 0) result += "and"
+                    result += String(key)
+                    return result
+                }).join("")
+                if (manyFunctionsCases[keyString] !== undefined) {
+                    manyFunctionsCases[keyString].number++
+                    manyFunctionsCases[keyString].elements.push(word.completeWord)
+                }
+            }
+        })
+
+        console.log(manyFunctionsCases)
+        //
 
         console.log(kanjiList.length, 'kanji chargés le', new Date().toLocaleString('fr-FR'))
         console.log(vocabularyList.length, 'mots chargés le', new Date().toLocaleString('fr-FR'))
