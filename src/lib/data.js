@@ -8,7 +8,6 @@ const localKanji = require('../localDatabase/kanji.json')
 const localVocabulary = require('../localDatabase/vocabulary.json')
 const localAlternatives = require('../localDatabase/alternatives.json')
 const localSentences = require('../localDatabase/sentences.json')
-const { dispatchFunctionInSentence } = require('../lib/grammar')
 
 module.exports = {
     buildData: async () => {
@@ -120,6 +119,7 @@ module.exports = {
                     }
                 })
                 if (!partKanjiFound) console.log('Undefined part:', part, 'in', kanji.kanji)
+                if (kanji.kanjiTakenAsPartFrom.length > kanji.kanjiParts.length) console.log('Duplicate parts in', kanji.kanji)
             })
         })
 

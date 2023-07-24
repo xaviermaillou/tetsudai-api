@@ -16,7 +16,7 @@ module.exports = (app, kanjiList) => {
             return
         }
     
-        if (!dictionnary.levels[level]) {
+        if (!dictionnary.levels[level] && dictionnary.levels[level] !== null) {
             res.status(400).json(`Level query must be a number between 0 and ${
                 Object.keys(dictionnary.levels)
                     [Object.keys(dictionnary.levels).length - 1]
@@ -123,7 +123,7 @@ module.exports = (app, kanjiList) => {
         const grammar = Number(req.params.grammar)
         const collection = Number(req.params.collection)
     
-        if (!dictionnary.levels[level]) {
+        if (!dictionnary.levels[level] && dictionnary.levels[level] !== null) {
             res.status(400).json(`Level query must be a number between 0 and ${
                 Object.keys(dictionnary.levels)
                     [Object.keys(dictionnary.levels).length - 1]

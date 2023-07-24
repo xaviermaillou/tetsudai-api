@@ -17,7 +17,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
             return
         }
     
-        if (!dictionnary.levels[level]) {
+        if (!dictionnary.levels[level] && dictionnary.levels[level] !== null) {
             res.status(400).json(`Level query must be a number between 0 and ${
                 Object.keys(dictionnary.levels)
                     [Object.keys(dictionnary.levels).length - 1]
@@ -132,7 +132,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 })
             }
         })
-    foundSentenceWithIds.forEach((element) => console.log(element.foundElements))
+        foundSentenceWithIds.forEach((element) => console.log(element.foundElements))
         const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
         const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.levels)
         const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)
@@ -232,7 +232,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         const grammar = Number(req.params.grammar)
         const collection = Number(req.params.collection)
     
-        if (!dictionnary.levels[level]) {
+        if (!dictionnary.levels[level] && dictionnary.levels[level] !== null) {
             res.status(400).json(`Level query must be a number between 0 and ${
                 Object.keys(dictionnary.levels)
                     [Object.keys(dictionnary.levels).length - 1]
