@@ -118,8 +118,8 @@ module.exports = {
                         partKanjiFound = true
                     }
                 })
-                if (!partKanjiFound) console.log('Undefined part:', part, 'in', kanji.kanji)
-                if (kanji.kanjiTakenAsPartFrom.length > kanji.kanjiParts.length) console.log('Duplicate parts in', kanji.kanji)
+                if (!partKanjiFound) console.log('Undefined part:', part, 'in', kanji.kanji, ': this part is not registered as a kanji in the database.')
+                if (kanji.kanjiTakenAsPartFrom.length > kanji.kanjiParts.length) console.log('Duplicate parts in', kanji.kanji, ': open the kanji and check parts of the kanji, there might be a duplicate.')
             })
         })
 
@@ -155,6 +155,7 @@ module.exports = {
         })
         
         vocabularyList.forEach((word) => {
+            if ((word.grammar.includes(3) || word.grammar.includes(4)) && !!!word.inflexions) console.log('Missing inflexions for', word.completeWord)
             const base = word.completeWord
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
@@ -172,14 +173,14 @@ module.exports = {
                         word.relatedWords.stem.push(libFunctions.getBasicWordElements(word2))
                         word2.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word))
                     }
-                    else if (!!stem
+                    /* else if (!!stem
                         && stem.length > 1
                         && base2.includes(stem)
                         && word.id !== word2.id
                     ) {
                         word.relatedWords.stemUsedIn.push(libFunctions.getBasicWordElements(word2))
                         word2.relatedWords.stemTakenFrom.push(libFunctions.getBasicWordElements(word))
-                    }
+                    } */
                     else if (base2.includes(base)
                         && (!word.grammar.includes(9) || word2.includesParticle)
                         && baseWrittenInKana2.includes(baseWrittenInKana)
@@ -207,80 +208,6 @@ module.exports = {
                 }
             })
         })
-
-        // To use to monitor words with more than one grammar class
-        /* const manyFunctionsCases = {
-            "1and4": {
-                number: 0,
-                elements: []
-            },
-            "1and4and5": {
-                number: 0,
-                elements: []
-            },
-            "1and5": {
-                number: 0,
-                elements: []
-            },
-            "1and5and8": {
-                number: 0,
-                elements: []
-            },
-            "1and5and13": {
-                number: 0,
-                elements: []
-            },
-            "1and8": {
-                number: 0,
-                elements: []
-            },
-            "1and13": {
-                number: 0,
-                elements: []
-            },
-            "4and5": {
-                number: 0,
-                elements: []
-            },
-            "4and10": {
-                number: 0,
-                elements: []
-            },
-            "5and6": {
-                number: 0,
-                elements: []
-            },
-            "5and10": {
-                number: 0,
-                elements: []
-            },
-            "6and9": {
-                number: 0,
-                elements: []
-            },
-            "6and10": {
-                number: 0,
-                elements: []
-            },
-        }
-
-        vocabularyList.forEach((word) => {
-            const manyFunctionsCase = word.grammar.length > 1 ? word.grammar : undefined
-            if (manyFunctionsCase) {
-                const keyString = manyFunctionsCase.map((key, i) => {
-                    let result = ""
-                    if (i > 0) result += "and"
-                    result += String(key)
-                    return result
-                }).join("")
-                if (manyFunctionsCases[keyString] !== undefined) {
-                    manyFunctionsCases[keyString].number++
-                    manyFunctionsCases[keyString].elements.push(word.completeWord)
-                }
-            }
-        })
-
-        console.log(manyFunctionsCases) */
 
         console.log(kanjiList.length, 'kanji chargés le', new Date().toLocaleString('fr-FR'))
         console.log(vocabularyList.length, 'mots chargés le', new Date().toLocaleString('fr-FR'))
