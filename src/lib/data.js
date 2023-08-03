@@ -110,6 +110,7 @@ module.exports = {
             kanji.kanjiTakenAsPartFrom = []
         })
 
+        // Here we relate kanji with each other as kanji's components
         kanjiList.forEach((kanji) => {
             kanji.kanjiParts?.forEach((part) => {
                 let partKanjiFound = false
@@ -126,29 +127,35 @@ module.exports = {
         })
 
         vocabularyList.forEach((word) => {
+
+            // Here we transform katakana words into hiragana when it's used this way in Japanese language
             word.elements.forEach((element) => {
                 if (word.forceHiragana) {
                     const katakana = element.kana
                     element.kana = kanasDictionnary.translateToHiragana(katakana)
                 }
             })
+
+            // Here we define completeWord, which is the word as normally used
             word.completeWord = word.jukujikunAsMain ?
                 (word.jukujikun || word.elements.map((element) => element.kana).join(''))
                 :
                 word.elements.map((element) => element.option === "rareKanji" ? element.kana : element.kanji || element.kana).join('')
 
+            // here we inject the inflexions for verbs and adjectives
             word.inflexions = grammar.dispatchInflexion(word)
 
+            // Here we inject the alternatives (different possible translations of the word)
+            // The last part (conjugation...) is related to an older structure of the alternatives objects
             word.alternatives = []
             alternativesList.forEach((alternative) => {
                 if (alternative.id === word.id) word.alternatives = alternative.alternatives || [ ...alternative.conjugation.nonPast, ...alternative.conjugation.past ]
             })
 
+            // Here we create the empty arrays for related words, that will be filled in the next loop
             word.relatedWords = {
                 stem: [],
                 verbForm: [],
-                stemUsedIn: [],
-                stemTakenFrom: [],
                 wordUsedIn: [],
                 wordTakenFrom: [],
                 baseWord: [],
@@ -156,6 +163,7 @@ module.exports = {
             }
         })
         
+        // Here we inject the related words
         vocabularyList.forEach((word) => {
             if ((word.grammar.includes(3) || word.grammar.includes(4)) && !!!word.inflexions) console.log('Missing inflexions for', word.completeWord)
             const base = word.completeWord
@@ -163,38 +171,32 @@ module.exports = {
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
             const stem = grammar.dispatchBaseWord(word)
             
+            // Stem and generic included words
             vocabularyList.forEach((word2) => {
                 const base2 = word2.completeWord
                 const kanjiOnly2 = word2.elements.map((element) => element.kanji).join('')
                 const baseWrittenInKana2 = word2.elements.map((element) => element.kana).join('')
 
-                if (kanjiOnly2.includes(kanjiOnly)) {
+                if (kanjiOnly.includes(kanjiOnly2)) {
                     if (!!stem
                         && base2 === stem
                     ) {
                         word.relatedWords.stem.push(libFunctions.getBasicWordElements(word2))
                         word2.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word))
                     }
-                    /* else if (!!stem
-                        && stem.length > 1
-                        && base2.includes(stem)
+                    else if (base.includes(base2)
+                        && (!word2.grammar.includes(9) || word.includesParticle)
+                        && baseWrittenInKana.includes(baseWrittenInKana2)
                         && word.id !== word2.id
+                        && !base.includes("する")
                     ) {
-                        word.relatedWords.stemUsedIn.push(libFunctions.getBasicWordElements(word2))
-                        word2.relatedWords.stemTakenFrom.push(libFunctions.getBasicWordElements(word))
-                    } */
-                    else if (base2.includes(base)
-                        && (!word.grammar.includes(9) || word2.includesParticle)
-                        && baseWrittenInKana2.includes(baseWrittenInKana)
-                        && word.id !== word2.id
-                        && !base2.includes("する")
-                    ) {
-                        word.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word2))
-                        word2.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word))
+                        word.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word2))
+                        word2.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word))
                     }
                 }
             })
 
+            // Suru form
             word.elements.forEach((element) => {
                 if (element.kana === "する") {
                     const wordWithoutSuru = base.slice(0, -2)
