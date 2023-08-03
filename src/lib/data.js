@@ -57,12 +57,14 @@ module.exports = {
         } else sentencesList = localSentences
 
         kanjiList.forEach((kanji) => {
+            kanji.id = Number(kanji.id)
             kanji.translationArray = libFunctions.cutStringToArray(kanji.translation)
             kanji.relatedJukujikun = []
             kanji.grammar = []
             kanji.readings.kunyomi.forEach((yomi) => yomi.examples = [])
             kanji.readings.onyomi.forEach((yomi) => yomi.examples = [])
             vocabularyList.forEach((word) => {
+                word.id = Number(word.id)
                 word.sentences = []
                 word.translationArray = libFunctions.cutStringToArray(word.translation)
                 word.elements.every((element) => {

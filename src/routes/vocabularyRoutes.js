@@ -161,7 +161,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         })
     
         if (!foundWord) {
-            res.status(404).json('Aucun mot ne correspond à cet id.')
+            res.status(404).json('No word found with this id.')
             return
         }
     

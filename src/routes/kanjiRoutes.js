@@ -109,9 +109,9 @@ module.exports = (app, kanjiList) => {
         kanjiList.forEach((kanji) => {
             if (kanji.id === id) foundKanji = kanji
         })
-    
+
         if (!foundKanji) {
-            res.status(404).json('Aucun kanji ne correspond à cet id.')
+            res.status(404).json('No kanji found with this id.')
             return
         }
     
