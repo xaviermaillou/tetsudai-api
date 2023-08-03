@@ -128,6 +128,8 @@ module.exports = {
     },
 
     searchThroughWord: (vocabularyWord, string) => {
+        // "includes" gives the current word a pass to be included in results
+        // "foundWords" is used for building a possible sentence out of the string sent by the user
         let includes = false
         let foundWords = []
 
@@ -167,6 +169,12 @@ module.exports = {
             if (vocabularyWord.adjectivePrecisions?.type === "na" && string.includes(japaneseWord + "な")) {
                 foundWords.push(vocabularyWord.completeWord + "な")
             }
+        }
+
+        // Alternative word filtering
+        const alternativeWord = vocabularyWord.alternativeWord
+        if (alternativeWord.includes(string) || string.includes(alternativeWord)) {
+            includes = true
         }
 
         // Inflexions filtering
