@@ -1,5 +1,3 @@
-const firebase = require('../Firebase')
-require( "firebase/firestore")
 const libFunctions = require('./common')
 const grammar = require('../lib/grammar')
 const { kanasDictionnary } = require('tetsudai-common')

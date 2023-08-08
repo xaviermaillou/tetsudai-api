@@ -1,8 +1,8 @@
 const fs = require('fs')
-const kanjiList = require('./src/localDatabase/kanji.json')
-const vocabularyList = require('./src/localDatabase/vocabulary.json')
-const alternativesList = require('./src/localDatabase/alternatives.json')
-const sentencesList = require('./src/localDatabase/sentences.json')
+const kanjiList = require('./src/dataBackUp/kanji.json')
+const vocabularyList = require('./src/dataBackUp/vocabulary.json')
+const alternativesList = require('./src/dataBackUp/alternatives.json')
+const sentencesList = require('./src/dataBackUp/sentences.json')
 
 const cleanedKanjiList = kanjiList?.map((kanji) => ({
     id: Number(kanji.id),
