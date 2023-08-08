@@ -428,61 +428,61 @@ const getAdjectiveConjugation = (word) => {
 }
 
 const getUniqueFunction = (word, foundString, previousWord, nextWord) => {
-    switch (word.grammar.join("&")) {
+    switch (word.grammar.join("+")) {
         // Common noun + adjective
-        case "1&4":
-            if (nextWord?.grammar?.includes(3)) return 4
-            if (!nextWord?.id) return 4
-            if (foundString.slice(-1) === "な") return 4
-            if (nextWord?.word === "て" || nextWord?.word === "で") return 4
-            return 1
+        case "nc+adj":
+            if (nextWord?.grammar?.includes("vb")) return "adj"
+            if (!nextWord?.id) return "adj"
+            if (foundString.slice(-1) === "な") return "adj"
+            if (nextWord?.word === "て" || nextWord?.word === "で") return "adj"
+            return "nc"
         // Common noun + adjective + adverb
-        case "1&4&5":
-            if (!nextWord?.id) return 4
-            if (foundString.slice(-1) === "な") return 4
-            if (nextWord?.word === "て" || nextWord?.word === "で") return 4
-            return 1
+        case "nc+adj+adv":
+            if (!nextWord?.id) return "adj"
+            if (foundString.slice(-1) === "な") return "adj"
+            if (nextWord?.word === "て" || nextWord?.word === "で") return "adj"
+            return "nc"
         // Common noun + adverb
-        case "1&5":
-            return 1
+        case "nc+adv":
+            return "nc"
         // Common noun + adjective + pronoun
-        case "1&5&8":
-            if (nextWord?.grammar?.includes(3)) return 5
-            return 8
+        case "nc+adj+pn":
+            if (nextWord?.grammar?.includes("vb")) return "adv"
+            return "pn"
         // Common noun + adjective + suffix
-        case "1&5&13":
-            if (previousWord?.grammar?.includes(1)) return 13
-            return 1
+        case "nc+adj+suf":
+            if (previousWord?.grammar?.includes("nc")) return "suf"
+            return "nc"
         // Common noun + pronoun
-        case "1&8":
-            if (previousWord?.grammar?.includes(9) && previousWord?.word !== "と") return 1
-            return 8
+        case "nc+pn":
+            if (previousWord?.grammar?.includes("ptc") && previousWord?.word !== "と") return "nc"
+            return "pn"
         // Common noun + suffix
-        case "1&13":
-            if (previousWord?.grammar?.includes(1)) return 13
-            return 1
+        case "nc+suf":
+            if (previousWord?.grammar?.includes("nc")) return 13
+            return "nc"
         // Adjective + adverb
-        case "4&5":
-            if (!nextWord?.id) return 4
-            if (foundString.slice(-1) === "な") return 4
-            if (nextWord?.word === "て" || nextWord?.word === "で") return 4
-            return 5
+        case "adj+adv":
+            if (!nextWord?.id) return "adj"
+            if (foundString.slice(-1) === "な") return "adj"
+            if (nextWord?.word === "て" || nextWord?.word === "で") return "adj"
+            return "adv"
         // Adjective + expression
-        case "4&10":
-            return 4
+        case "adj+exp":
+            return "adj"
         // Adverb + conjunction
-        case "5&6":
-            return 5
+        case "adv+cj":
+            return "adv"
         // Adverb + expression
-        case "5&10":
-            return 5
+        case "adv+exp":
+            return "adv"
         // Conjunction + particle
-        case "6&9":
-            if (previousWord?.grammar?.includes(1) && nextWord?.grammar?.includes(1)) return 6
-            return 9
+        case "cj+ptc":
+            if (previousWord?.grammar?.includes("nc") && nextWord?.grammar?.includes("nc")) return "cj"
+            return "ptc"
         // Conjunction + expression
-        case "6&10":
-            return 6
+        case "cj+exp":
+            return "cj"
         default:
             console.log("Multiple grammar functions not taken in account for: ", word.word, word.grammar)
     }
@@ -532,8 +532,9 @@ module.exports = {
             let tense
             if (word.grammar.length > 1) {
                 grammarFunction = getUniqueFunction(word, foundString, previousWord, nextWord)
-            } else grammarFunction = word.grammar[0]
-            if (grammarFunction === 3 || grammarFunction === 4) {
+            }
+            else grammarFunction = word.grammar[0]
+            if (grammarFunction === "vb" || grammarFunction === "adj") {
                 tense = getTense(word, foundString)
             }
     

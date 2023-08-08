@@ -6,8 +6,8 @@ const grammar = require('../lib/grammar')
 module.exports = (app, vocabularyList, sentencesList) => {
     app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, res) => {
         const level = Number(req.params.level)
-        const grammar = Number(req.params.grammar)
-        const collection = Number(req.params.collection)
+        const grammar = String(req.params.grammar)
+        const collection = String(req.params.collection)
         const search = req.params.search || ""
     
         const offset = Number(req.params.offset)
@@ -25,17 +25,13 @@ module.exports = (app, vocabularyList, sentencesList) => {
             return
         }
         if (!dictionnary.pluralClasses[grammar]) {
-            res.status(400).json(`Grammar query must be a number between 0 and ${
-                Object.keys(dictionnary.pluralClasses)
-                    [Object.keys(dictionnary.pluralClasses).length - 1]
-            }`)
+            res.status(400).json(`Grammar query must be one of those:
+            ${Object.keys(dictionnary.classes).map((key) => key)}`)
             return
         }
         if (!dictionnary.collections[collection]) {
-            res.status(400).json(`Collection query must be a number between 0 and ${
-                Object.keys(dictionnary.collections)
-                    [Object.keys(dictionnary.collections).length - 1]
-            }`)
+            res.status(400).json(`Collection query must be one of those:
+            ${Object.keys(dictionnary.collections).map((key) => key)}`)
             return
         }
     
@@ -59,9 +55,9 @@ module.exports = (app, vocabularyList, sentencesList) => {
             vocabularyList.forEach((word) => {
                 const searchThroughWordResult = filters.searchThroughWord(word, searchElement)
                 if (
-                    (word.collections?.includes(collection) || collection === 0)
+                    (word.collections?.includes(collection) || collection === "0")
                     && (dictionnary.levels[level] === word.level || !level) 
-                    && (word.grammar.includes(grammar) || grammar === 0)
+                    && (word.grammar?.includes(grammar) || grammar === "0")
                     && (searchThroughWordResult.includes
                         || !searchElement)
                 ) {
@@ -191,7 +187,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         res.json(sentencesArray.sort((a, b) => a.elements.length - b.elements.length))
     })
 
-    app.post('/sentence', (req, res) => {
+    app.post('/foundSentence', (req, res) => {
         const fullDataElements = [ ...req.body.elements ]
         fullDataElements.forEach((fullDataElement) => {
             fullDataElement.foundElements.forEach((element) => {
@@ -229,8 +225,8 @@ module.exports = (app, vocabularyList, sentencesList) => {
     
     app.get('/vocabularyTrainingList/:level/:grammar/:collection', (req, res) => {
         const level = Number(req.params.level)
-        const grammar = Number(req.params.grammar)
-        const collection = Number(req.params.collection)
+        const grammar = String(req.params.grammar)
+        const collection = String(req.params.collection)
     
         if (!dictionnary.levels[level] && dictionnary.levels[level] !== null) {
             res.status(400).json(`Level query must be a number between 0 and ${
@@ -240,17 +236,13 @@ module.exports = (app, vocabularyList, sentencesList) => {
             return
         }
         if (!dictionnary.pluralClasses[grammar]) {
-            res.status(400).json(`Grammar query must be a number between 0 and ${
-                Object.keys(dictionnary.pluralClasses)
-                    [Object.keys(dictionnary.pluralClasses).length - 1]
-            }`)
+            res.status(400).json(`Grammar query must be one of those:
+            ${Object.keys(dictionnary.classes).map((key) => key)}`)
             return
         }
         if (!dictionnary.collections[collection]) {
-            res.status(400).json(`Collection query must be a number between 0 and ${
-                Object.keys(dictionnary.collections)
-                    [Object.keys(dictionnary.collections).length - 1]
-            }`)
+            res.status(400).json(`Collection query must be one of those:
+            ${Object.keys(dictionnary.collections).map((key) => key)}`)
             return
         }
     
@@ -262,9 +254,9 @@ module.exports = (app, vocabularyList, sentencesList) => {
     
         vocabularyList.forEach((word) => {
             if (
-                (word.collections?.includes(collection) || collection === 0)
+                (word.collections?.includes(collection) || collection === "0")
                 && (dictionnary.levels[level] === word.level || !level) 
-                && (word.grammar.includes(grammar) || grammar === 0)
+                && (word.grammar?.includes(grammar) || grammar === "0")
             ) {
                 vocabularyArray.push({ 
                     id: word.id,

@@ -4,61 +4,18 @@ const libFunctions = require('./common')
 const grammar = require('../lib/grammar')
 const { kanasDictionnary } = require('tetsudai-common')
 
-const localKanji = require('../localDatabase/kanji.json')
-const localVocabulary = require('../localDatabase/vocabulary.json')
-const localAlternatives = require('../localDatabase/alternatives.json')
-const localSentences = require('../localDatabase/sentences.json')
+const localKanji = require('../data/kanji.json')
+const localVocabulary = require('../data/vocabulary.json')
+const localSentences = require('../data/sentences.json')
 
 module.exports = {
     buildData: async () => {
-
-        let kanjiList = []
-        if (process.env.NODE_ENV === 'production') {
-            const kanjiSnapshot = await firebase.firestore().collection('Kanjis').get()
-            kanjiSnapshot.forEach((doc) => {
-                kanjiList.push({
-                    ...doc.data(),
-                    doc,
-                })
-            })
-        } else kanjiList = localKanji
-
-        let vocabularyList = []
-        if (process.env.NODE_ENV === 'production') {
-            const vocabularySnapshot = await firebase.firestore().collection('Vocabulary').get()
-            vocabularySnapshot.forEach((doc) => {
-                vocabularyList.push({
-                    ...doc.data(),
-                    doc,
-                })
-            })
-        } else vocabularyList = localVocabulary
-
-        let alternativesList = []
-        if (process.env.NODE_ENV === 'production') {
-            const alternativesSnapshot = await firebase.firestore().collection('Alternatives').get()
-            alternativesSnapshot.forEach((doc) => {
-                alternativesList.push({
-                    ...doc.data(),
-                    doc,
-                })
-            })
-        } else alternativesList = localAlternatives
-
-        let sentencesList = []
-        if (process.env.NODE_ENV === 'production') {
-            const sentencesSnapshot = await firebase.firestore().collection('Sentences').get()
-            sentencesSnapshot.forEach((doc) => {
-                sentencesList.push({
-                    ...doc.data(),
-                    doc,
-                })
-            })
-        } else sentencesList = localSentences
+        let kanjiList = localKanji
+        let vocabularyList = localVocabulary
+        let sentencesList = localSentences
 
         kanjiList.forEach((kanji) => {
             kanji.id = Number(kanji.id)
-            kanji.translationArray = libFunctions.cutStringToArray(kanji.translation)
             kanji.relatedJukujikun = []
             kanji.grammar = []
             kanji.readings.kunyomi.forEach((yomi) => yomi.examples = [])
@@ -66,7 +23,6 @@ module.exports = {
             vocabularyList.forEach((word) => {
                 word.id = Number(word.id)
                 word.sentences = []
-                word.translationArray = libFunctions.cutStringToArray(word.translation)
                 word.elements.every((element) => {
                     if (kanji.kanji === element.kanji) {
                         element.kana ?
@@ -151,13 +107,6 @@ module.exports = {
             // here we inject the inflexions for verbs and adjectives
             word.inflexions = grammar.dispatchInflexion(word)
 
-            // Here we inject the alternatives (different possible translations of the word)
-            // The last part (conjugation...) is related to an older structure of the alternatives objects
-            word.alternatives = []
-            alternativesList.forEach((alternative) => {
-                if (alternative.id === word.id) word.alternatives = alternative.alternatives || [ ...alternative.conjugation.nonPast, ...alternative.conjugation.past ]
-            })
-
             // Here we create the empty arrays for related words, that will be filled in the next loop
             word.relatedWords = {
                 stem: [],
@@ -171,7 +120,7 @@ module.exports = {
         
         // Here we inject the related words
         vocabularyList.forEach((word) => {
-            if ((word.grammar.includes(3) || word.grammar.includes(4)) && !!!word.inflexions) console.log('Missing inflexions for', word.completeWord)
+            if ((word.grammar?.includes("vb") || word.grammar?.includes("adj")) && !!!word.inflexions) console.log('Missing inflexions for', word.completeWord)
             const base = word.completeWord
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
@@ -191,7 +140,7 @@ module.exports = {
                         word2.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word))
                     }
                     else if (base.includes(base2)
-                        && (!word2.grammar.includes(9) || word.includesParticle)
+                        && (!word2.grammar?.includes("ptc") || word.includesParticle)
                         && baseWrittenInKana.includes(baseWrittenInKana2)
                         && word.id !== word2.id
                         && !base.includes("する")

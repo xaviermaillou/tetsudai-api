@@ -7,6 +7,7 @@ const port = process.env.PORT || 8000
 const explanationRoutes = require('./src/routes/explanationRoutes')
 const kanjiRoutes = require('./src/routes/kanjiRoutes')
 const vocabularyRoutes = require('./src/routes/vocabularyRoutes')
+const adminRoutes = require('./src/routes/adminRoutes')
 
 const data = require('./src/lib/data')
 const schedule = require('node-schedule')
@@ -25,6 +26,7 @@ const launchRoutes = (response) => {
     explanationRoutes(app)
     kanjiRoutes(app, response.kanjiList)
     vocabularyRoutes(app, response.vocabularyList, response.sentencesList)
+    adminRoutes(app)
 }
 
 data.buildData().then((response) => launchRoutes(response))

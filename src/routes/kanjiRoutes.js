@@ -5,8 +5,8 @@ const filters = require('../lib/filters')
 module.exports = (app, kanjiList) => {
     app.get('/kanjiList/:offset/:level/:grammar/:collection/:search?', (req, res) => {
         const level = Number(req.params.level)
-        const grammar = Number(req.params.grammar)
-        const collection = Number(req.params.collection)
+        const grammar = String(req.params.grammar)
+        const collection = String(req.params.collection)
         const search = req.params.search || ""
     
         const offset = Number(req.params.offset)
@@ -24,17 +24,13 @@ module.exports = (app, kanjiList) => {
             return
         }
         if (!dictionnary.pluralClasses[grammar]) {
-            res.status(400).json(`Grammar query must be a number between 0 and ${
-                Object.keys(dictionnary.pluralClasses)
-                    [Object.keys(dictionnary.pluralClasses).length - 1]
-            }`)
+            res.status(400).json(`Grammar query must be one of those:
+            ${Object.keys(dictionnary.classes).map((key) => key)}`)
             return
         }
         if (!dictionnary.collections[collection]) {
-            res.status(400).json(`Collection query must be a number between 0 and ${
-                Object.keys(dictionnary.collections)
-                    [Object.keys(dictionnary.collections).length - 1]
-            }`)
+            res.status(400).json(`Collection query must be one of those:
+            ${Object.keys(dictionnary.collections).map((key) => key)}`)
             return
         }
     
@@ -56,9 +52,9 @@ module.exports = (app, kanjiList) => {
             kanjiList.forEach((kanji) => {
                 if (
                     (
-                        (kanji.collections?.includes(collection) || collection === 0)
+                        (kanji.collections?.includes(collection) || collection === "0")
                         && (dictionnary.levels[level] === kanji.level || !level) 
-                        && (kanji.grammar.includes(grammar) || grammar === 0)
+                        && (kanji.grammar?.includes(grammar) || grammar === "0")
                     ) 
                     &&
                     (
@@ -120,8 +116,8 @@ module.exports = (app, kanjiList) => {
     
     app.get('/kanjiTrainingList/:level/:grammar/:collection', (req, res) => {
         const level = Number(req.params.level)
-        const grammar = Number(req.params.grammar)
-        const collection = Number(req.params.collection)
+        const grammar = String(req.params.grammar)
+        const collection = String(req.params.collection)
     
         if (!dictionnary.levels[level] && dictionnary.levels[level] !== null) {
             res.status(400).json(`Level query must be a number between 0 and ${
@@ -131,17 +127,13 @@ module.exports = (app, kanjiList) => {
             return
         }
         if (!dictionnary.pluralClasses[grammar]) {
-            res.status(400).json(`Grammar query must be a number between 0 and ${
-                Object.keys(dictionnary.pluralClasses)
-                    [Object.keys(dictionnary.pluralClasses).length - 1]
-            }`)
+            res.status(400).json(`Grammar query must be one of those:
+            ${Object.keys(dictionnary.classes).map((key) => key)}`)
             return
         }
         if (!dictionnary.collections[collection]) {
-            res.status(400).json(`Collection query must be a number between 0 and ${
-                Object.keys(dictionnary.collections)
-                    [Object.keys(dictionnary.collections).length - 1]
-            }`)
+            res.status(400).json(`Collection query must be one of those:
+            ${Object.keys(dictionnary.collections).map((key) => key)}`)
             return
         }
     
@@ -153,9 +145,9 @@ module.exports = (app, kanjiList) => {
     
         kanjiList.forEach((kanji) => {
             if (
-                (kanji.collections?.includes(collection) || collection === 0)
+                (kanji.collections?.includes(collection) || collection === "0")
                 && (dictionnary.levels[level] === kanji.level || !level) 
-                && (kanji.grammar.includes(grammar) || grammar === 0)
+                && (kanji.grammar?.includes(grammar) || grammar === "0")
             ) {
                 kanjiArray.push({ 
                     id: kanji.id,

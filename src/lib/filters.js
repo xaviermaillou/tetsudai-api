@@ -15,21 +15,26 @@ module.exports = {
 
         // French filtering
         if (string.length > 1) {
-            kanji.translationArray?.forEach((word) => {
+            kanji.translation?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
+                    .includes(frenchRegularization(string.toLowerCase()))
+                ) includes = true
+            })
+            kanji.alternatives?.forEach((alternative) => {
+                if (frenchRegularization(alternative.toLowerCase())
                     .includes(frenchRegularization(string.toLowerCase()))
                 ) includes = true
             })
             kanji.readings.kunyomi.forEach((yomi) => {
                 yomi.examples.forEach((word) => {
-                    if (frenchRegularization(word.translation.toLowerCase())
+                    if (frenchRegularization(word.translation.join('; ').toLowerCase())
                         .includes(frenchRegularization(string.toLowerCase()))
                     ) includes = true
                 })
             })
             kanji.readings.onyomi.forEach((yomi) => {
                 yomi.examples.forEach((word) => {
-                    if (frenchRegularization(word.translation.toLowerCase())
+                    if (frenchRegularization(word.translation.join('; ').toLowerCase())
                         .includes(frenchRegularization(string.toLowerCase()))
                     ) includes = true
                 })
@@ -97,8 +102,13 @@ module.exports = {
 
         // French filtering
         if (string.length > 1) {
-            kanji.translationArray?.forEach((word) => {
+            kanji.translation?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
+                    === frenchRegularization(string.toLowerCase())
+                ) matchingScore = 1
+            })
+            kanji.alternatives?.forEach((alternative) => {
+                if (frenchRegularization(alternative.toLowerCase())
                     === frenchRegularization(string.toLowerCase())
                 ) matchingScore = 1
             })
@@ -135,7 +145,7 @@ module.exports = {
 
         // French filtering
         if (string.length > 1) {
-            vocabularyWord.translationArray?.forEach((word) => {
+            vocabularyWord.translation?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
                     .includes(frenchRegularization(string.toLowerCase()))
                 ) includes = true
@@ -165,9 +175,9 @@ module.exports = {
         const japaneseWord = vocabularyWord.completeWord
         if (japaneseWord.includes(string) || string.includes(japaneseWord)) {
             includes = true
-            if (string.includes(japaneseWord)) foundWords.push(vocabularyWord.completeWord)
+            if (string.includes(japaneseWord)) foundWords.push(japaneseWord)
             if (vocabularyWord.adjectivePrecisions?.type === "na" && string.includes(japaneseWord + "な")) {
-                foundWords.push(vocabularyWord.completeWord + "な")
+                foundWords.push(japaneseWord + "な")
             }
         }
 
@@ -202,7 +212,7 @@ module.exports = {
 
         // French filtering
         if (string.length > 1) {
-            vocabularyWord.translationArray?.forEach((word) => {
+            vocabularyWord.translation?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
                     === frenchRegularization(string.toLowerCase())
                 ) matchingScore = 1
@@ -233,7 +243,6 @@ module.exports = {
         const japaneseWord = vocabularyWord.completeWord
         if (japaneseWord === string) matchingScore = 1
         // Taking in account suru verbs
-        if (vocabularyWord.grammar.includes(14) && japaneseWord + 'する' === string) matchingScore = 1
         if (vocabularyWord.adjectivePrecisions?.type === "na" && japaneseWord + "な" === string) matchingScore = 1
 
         // Inflexions filtering
