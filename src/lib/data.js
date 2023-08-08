@@ -8,9 +8,9 @@ const localSentences = require('../data/sentences.json')
 
 module.exports = {
     buildData: async () => {
-        let kanjiList = localKanji
-        let vocabularyList = localVocabulary
-        let sentencesList = localSentences
+        let kanjiList = await libFunctions.readJSONAsync('kanji')
+        let vocabularyList = await libFunctions.readJSONAsync('vocabulary')
+        let sentencesList = await libFunctions.readJSONAsync('sentences')
 
         kanjiList.forEach((kanji) => {
             kanji.id = Number(kanji.id)

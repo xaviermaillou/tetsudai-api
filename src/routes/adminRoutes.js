@@ -1,17 +1,7 @@
 const fs = require('fs')
+const { readJSON } = require('../lib/common')
 
 module.exports = (app) => {
-    const readJSON = (type, cb) => {
-        fs.readFile(process.cwd() + `/src/data/${type}.json`, (err, data) => {
-            if (err) {
-                console.log("An error has occurred ", err)
-                return
-            }
-            console.log("Data read successfully from the file:", type)
-            cb(JSON.parse(data))
-        })
-    }
-
     app.get('/kanjiFullList', (req, res) => {
         readJSON('kanji', (data) => res.json(data))
     })
