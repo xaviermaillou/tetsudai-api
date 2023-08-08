@@ -1,7 +1,6 @@
 const fs = require('fs')
 const kanjiList = require('./src/dataBackUp/kanji.json')
 const vocabularyList = require('./src/dataBackUp/vocabulary.json')
-const alternativesList = require('./src/dataBackUp/alternatives.json')
 const sentencesList = require('./src/dataBackUp/sentences.json')
 
 const cleanedKanjiList = kanjiList?.map((kanji) => ({
@@ -11,17 +10,11 @@ const cleanedKanjiList = kanjiList?.map((kanji) => ({
     level: kanji.level,
     frequency: Number(kanji.frequency),
     readings: kanji.readings,
-    collections: kanji.collections?.map((collection) => {
-        if (collection === 1 || collection === '1') return 'lplk1'
-        if (collection === 2 || collection === '2') return 'mok'
-        if (collection === 3 || collection === '3') return 'jkjk'
-        if (collection === 4 || collection === '4') return 'jfs'
-        else return collection
-    }) || [],
+    collections: kanji.collections || [],
     kanjiVariations: kanji.kanjiVariations || [],
     kanjiParts: kanji.kanjiParts || [],
-    translation: [kanji.translation],
-    romaji: kanji.romaji,
+    translation: kanji.translation || [],
+    romaji: kanji.romaji || [],
     alternatives: [],
 }))
 
@@ -43,37 +36,16 @@ const cleanedVocabularyList = vocabularyList?.map((word) => ({
     includesParticle: !!word.includesParticle,
     gender: word.gender,
     formality: word.formality,
-    collections: word.collections?.map((collection) => {
-        if (collection === 1 || collection === '1') return 'lplk1'
-        if (collection === 2 || collection === '2') return 'mok'
-        if (collection === 3 || collection === '3') return 'jkjk'
-        if (collection === 4 || collection === '4') return 'jfs'
-        else return collection
-    }) || [],
+    collections: word.collections,
     level: word.level,
     originLanguage: word.originLanguage,
     originLanguageWord: word.originLanguageWord,
     precisions: word.precisions,
     frequency: Number(word.frequency),
-    romaji: word.romaji,
-    translation: [word.translation],
-    alternatives: alternativesList?.find((alternative) => Number(alternative.id) === Number(word.id))?.alternatives,
-    grammar: word.grammar?.map((grammarClass) => {
-        if (grammarClass === 1 || grammarClass === "1") return "nc"
-        if (grammarClass === 2 || grammarClass === "2") return "np"
-        if (grammarClass === 3 || grammarClass === "3") return "vb"
-        if (grammarClass === 4 || grammarClass === "4") return "adj"
-        if (grammarClass === 5 || grammarClass === "5") return "adv"
-        if (grammarClass === 6 || grammarClass === "6") return "cj"
-        if (grammarClass === 7 || grammarClass === "7") return "dtm"
-        if (grammarClass === 8 || grammarClass === "8") return "pn"
-        if (grammarClass === 9 || grammarClass === "9") return "ptc"
-        if (grammarClass === 10 || grammarClass === "10") return "exp"
-        if (grammarClass === 11 || grammarClass === "11") return "cpl"
-        if (grammarClass === 12 || grammarClass === "12") return "nb"
-        if (grammarClass === 13 || grammarClass === "13") return "suf"
-        else return grammarClass
-    }),
+    romaji: word.romaji || [],
+    translation: word.translation || [],
+    alternatives: word.alternatives || [],
+    grammar: word.grammar,
     verbPrecisions: word.verbPrecisions,
     adjectivePrecisions: word.adjectivePrecisions,
     kosoado: word.kosoado,
