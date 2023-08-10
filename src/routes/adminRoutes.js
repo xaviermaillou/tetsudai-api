@@ -58,23 +58,23 @@ module.exports = (app) => {
 
     app.post('/word', (req, res) => {
         const body = req.body
-        readJSON('kanji', (data) => addElement('vocabulary', body, data, res))
+        readJSON('vocabulary', (data) => addElement('vocabulary', body, data, res))
     })
 
     app.post('/word/:id', (req, res) => {
         const id = Number(req.params.id)
         const body = req.body
-        readJSON('kanji', (data) => editElement('vocabulary', id, body, data, res))
+        readJSON('vocabulary', (data) => editElement('vocabulary', id, body, data, res))
     })
 
     app.post('/sentence', (req, res) => {
         const body = req.body
-        readJSON('kanji', (data) => addElement('sentences', body, data, res))
+        readJSON('sentences', (data) => addElement('sentences', body, data, res))
     })
 
     app.post('/sentence/:id', (req, res) => {
         const id = Number(req.params.id)
         const body = req.body
-        readJSON('kanji', (data) => editElement('sentences', id, body, data, res))
+        readJSON('sentences', (data) => editElement('sentences', id, body, data, res))
     })
 }
