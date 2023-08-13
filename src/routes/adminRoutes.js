@@ -1,19 +1,18 @@
-const fs = require('fs')
 const axios = require('axios')
-const { readJSON } = require('../lib/common')
+const { getKanjiFullList, getVocabularyFullList, getSentencesFullList } = require('../request')
 
 module.exports = (app) => {
     app.get('/kanjiFullList', async (req, res) => {
-        const result = await axios.get("http://localhost:9002/kanji")
-        res.json(result.data)
+        const list = await getKanjiFullList()
+        res.json(list)
     })
     app.get('/vocabularyFullList', async (req, res) => {
-        const result = await axios.get("http://localhost:9002/vocabulary")
-        res.json(result.data)
+        const list = await getVocabularyFullList()
+        res.json(list)
     })
     app.get('/sentencesFullList', async (req, res) => {
-        const result = await axios.get("http://localhost:9002/sentences")
-        res.json(result.data)
+        const list = await getSentencesFullList()
+        res.json(list)
     })
 
     app.post('/kanji', async (req, res) => {

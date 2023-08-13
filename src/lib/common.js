@@ -49,19 +49,5 @@ module.exports = {
         "。",
         "、",
         "？",
-    ],
-    readJSON: (fileName, cb) => {
-        fs.readFile(process.cwd() + `/src/data/${fileName}.json`, (err, data) => {
-            if (err) {
-                console.log("An error has occurred ", err)
-                return
-            }
-            console.log("Data read successfully from the file:", fileName)
-            cb(JSON.parse(data))
-        })
-    },
-    readJSONAsync: async (fileName) => {
-        const data = fs.readFileSync(process.cwd() + `/src/data/${fileName}.json`)
-        return JSON.parse(data)
-    }
+    ]
 }

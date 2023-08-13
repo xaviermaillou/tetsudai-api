@@ -1,16 +1,13 @@
-const libFunctions = require('./common')
+const { getKanjiFullList, getVocabularyFullList, getSentencesFullList } = require('../request')
 const grammar = require('../lib/grammar')
 const { kanasDictionnary } = require('tetsudai-common')
-
-const localKanji = require('../data/kanji.json')
-const localVocabulary = require('../data/vocabulary.json')
-const localSentences = require('../data/sentences.json')
+const libFunctions = require('./common')
 
 module.exports = {
     buildData: async () => {
-        let kanjiList = await libFunctions.readJSONAsync('kanji')
-        let vocabularyList = await libFunctions.readJSONAsync('vocabulary')
-        let sentencesList = await libFunctions.readJSONAsync('sentences')
+        let kanjiList = await getKanjiFullList()
+        let vocabularyList = await getVocabularyFullList()
+        let sentencesList = await getSentencesFullList()
 
         kanjiList.forEach((kanji) => {
             kanji.id = Number(kanji.id)
