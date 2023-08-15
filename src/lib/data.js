@@ -23,12 +23,10 @@ module.exports = {
                         element.kana ?
                             kanasDictionnary.isKatakana(element.kana) ?
                             kanji.readings.onyomi.forEach((yomi) => {
-                                if (kanji.id === 52) console.log('onyomi', element.kana)
                                 if (yomi.kana === element.kana) yomi.examples.push(libFunctions.getBasicWordElements(word))
                             })
                             :
                             kanji.readings.kunyomi.forEach((yomi) => {
-                                if (kanji.id === 52) console.log('kunyomi', element.kana)
                                 if (yomi.kana === element.kana) yomi.examples.push(libFunctions.getBasicWordElements(word))
                             })
                         :
@@ -140,10 +138,25 @@ module.exports = {
                         && word.id !== word2.id
                         && !base.includes("する")
                     ) {
+                        if (word.id == 48 && word2.id === 331) console.log("PASSES")
                         word.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word2))
                         word2.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word))
                     }
                 }
+                // Here we check for possible related words that are missing the kanji that could confirm their bound
+                // As instance フランス had its kanji (仏蘭西) but フランス語 was missing it
+                else if (
+                    (!!stem
+                        && base2 === stem
+                    )
+                    ||
+                    (base.includes(base2)
+                        && (!word2.grammar?.includes("ptc") || word.includesParticle)
+                        && baseWrittenInKana.includes(baseWrittenInKana2)
+                        && word.id !== word2.id
+                        && !base.includes("する")
+                    )
+                ) console.log("Possible related words:", base, `(${word.id})`, "&", base2, `(${word2.id})`)
             })
 
             // Suru form
