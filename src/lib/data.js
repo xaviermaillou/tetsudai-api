@@ -118,8 +118,10 @@ module.exports = {
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
             const stem = grammar.dispatchBaseWord(word)
+
+            const foundWords = {}
             
-            // Stem and generic included words
+            // Stem and general included words
             vocabularyList.forEach((word2) => {
                 const base2 = word2.completeWord
                 const kanjiOnly2 = word2.elements.map((element) => element.kanji).join('')
@@ -138,8 +140,8 @@ module.exports = {
                         && word.id !== word2.id
                         && !base.includes("する")
                     ) {
-                        if (word.id == 48 && word2.id === 331) console.log("PASSES")
-                        word.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word2))
+                        // word.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word2))
+                        foundWords[base2] = libFunctions.getBasicWordElements(word2)
                         word2.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word))
                     }
                 }
@@ -158,6 +160,9 @@ module.exports = {
                     )
                 ) console.log("Possible related words:", base, `(${word.id})`, "&", base2, `(${word2.id})`)
             })
+
+            const filteredWordsStrings = libFunctions.findComposingWords(Object.keys(foundWords), base)
+            word.relatedWords.wordTakenFrom = filteredWordsStrings.map((word) => foundWords[word])
 
             // Suru form
             word.elements.forEach((element) => {
