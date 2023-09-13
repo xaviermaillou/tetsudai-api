@@ -51,7 +51,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
             previousWord = searchElement
         })
 
-        splittedSearch.forEach((searchElement) => {
+        splittedSearch.forEach((searchElement, i) => {
             vocabularyList.forEach((word) => {
                 const searchThroughWordResult = filters.searchThroughWord(word, searchElement)
                 if (
@@ -71,11 +71,11 @@ module.exports = (app, vocabularyList, sentencesList) => {
                             translation: word.translation,
                             jukujikunAsMain: word.jukujikunAsMain,
                             importance: filters
-                                .getWordImportance(word, searchElement)
+                                .getWordImportance(word, searchElement, i === 0 ? 2 : 1)
                         })
-                    } else if (alreadyAddedItem.importance === 0) {
+                    } else if (alreadyAddedItem.importance < 2) {
                         alreadyAddedItem.importance = filters
-                            .getWordImportance(word, searchElement)
+                            .getWordImportance(word, searchElement, i === 0 ? 2 : 1)
                     }
                 }
                 if (searchElement
@@ -85,13 +85,11 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     foundJapaneseWordsArray.push( ...searchThroughWordResult.foundWords )
             })
         })
-
         let foundSentence = []
         // If one of the found words is not the whole search string, we can assume there are several words in the search
         if (!foundJapaneseWordsArray.includes(search)) {
             foundSentence = libFunctions.findComposingWords(foundJapaneseWordsArray, search)
         }
-
         const foundSentenceWithIds = []
         // With the found japanese sentence, we execute a new search loop with the separated words
         // so that we can reinject the word id
@@ -109,16 +107,16 @@ module.exports = (app, vocabularyList, sentencesList) => {
             else {
                 const matchingWords = []
                 vocabularyList.forEach((word) => {
-                    if (filters.getWordImportance(word, sentenceElement)) {
+                    if (filters.getWordImportance(word, sentenceElement, 2) === 2) {
                         matchingWords.push({
                             id: word.id,
                             word: sentenceElement
                         })
                         // Here we add importance to the found word in vocabulary array for classic results
                         const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
-                        if (alreadyAddedItem?.importance === 0) {
+                        if (alreadyAddedItem?.importance < 2) {
                             alreadyAddedItem.importance = filters
-                                .getWordImportance(word, sentenceElement)
+                                .getWordImportance(word, sentenceElement, 2)
                         }
                     }
                 })
@@ -129,6 +127,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
             }
         })
         foundSentenceWithIds.forEach((element) => console.log(element.foundElements))
+
         const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
         const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.levels)
         const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)

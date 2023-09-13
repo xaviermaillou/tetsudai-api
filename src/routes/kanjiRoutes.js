@@ -71,11 +71,11 @@ module.exports = (app, kanjiList) => {
                             frequency: kanji.frequency,
                             translation: kanji.translation,
                             importance: filters
-                                .getKanjiImportance(kanji, searchElement)
+                                .getKanjiImportance(kanji, searchElement, 2)
                         })
-                    } else if (alreadyAddedItem.importance === 0) {
+                    } else if (alreadyAddedItem.importance < 2) {
                         alreadyAddedItem.importance = filters
-                            .getKanjiImportance(kanji, searchElement)
+                            .getKanjiImportance(kanji, searchElement, 2)
                     }
                 }
             })

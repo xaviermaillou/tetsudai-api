@@ -95,7 +95,7 @@ module.exports = {
         return includes
     },
 
-    getKanjiImportance: (kanji, string) => {
+    getKanjiImportance: (kanji, string, score) => {
         let matchingScore = 0
 
         // French filtering
@@ -103,12 +103,12 @@ module.exports = {
             kanji.translation?.forEach((word) => {
                 if (frenchRegularization(word.toLowerCase())
                     === frenchRegularization(string.toLowerCase())
-                ) matchingScore = 1
+                ) matchingScore = score
             })
             kanji.alternatives?.forEach((alternative) => {
                 if (frenchRegularization(alternative.toLowerCase())
                     === frenchRegularization(string.toLowerCase())
-                ) matchingScore = 1
+                ) matchingScore = score
             })
         }
 
@@ -116,21 +116,21 @@ module.exports = {
         kanji.romaji?.forEach((word) => {
             if (word && romajiRegularization(word.toLowerCase())
                 === romajiRegularization(string.toLowerCase())
-            ) matchingScore = 1
+            ) matchingScore = score
         })
 
         // Kanji filtering
-        if (kanji.kanji === string) matchingScore = 1
+        if (kanji.kanji === string) matchingScore = score
         kanji.kanjiVariations?.forEach((variation) => {
-            if (variation === string) matchingScore = 1
+            if (variation === string) matchingScore = score
         })
 
         // Kanas filtering
         kanji.readings.kunyomi.forEach((reading) => {
-            if (reading && reading === string) matchingScore = 1
+            if (reading && reading === string) matchingScore = score
         })
         kanji.readings.onyomi.forEach((reading) => {
-            if (reading && reading === string) matchingScore = 1
+            if (reading && reading === string) matchingScore = score
         })
         return matchingScore
     },
@@ -143,15 +143,19 @@ module.exports = {
 
         // French filtering
         if (string.length > 1) {
-            vocabularyWord.translation?.forEach((word) => {
-                if (frenchRegularization(word.toLowerCase())
-                    .includes(frenchRegularization(string.toLowerCase()))
-                ) includes = true
+            vocabularyWord.translation?.forEach((element) => {
+                element.split(', ').forEach((word) => {
+                    if (frenchRegularization(word.toLowerCase())
+                        .includes(frenchRegularization(string.toLowerCase()))
+                    ) includes = true
+                })
             })
-            vocabularyWord.alternatives?.forEach((word) => {
-                if (frenchRegularization(word.toLowerCase())
-                    .includes(frenchRegularization(string.toLowerCase()))
-                ) includes = true
+            vocabularyWord.alternatives?.forEach((element) => {
+                element.split(', ').forEach((word) => {
+                    if (frenchRegularization(word.toLowerCase())
+                        .includes(frenchRegularization(string.toLowerCase()))
+                    ) includes = true
+                })
             })
         }
         
@@ -183,6 +187,7 @@ module.exports = {
         const alternativeWord = vocabularyWord.alternativeWord
         if (alternativeWord.includes(string) || string.includes(alternativeWord)) {
             includes = true
+            if (string.includes(alternativeWord)) foundWords.push(alternativeWord)
         }
 
         // Inflexions filtering
@@ -205,21 +210,25 @@ module.exports = {
         return { includes, foundWords }
     },
 
-    getWordImportance: (vocabularyWord, string) => {
+    getWordImportance: (vocabularyWord, string, score) => {
         let matchingScore = 0
 
         // French filtering
         if (string.length > 1) {
-            vocabularyWord.translation?.forEach((word) => {
-                if (frenchRegularization(word.toLowerCase())
-                    === frenchRegularization(string.toLowerCase())
-                ) matchingScore = 1
+            vocabularyWord.translation?.forEach((element) => {
+                element.split(', ').forEach((word) => {
+                    if (frenchRegularization(word.toLowerCase())
+                        === frenchRegularization(string.toLowerCase())
+                    ) matchingScore = score
+                })
             })
     
-            vocabularyWord.alternatives?.forEach((word) => {
-                if (frenchRegularization(word.toLowerCase())
-                    === frenchRegularization(string.toLowerCase())
-                ) matchingScore = 1
+            vocabularyWord.alternatives?.forEach((element) => {
+                element.split(', ').forEach((word) => {
+                    if (frenchRegularization(word.toLowerCase())
+                        === frenchRegularization(string.toLowerCase())
+                    ) matchingScore = score
+                })
             })
         }
 
@@ -228,20 +237,24 @@ module.exports = {
             // This part is to remove when all the romaji are arrays and not strings anymore
             if (romajiRegularization(vocabularyWord.romaji.toLowerCase())
                 === romajiRegularization(string.toLowerCase())
-            ) matchingScore = 1
+            ) matchingScore = score
         } else {
             vocabularyWord.romaji?.forEach((word) => {
                 if (romajiRegularization(word.toLowerCase())
                     === romajiRegularization(string.toLowerCase())
-                ) matchingScore = 1
+                ) matchingScore = score
             })
         }
 
         // Main word filtering
         const japaneseWord = vocabularyWord.completeWord
-        if (japaneseWord === string) matchingScore = 1
-        // Taking in account suru verbs
-        if (vocabularyWord.adjectivePrecisions?.type === "na" && japaneseWord + "な" === string) matchingScore = 1
+        if (japaneseWord === string) matchingScore = score
+        // Taking in account na adjectives
+        if (vocabularyWord.adjectivePrecisions?.type === "na" && japaneseWord + "な" === string) matchingScore = score
+
+        // Alternative word filtering
+        const alternativeWord = vocabularyWord.alternativeWord
+        if (alternativeWord === string && !!!matchingScore) matchingScore = 1
 
         // Inflexions filtering
         if (vocabularyWord.inflexions) {
@@ -253,7 +266,7 @@ module.exports = {
                 if (tense?.negative?.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending) 
             })
             inflexionsArray.forEach((inflexion) => {
-                if (inflexion === string) matchingScore = 1
+                if (inflexion === string) matchingScore = score
             })
         }
 

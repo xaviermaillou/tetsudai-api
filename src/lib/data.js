@@ -93,7 +93,7 @@ module.exports = {
 
             // Here we define alternativeWord, which is the opposite version of the nornally used word (in kanas if used in kanji, in kanji if used in kanas)
             word.alternativeWord = word.jukujikunAsMain ?
-                word.elements.map((element) => element.kanji).join('')
+                word.elements.map((element) => element.kanji || element.kana).join('')
                 :
                 word.elements.map((element) => element.option === "rareKanji" ? element.kanji || element.kana : element.kana || element.kanji).join('')
 
