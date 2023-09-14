@@ -2,6 +2,8 @@ const sentenceExceptionCharacters = [
     "。",
     "、",
     "？",
+    "「",
+    "」",
 ]
 
 module.exports = {
