@@ -126,7 +126,6 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 })
             }
         })
-        foundSentenceWithIds.forEach((element) => console.log(element.foundElements))
 
         const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
         const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.levels)

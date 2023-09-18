@@ -187,7 +187,6 @@ module.exports = {
         const alternativeWord = vocabularyWord.alternativeWord
         if (alternativeWord.includes(string) || string.includes(alternativeWord)) {
             includes = true
-            if (string.includes(alternativeWord)) foundWords.push(alternativeWord)
         }
 
         // Inflexions filtering
