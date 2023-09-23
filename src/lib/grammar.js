@@ -444,13 +444,28 @@ const getUniqueFunction = (word, foundString, previousWord, nextWord) => {
             return "nc"
         // Common noun + adverb
         case "nc+adv":
+            if (nextWord?.grammar?.includes("vb")) return "adv"
+            return "nc"
+        // Common noun + adverb + suffix
+        case "nc+adv+suf":
+            if (nextWord?.grammar?.includes("vb")) return "adv"
+            if (previousWord?.grammar?.includes("nc") || previousWord?.grammar?.includes("np")) return "suf"
             return "nc"
         // Common noun + adjective + pronoun
         case "nc+adj+pn":
+            if (previousWord?.grammar?.includes("ptc") && previousWord?.word !== "と") return "nc"
+            if (nextWord?.grammar?.includes("vb")) return "adj"
+            if (!nextWord?.id) return "adj"
+            if (foundString.slice(-1) === "な") return "adj"
+            if (nextWord?.word === "て" || nextWord?.word === "で") return "adj"
             if (nextWord?.grammar?.includes("vb")) return "adv"
             return "pn"
         // Common noun + adjective + suffix
         case "nc+adj+suf":
+            if (nextWord?.grammar?.includes("vb")) return "adj"
+            if (!nextWord?.id) return "adj"
+            if (foundString.slice(-1) === "な") return "adj"
+            if (nextWord?.word === "て" || nextWord?.word === "で") return "adj"
             if (previousWord?.grammar?.includes("nc")) return "suf"
             return "nc"
         // Common noun + pronoun
