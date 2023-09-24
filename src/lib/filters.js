@@ -1,3 +1,5 @@
+const { katakanaRegularization, numberRegularization } = require("./common")
+
 const frenchRegularization = (string) => {
     return string.split('\'').join(' ').split('é').join('e').split('è').join('e').split('ê').join('e')
         .split('à').join('a').split('â').join('a').split('î').join('i').split('ô').join('o').split('û')
@@ -173,21 +175,19 @@ module.exports = {
             })
         }
 
+        const regularizedString = katakanaRegularization(numberRegularization(string))
+
         // Main word filtering
         const japaneseWord = vocabularyWord.completeWord
-        if (japaneseWord.includes(string) || string.includes(japaneseWord)) {
+        if (japaneseWord.includes(regularizedString) || regularizedString.includes(japaneseWord)) {
             includes = true
-            if (string.includes(japaneseWord)) foundWords.push(japaneseWord)
-            if (vocabularyWord.adjectivePrecisions?.type === "na" && string.includes(japaneseWord + "な")) {
-                foundWords.push(japaneseWord + "な")
-            }
+            if (regularizedString.includes(japaneseWord)) foundWords.push(japaneseWord)
+            if (vocabularyWord.adjectivePrecisions?.type === "na" && regularizedString.includes(japaneseWord + "な")) foundWords.push(japaneseWord + "な")
         }
 
         // Alternative word filtering
         const alternativeWord = vocabularyWord.alternativeWord
-        if (alternativeWord.includes(string) || string.includes(alternativeWord)) {
-            includes = true
-        }
+        if (alternativeWord.includes(regularizedString) || regularizedString.includes(alternativeWord)) includes = true
 
         // Inflexions filtering
         if (vocabularyWord.inflexions && (string.length > 1 || string === "だ")) {
@@ -245,15 +245,17 @@ module.exports = {
             })
         }
 
+        const regularizedString = katakanaRegularization(numberRegularization(string))
+
         // Main word filtering
         const japaneseWord = vocabularyWord.completeWord
-        if (japaneseWord === string) matchingScore = score
+        if (japaneseWord === regularizedString) matchingScore = score
         // Taking in account na adjectives
-        if (vocabularyWord.adjectivePrecisions?.type === "na" && japaneseWord + "な" === string) matchingScore = score
+        if (vocabularyWord.adjectivePrecisions?.type === "na" && japaneseWord + "な" === regularizedString) matchingScore = score
 
         // Alternative word filtering
         const alternativeWord = vocabularyWord.alternativeWord
-        if (alternativeWord === string && !!!matchingScore) matchingScore = 1
+        if (alternativeWord === regularizedString && !!!matchingScore) matchingScore = 1
 
         // Inflexions filtering
         if (vocabularyWord.inflexions) {

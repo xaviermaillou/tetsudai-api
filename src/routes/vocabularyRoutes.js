@@ -87,7 +87,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         })
         let foundSentence = []
         // If one of the found words is not the whole search string, we can assume there are several words in the search
-        if (!foundJapaneseWordsArray.includes(search)) {
+        if (!foundJapaneseWordsArray.includes(libFunctions.katakanaRegularization(libFunctions.numberRegularization(search)))) {
             foundSentence = libFunctions.findComposingWords(foundJapaneseWordsArray, search)
         }
         const foundSentenceWithIds = []
