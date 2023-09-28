@@ -131,7 +131,7 @@ module.exports = {
                 if (sentenceExceptionCharacters.includes(stringToCompare)) {
                     foundWords.push(stringToCompare)
                 }
-                searchCopy = searchCopy.slice(-i)
+                searchCopy = searchCopy.slice(1)
                 if (searchCopy === stringToCompare) break
                 // Loop is reset
                 else i = -1
@@ -140,10 +140,10 @@ module.exports = {
         // If an element has been skipped, we redo the loop in reverse
         if (foundWords.join("").length < string.length) {
             for (let i = 0; i < alternativeSearchCopy.length; i++) {
-                const stringToCompare = i === 0 ? alternativeSearchCopy : alternativeSearchCopy.slice(-i)
+                const stringToCompare = i === 0 ? alternativeSearchCopy : alternativeSearchCopy.slice(i)
                 if (stringsArray.includes(katakanaRegularization(numberRegularization(stringToCompare)))) {
                     alternativeFoundWords.unshift(stringToCompare)
-                    alternativeSearchCopy = alternativeSearchCopy.slice(0, -i)
+                    alternativeSearchCopy = alternativeSearchCopy.slice(0, i)
                     if (alternativeSearchCopy === stringToCompare) break
                     else i = -1
                 }
@@ -151,7 +151,7 @@ module.exports = {
                     if (sentenceExceptionCharacters.includes(stringToCompare)) {
                         alternativeFoundWords.unshift(stringToCompare)
                     }
-                    alternativeSearchCopy = alternativeSearchCopy.slice(0, -i)
+                    alternativeSearchCopy = alternativeSearchCopy.slice(0, -1)
                     if (alternativeSearchCopy === stringToCompare) break
                     else i = -1
                 }
