@@ -4,7 +4,7 @@ const sentenceExceptionCharacters = [
     "？",
     "「",
     "」",
-    " ",
+    "　",
 ]
 
 const katakanaRegularization = (string) => {
