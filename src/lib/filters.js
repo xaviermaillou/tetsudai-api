@@ -13,30 +13,50 @@ module.exports = {
     searchThroughKanji: (kanji, string) => {
         let includes = false
 
-        // French filtering
+        // Translations filtering
         if (string.length > 1) {
-            kanji.translation?.forEach((word) => {
-                if (frenchRegularization(word.toLowerCase())
-                    .includes(frenchRegularization(string.toLowerCase()))
-                ) includes = true
+            Object.keys(kanji.translation)?.forEach((key) => {
+                kanji.translation[key]?.forEach((element) => {
+                    element.split(', ').forEach((word) => {
+                        if (frenchRegularization(word.toLowerCase())
+                            .includes(frenchRegularization(string.toLowerCase()))
+                        ) includes = true
+                    })
+                })
             })
-            kanji.alternatives?.forEach((alternative) => {
-                if (frenchRegularization(alternative.toLowerCase())
-                    .includes(frenchRegularization(string.toLowerCase()))
-                ) includes = true
+            Object.keys(kanji.alternatives)?.forEach((key) => {
+                kanji.alternatives[key]?.forEach((element) => {
+                    element.split(', ').forEach((alternative) => {
+                        if (frenchRegularization(alternative.toLowerCase())
+                            .includes(frenchRegularization(string.toLowerCase()))
+                        ) includes = true
+                    })
+                })
             })
             kanji.readings.kunyomi.forEach((yomi) => {
                 yomi.examples.forEach((word) => {
-                    if (frenchRegularization(word.translation.join('; ').toLowerCase())
-                        .includes(frenchRegularization(string.toLowerCase()))
-                    ) includes = true
+                    Object.keys(word.translation)?.forEach((key) => {
+                        word.translation[key]?.forEach((element) => {
+                            element.split(', ').forEach((word2) => {
+                                if (frenchRegularization(word2.toLowerCase())
+                                    .includes(frenchRegularization(string.toLowerCase()))
+                                ) includes = true
+                            })
+                        })
+                    })
                 })
             })
             kanji.readings.onyomi.forEach((yomi) => {
                 yomi.examples.forEach((word) => {
-                    if (frenchRegularization(word.translation.join('; ').toLowerCase())
-                        .includes(frenchRegularization(string.toLowerCase()))
-                    ) includes = true
+                    Object.keys(word.translation)?.forEach((key) => {
+                        word.translation[key]?.forEach((element) => {
+                            element.split(', ').forEach((word2) => {
+                                if (frenchRegularization(word2.toLowerCase())
+                                    .includes(frenchRegularization(string.toLowerCase()))
+                                ) includes = true
+                            })
+                        })
+                    })
                 })
             })
         }
@@ -102,15 +122,23 @@ module.exports = {
 
         // French filtering
         if (string.length > 1) {
-            kanji.translation?.forEach((word) => {
-                if (frenchRegularization(word.toLowerCase())
-                    === frenchRegularization(string.toLowerCase())
-                ) matchingScore = score
+            Object.keys(kanji.translation)?.forEach((key) => {
+                kanji.translation[key]?.forEach((element) => {
+                    element.split(', ').forEach((word) => {
+                        if (frenchRegularization(word.toLowerCase())
+                            === frenchRegularization(string.toLowerCase())
+                        ) matchingScore = score
+                    })
+                })
             })
-            kanji.alternatives?.forEach((alternative) => {
-                if (frenchRegularization(alternative.toLowerCase())
-                    === frenchRegularization(string.toLowerCase())
-                ) matchingScore = score
+            Object.keys(kanji.alternatives)?.forEach((key) => {
+                kanji.alternatives[key]?.forEach((element) => {
+                    element.split(', ').forEach((alternative) => {
+                        if (frenchRegularization(alternative.toLowerCase())
+                            === frenchRegularization(string.toLowerCase())
+                        ) matchingScore = score
+                    })
+                })
             })
         }
 
@@ -145,18 +173,22 @@ module.exports = {
 
         // French filtering
         if (string.length > 1) {
-            vocabularyWord.translation?.forEach((element) => {
-                element.split(', ').forEach((word) => {
-                    if (frenchRegularization(word.toLowerCase())
-                        .includes(frenchRegularization(string.toLowerCase()))
-                    ) includes = true
+            Object.keys(vocabularyWord.translation)?.forEach((key) => {
+                vocabularyWord.translation[key]?.forEach((element) => {
+                    element.split(', ').forEach((word) => {
+                        if (frenchRegularization(word.toLowerCase())
+                            .includes(frenchRegularization(string.toLowerCase()))
+                        ) includes = true
+                    })
                 })
             })
-            vocabularyWord.alternatives?.forEach((element) => {
-                element.split(', ').forEach((word) => {
-                    if (frenchRegularization(word.toLowerCase())
-                        .includes(frenchRegularization(string.toLowerCase()))
-                    ) includes = true
+            Object.keys(vocabularyWord.alternatives)?.forEach((key) => {
+                vocabularyWord.alternatives[key]?.forEach((element) => {
+                    element.split(', ').forEach((word) => {
+                        if (frenchRegularization(word.toLowerCase())
+                            .includes(frenchRegularization(string.toLowerCase()))
+                        ) includes = true
+                    })
                 })
             })
         }
@@ -214,19 +246,22 @@ module.exports = {
 
         // French filtering
         if (string.length > 1) {
-            vocabularyWord.translation?.forEach((element) => {
-                element.split(', ').forEach((word) => {
-                    if (frenchRegularization(word.toLowerCase())
-                        === frenchRegularization(string.toLowerCase())
-                    ) matchingScore = score
+            Object.keys(vocabularyWord.translation)?.forEach((key) => {
+                vocabularyWord.translation[key]?.forEach((element) => {
+                    element.split(', ').forEach((word) => {
+                        if (frenchRegularization(word.toLowerCase())
+                            === frenchRegularization(string.toLowerCase())
+                        ) matchingScore = score
+                    })
                 })
             })
-    
-            vocabularyWord.alternatives?.forEach((element) => {
-                element.split(', ').forEach((word) => {
-                    if (frenchRegularization(word.toLowerCase())
-                        === frenchRegularization(string.toLowerCase())
-                    ) matchingScore = score
+            Object.keys(vocabularyWord.alternatives)?.forEach((key) => {
+                vocabularyWord.alternatives[key]?.forEach((element) => {
+                    element.split(', ').forEach((word) => {
+                        if (frenchRegularization(word.toLowerCase())
+                            === frenchRegularization(string.toLowerCase())
+                        ) matchingScore = score
+                    })
                 })
             })
         }
