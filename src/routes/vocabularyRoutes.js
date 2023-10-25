@@ -42,18 +42,22 @@ module.exports = (app, vocabularyList, sentencesList) => {
         
         const vocabularyArray = []
         const foundJapaneseWordsArray = []
-    
-        const splittedSearch = [ search, ...search.split(/['\s]+/) ]
 
-        let previousWord
-        splittedSearch.forEach((searchElement, i) => {
-            if (i > 1) splittedSearch.push(previousWord + ' ' + searchElement)
-            previousWord = searchElement
-        })
+        const searchIsLatin = (/^[a-zA-Z]+$/).test(search)
+    
+        const splittedSearch = [ search, ...(search.split(/['\s]+/).length > 1 ? search.split(/['\s]+/) : []) ]
+
+        if (splittedSearch.length > 1) {
+            let previousWord
+            splittedSearch.forEach((searchElement, i) => {
+                if (i > 1) splittedSearch.push(previousWord + ' ' + searchElement)
+                previousWord = searchElement
+            })
+        }
 
         splittedSearch.forEach((searchElement, i) => {
             vocabularyList.forEach((word) => {
-                const searchThroughWordResult = filters.searchThroughWord(word, searchElement)
+                const searchThroughWordResult = filters.searchThroughWord(word, searchElement, searchIsLatin)
                 if (
                     (word.collections?.includes(collection) || collection === "0")
                     && (dictionnary.levels[level] === word.level || !level) 
@@ -71,11 +75,11 @@ module.exports = (app, vocabularyList, sentencesList) => {
                             translation: word.translation,
                             jukujikunAsMain: word.jukujikunAsMain,
                             importance: filters
-                                .getWordImportance(word, searchElement, i === 0 ? 2 : 1)
+                                .getWordImportance(word, searchElement, i === 0 ? 2 : 1, searchIsLatin)
                         })
                     } else if (alreadyAddedItem.importance < 2) {
                         alreadyAddedItem.importance = filters
-                            .getWordImportance(word, searchElement, i === 0 ? 2 : 1)
+                            .getWordImportance(word, searchElement, i === 0 ? 2 : 1, searchIsLatin)
                     }
                 }
                 if (searchElement
@@ -85,11 +89,13 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     foundJapaneseWordsArray.push( ...searchThroughWordResult.foundWords )
             })
         })
+
         let foundSentence = []
         // If one of the found words is not the whole search string, we can assume there are several words in the search
         if (!foundJapaneseWordsArray.includes(libFunctions.katakanaRegularization(libFunctions.numberRegularization(search)))) {
             foundSentence = libFunctions.findComposingWords(foundJapaneseWordsArray, search)
         }
+
         const foundSentenceWithIds = []
         // With the found japanese sentence, we execute a new search loop with the separated words
         // so that we can reinject the word id
@@ -107,7 +113,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
             else {
                 const matchingWords = []
                 vocabularyList.forEach((word) => {
-                    if (filters.getWordImportance(word, sentenceElement, 2) === 2) {
+                    if (filters.getWordImportance(word, sentenceElement, 2, searchIsLatin) === 2) {
                         matchingWords.push({
                             id: word.id,
                             word: sentenceElement
@@ -115,8 +121,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                         // Here we add importance to the found word in vocabulary array for classic results
                         const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
                         if (alreadyAddedItem?.importance < 2) {
-                            alreadyAddedItem.importance = filters
-                                .getWordImportance(word, sentenceElement, 2)
+                            alreadyAddedItem.importance = 2
                         }
                     }
                 })

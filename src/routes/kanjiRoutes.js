@@ -41,6 +41,8 @@ module.exports = (app, kanjiList) => {
             
         const kanjiArray = []
 
+        const searchIsLatin = (/^[a-zA-Z]+$/).test(search)
+
         const splittedSearch = [ search, ...search.split(/['\s]+/) ]
         let previousWord
         splittedSearch.forEach((searchElement) => {
@@ -58,7 +60,7 @@ module.exports = (app, kanjiList) => {
                     ) 
                     &&
                     (
-                        filters.searchThroughKanji(kanji, searchElement)
+                        filters.searchThroughKanji(kanji, searchElement, searchIsLatin)
                         || !searchElement
                     )
                 ) {
@@ -71,11 +73,11 @@ module.exports = (app, kanjiList) => {
                             frequency: kanji.frequency,
                             translation: kanji.translation,
                             importance: filters
-                                .getKanjiImportance(kanji, searchElement, 2)
+                                .getKanjiImportance(kanji, searchElement, 2, searchIsLatin)
                         })
                     } else if (alreadyAddedItem.importance < 2) {
                         alreadyAddedItem.importance = filters
-                            .getKanjiImportance(kanji, searchElement, 2)
+                            .getKanjiImportance(kanji, searchElement, 2, searchIsLatin)
                     }
                 }
             })
