@@ -16,27 +16,27 @@ module.exports = (app, kanjiList) => {
             return
         }
     
-        if (!dictionnary.levels[level] && dictionnary.levels[level] !== null) {
+        if (!dictionnary.fr.levels[level] && dictionnary.fr.levels[level] !== null) {
             res.status(400).json(`Level query must be a number between 0 and ${
-                Object.keys(dictionnary.levels)
-                    [Object.keys(dictionnary.levels).length - 1]
+                Object.keys(dictionnary.fr.levels)
+                    [Object.keys(dictionnary.fr.levels).length - 1]
             }`)
             return
         }
-        if (!dictionnary.pluralClasses[grammar]) {
+        if (!dictionnary.fr.pluralClasses[grammar]) {
             res.status(400).json(`Grammar query must be one of those:
-            ${Object.keys(dictionnary.classes).map((key) => key)}`)
+            ${Object.keys(dictionnary.fr.classes).map((key) => key)}`)
             return
         }
-        if (!dictionnary.collections[collection]) {
+        if (!dictionnary.fr.collections[collection]) {
             res.status(400).json(`Collection query must be one of those:
-            ${Object.keys(dictionnary.collections).map((key) => key)}`)
+            ${Object.keys(dictionnary.fr.collections).map((key) => key)}`)
             return
         }
     
         console.log('\nKanji requêtés \n',
-            'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
-            'Collection:', dictionnary.collections[collection], 'Recherche:', search,
+            'Niveau:', dictionnary.fr.levels[level], 'Grammaire:', dictionnary.fr.pluralClasses[grammar],
+            'Collection:', dictionnary.fr.collections[collection], 'Recherche:', search,
             '\nOffset:', offset)
             
         const kanjiArray = []
@@ -55,7 +55,7 @@ module.exports = (app, kanjiList) => {
                 if (
                     (
                         (kanji.collections?.includes(collection) || collection === "0")
-                        && (dictionnary.levels[level] === kanji.level || !level) 
+                        && (dictionnary.fr.levels[level] === kanji.level || !level) 
                         && (kanji.grammar?.includes(grammar) || grammar === "0")
                     ) 
                     &&
@@ -85,7 +85,7 @@ module.exports = (app, kanjiList) => {
     
     
         const sortedByFrequencyData = kanjiArray.sort((a, b) => a.frequency - b.frequency)
-        const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.levels)
+        const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.fr.levels)
         const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)
     
         const slicedKanjiArray = sortedByImportance.slice(offset, offset + 100)
@@ -121,34 +121,34 @@ module.exports = (app, kanjiList) => {
         const grammar = String(req.params.grammar)
         const collection = String(req.params.collection)
     
-        if (!dictionnary.levels[level] && dictionnary.levels[level] !== null) {
+        if (!dictionnary.fr.levels[level] && dictionnary.fr.levels[level] !== null) {
             res.status(400).json(`Level query must be a number between 0 and ${
-                Object.keys(dictionnary.levels)
-                    [Object.keys(dictionnary.levels).length - 1]
+                Object.keys(dictionnary.fr.levels)
+                    [Object.keys(dictionnary.fr.levels).length - 1]
             }`)
             return
         }
-        if (!dictionnary.pluralClasses[grammar]) {
+        if (!dictionnary.fr.pluralClasses[grammar]) {
             res.status(400).json(`Grammar query must be one of those:
-            ${Object.keys(dictionnary.classes).map((key) => key)}`)
+            ${Object.keys(dictionnary.fr.classes).map((key) => key)}`)
             return
         }
-        if (!dictionnary.collections[collection]) {
+        if (!dictionnary.fr.collections[collection]) {
             res.status(400).json(`Collection query must be one of those:
-            ${Object.keys(dictionnary.collections).map((key) => key)}`)
+            ${Object.keys(dictionnary.fr.collections).map((key) => key)}`)
             return
         }
     
         console.log('\nKanji requêtés pour l\'entraînement \n',
-            'Niveau:', dictionnary.levels[level], 'Grammaire:', dictionnary.pluralClasses[grammar],
-            'Collection:', dictionnary.collections[collection])
+            'Niveau:', dictionnary.fr.levels[level], 'Grammaire:', dictionnary.fr.pluralClasses[grammar],
+            'Collection:', dictionnary.fr.collections[collection])
             
         const kanjiArray = []
     
         kanjiList.forEach((kanji) => {
             if (
                 (kanji.collections?.includes(collection) || collection === "0")
-                && (dictionnary.levels[level] === kanji.level || !level) 
+                && (dictionnary.fr.levels[level] === kanji.level || !level) 
                 && (kanji.grammar?.includes(grammar) || grammar === "0")
             ) {
                 kanjiArray.push({ 
