@@ -43,7 +43,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         const vocabularyArray = []
         const foundJapaneseWordsArray = []
 
-        const searchIsLatin = (/^[a-zA-Z]+$/).test(search)
+        const searchIsLatin = (/^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/).test(search)
     
         const splittedSearch = [ search, ...(search.split(/['\s]+/).length > 1 ? search.split(/['\s]+/) : []) ]
 
