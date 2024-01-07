@@ -17,7 +17,6 @@ module.exports = {
             kanji.readings.onyomi.forEach((yomi) => yomi.examples = [])
             vocabularyList.forEach((word) => {
                 word.id = Number(word.id)
-                word.sentences = []
                 word.elements.every((element) => {
                     if (kanji.kanji === element.kanji) {
                         element.kana ?
