@@ -13,13 +13,13 @@ module.exports = {
             kanji.id = Number(kanji.id)
             kanji.relatedJukujikun = []
             kanji.grammar = []
-            if (kanji.kanji.includes(' ')) console.log('- Blank space in', kanji.kanji)
+            if (kanji.kanji.includes(' ')) console.log('- Blank space in', kanji.kanji, 'kanji')
             kanji.readings.kunyomi.forEach((yomi) => {
-                if (yomi.kana.includes(' ')) console.log('- Blank space in', kanji.kanji)
+                if (yomi.kana.includes(' ')) console.log('- Blank space in', kanji.kanji, 'reading', yomi)
                 yomi.examples = []
             })
             kanji.readings.onyomi.forEach((yomi) => {
-                if (yomi.kana.includes(' ')) console.log('- Blank space in', kanji.kanji)
+                if (yomi.kana.includes(' ')) console.log('- Blank space in', kanji.kanji, 'reading', yomi)
                 yomi.examples = []
             })
             vocabularyList.forEach((word) => {
@@ -68,6 +68,7 @@ module.exports = {
         // Here we relate kanji with each other as kanji's components
         kanjiList.forEach((kanji) => {
             kanji.kanjiParts?.forEach((part) => {
+                if (part.includes(' ')) console.log('- Blank space in', kanji, 'part:', part)
                 let partKanjiFound = false
                 kanjiList.forEach((kanji2) => {
                     if (kanji2.kanji === part || kanji2.kanjiVariations?.includes(part)) {
@@ -85,7 +86,8 @@ module.exports = {
 
             // Here we transform katakana words into hiragana when it's used this way in Japanese language
             word.elements.forEach((element) => {
-                if (element.kana.includes(' ') || element.kanji.includes(' ')) console.log('- Blank space in', word)
+                if (element.kanji.includes(' ')) console.log('- Blank space in', word, 'element:', element.kanji)
+                if (element.kana.includes(' ')) console.log('- Blank space in', word, 'element:', element.kana)
                 if (word.forceHiragana) {
                     const katakana = element.kana
                     element.kana = kanasDictionnary.translateToHiragana(katakana)
