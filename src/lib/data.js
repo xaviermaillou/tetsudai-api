@@ -13,8 +13,15 @@ module.exports = {
             kanji.id = Number(kanji.id)
             kanji.relatedJukujikun = []
             kanji.grammar = []
-            kanji.readings.kunyomi.forEach((yomi) => yomi.examples = [])
-            kanji.readings.onyomi.forEach((yomi) => yomi.examples = [])
+            if (kanji.kanji.includes(' ')) console.log('- Blank space in', kanji.kanji)
+            kanji.readings.kunyomi.forEach((yomi) => {
+                if (yomi.kana.includes(' ')) console.log('- Blank space in', kanji.kanji)
+                yomi.examples = []
+            })
+            kanji.readings.onyomi.forEach((yomi) => {
+                if (yomi.kana.includes(' ')) console.log('- Blank space in', kanji.kanji)
+                yomi.examples = []
+            })
             vocabularyList.forEach((word) => {
                 word.id = Number(word.id)
                 word.elements.every((element) => {
@@ -69,8 +76,8 @@ module.exports = {
                         partKanjiFound = true
                     }
                 })
-                if (!partKanjiFound) console.log('Undefined part:', part, 'in', kanji.kanji, ': this part is not registered as a kanji in the database.')
-                if (kanji.kanjiTakenAsPartFrom.length > kanji.kanjiParts.length) console.log('Duplicate parts in', kanji.kanji, ': open the kanji and check parts of the kanji, there might be a duplicate.')
+                if (!partKanjiFound) console.log('- Undefined part:', part, 'in', kanji.kanji, ': this part is not registered as a kanji in the database.')
+                if (kanji.kanjiTakenAsPartFrom.length > kanji.kanjiParts.length) console.log('- Duplicate parts in', kanji.kanji, ': open the kanji and check parts of the kanji, there might be a duplicate.')
             })
         })
 
@@ -78,6 +85,7 @@ module.exports = {
 
             // Here we transform katakana words into hiragana when it's used this way in Japanese language
             word.elements.forEach((element) => {
+                if (element.kana.includes(' ') || element.kanji.includes(' ')) console.log('- Blank space in', word)
                 if (word.forceHiragana) {
                     const katakana = element.kana
                     element.kana = kanasDictionnary.translateToHiragana(katakana)
@@ -116,7 +124,7 @@ module.exports = {
         
         // Here we inject the related words
         vocabularyList.forEach((word) => {
-            if ((word.grammar?.includes("vb") || word.grammar?.includes("adj")) && !!!word.inflexions) console.log('Missing inflexions for', word.completeWord)
+            if ((word.grammar?.includes("vb") || word.grammar?.includes("adj")) && !!!word.inflexions) console.log('- Missing inflexions for', word.completeWord)
             const base = word.completeWord
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
@@ -161,7 +169,7 @@ module.exports = {
                         && word.id !== word2.id
                         && !base.includes("する")
                     )
-                ) console.log("Possible related words:", base, `(${word.id})`, "&", base2, `(${word2.id})`)
+                ) console.log("- Possible related words:", base, `(${word.id})`, "&", base2, `(${word2.id})`)
             })
 
             const filteredWordsStrings = libFunctions.findComposingWords(Object.keys(foundWords), base)

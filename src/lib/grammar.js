@@ -569,7 +569,7 @@ const getUniqueFunction = (word, foundString, previousWord, nextWord) => {
         case "cj+exp":
             return "cj"
         default:
-            console.log("Multiple grammar functions not taken in account for: ", word.word, word.grammar)
+            console.log("- Multiple grammar functions not taken in account for: ", word.word, word.grammar)
     }
 }
 const getTense = (word, foundString) => {

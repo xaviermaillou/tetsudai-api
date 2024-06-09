@@ -211,14 +211,12 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 }
             })
         })
-
         fullDataElements.forEach((fullDataElement) => {
             fullDataElement.foundElements.forEach((element, i) => {
                 element.sentenceGrammar = grammar
                     .dispatchFunctionInSentence(element, element.word, fullDataElements[i - 1], fullDataElements[i + 1])
             })
         })
-
         res.json({
             elements: fullDataElements,
             translation: req.body.translation,
