@@ -83,6 +83,8 @@ module.exports = {
             elements: word.elements,
             romaji: word.romaji,
             translation: word.translation,
+            grammar: word.grammar,
+            verbPrecisions: word.verbPrecisions,
             jukujikunAsMain: word.jukujikunAsMain,
             jukujikun: word.jukujikun
         }

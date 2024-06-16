@@ -73,6 +73,8 @@ module.exports = (app, vocabularyList, sentencesList) => {
                             jukujikun: word.jukujikun,
                             frequency: word.frequency,
                             translation: word.translation,
+                            grammar: word.grammar,
+                            verbPrecisions: word.verbPrecisions,
                             jukujikunAsMain: word.jukujikunAsMain,
                             importance: filters
                                 .getWordImportance(word, searchElement, i === 0 ? 2 : 1, searchIsLatin)
