@@ -2,6 +2,9 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
     const masu = 'ます'
     const masen = 'ません'
     const nai = 'ない'
+    const desu = 'です'
+    const deshita = 'でした'
+    const katta = 'かった'
 
     return {
         nonPast: {
@@ -40,11 +43,11 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
             negative: {
                 neutral: {
                     main: exceptionBases?.pastNegNeutral ?? base,
-                    ending: inflexions.connective + 'なかった',
+                    ending: inflexions.connective + 'な' + katta,
                 },
                 polite: {
                     main: exceptionBases?.pastNegPolite ?? base,
-                    ending: inflexions.politeInterm + masen + 'でした',
+                    ending: inflexions.politeInterm + masen + deshita,
                 }
             }
         },
@@ -67,6 +70,72 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
                 polite: {
                     main: exceptionBases?.pastAffPolite ?? base,
                     ending: inflexions.teForm + 'い' + masen,
+                }
+            }
+        },
+        pastProgressive: {
+            affirmative: {
+                neutral: {
+                    main: exceptionBases?.pastAffNeutral ?? base,
+                    ending: inflexions.teForm + 'いた',
+                },
+                polite: {
+                    main: exceptionBases?.pastAffPolite ?? base,
+                    ending: inflexions.teForm + 'い' + 'ました',
+                }
+            },
+            negative: {
+                neutral: {
+                    main: exceptionBases?.pastAffNeutral ?? base,
+                    ending: inflexions.teForm + 'いな' + katta,
+                },
+                polite: {
+                    main: exceptionBases?.pastAffPolite ?? base,
+                    ending: inflexions.teForm + 'い' + masen + deshita,
+                }
+            }
+        },
+        nonPastDesiderative: {
+            affirmative: {
+                neutral: {
+                    main: exceptionBases?.pastAffNeutral ?? base,
+                    ending: inflexions.politeInterm + 'たい',
+                },
+                polite: {
+                    main: exceptionBases?.pastAffPolite ?? base,
+                    ending: inflexions.politeInterm + 'たい' + desu,
+                }
+            },
+            negative: {
+                neutral: {
+                    main: exceptionBases?.pastAffNeutral ?? base,
+                    ending: inflexions.politeInterm + 'たく' + nai,
+                },
+                polite: {
+                    main: exceptionBases?.pastAffPolite ?? base,
+                    ending: inflexions.politeInterm + 'たく' + nai + desu,
+                }
+            }
+        },
+        pastDesiderative: {
+            affirmative: {
+                neutral: {
+                    main: exceptionBases?.pastAffNeutral ?? base,
+                    ending: inflexions.politeInterm + 'た' + katta,
+                },
+                polite: {
+                    main: exceptionBases?.pastAffPolite ?? base,
+                    ending: inflexions.politeInterm + 'た' + katta + desu,
+                }
+            },
+            negative: {
+                neutral: {
+                    main: exceptionBases?.pastAffNeutral ?? base,
+                    ending: inflexions.politeInterm + 'たくな' + katta,
+                },
+                polite: {
+                    main: exceptionBases?.pastAffPolite ?? base,
+                    ending: inflexions.politeInterm + 'たくな' + katta + desu,
                 }
             }
         },
