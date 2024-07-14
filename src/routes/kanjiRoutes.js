@@ -41,7 +41,7 @@ module.exports = (app, kanjiList) => {
             
         const kanjiArray = []
 
-        const searchIsLatin = (/^[a-zA-Z]+$/).test(search)
+        const searchIsLatin = (/^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/).test(search)
 
         const splittedSearch = [ search, ...search.split(/['\s]+/) ]
         let previousWord
