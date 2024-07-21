@@ -134,9 +134,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
             }
         })
 
-        const sortedByFrequencyData = vocabularyArray.sort((a, b) => a.frequency - b.frequency)
-        const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.fr.levels)
-        const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)
+        const sortedByImportance = vocabularyArray.sort((a, b) => b.importance - a.importance)
     
         const slicedVocabularyArray = sortedByImportance.slice(offset, offset + 100)
     

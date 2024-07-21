@@ -1,13 +1,21 @@
 const { getKanjiFullList, getVocabularyFullList, getSentencesFullList } = require('../request')
 const grammar = require('../lib/grammar')
-const { kanasDictionnary } = require('tetsudai-common')
+const { kanasDictionnary, dictionnary } = require('tetsudai-common')
 const libFunctions = require('./common')
 
 module.exports = {
     buildData: async () => {
-        let kanjiList = await getKanjiFullList()
-        let vocabularyList = await getVocabularyFullList()
-        let sentencesList = await getSentencesFullList()
+        const rawKanjiList = await getKanjiFullList()
+        const kanjiList = libFunctions
+            .sortByObjectKey(rawKanjiList, dictionnary.fr.levels)
+            .sort((a, b) => a.frequency - b.frequency)
+
+        const rawVocabularyList = await getVocabularyFullList()
+        const vocabularyList = libFunctions
+            .sortByObjectKey(rawVocabularyList, dictionnary.fr.levels)
+            .sort((a, b) => a.frequency - b.frequency)
+
+        const sentencesList = await getSentencesFullList()
 
         kanjiList.forEach((kanji) => {
             kanji.id = Number(kanji.id)

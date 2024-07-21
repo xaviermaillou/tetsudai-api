@@ -83,10 +83,7 @@ module.exports = (app, kanjiList) => {
             })
         })
     
-    
-        const sortedByFrequencyData = kanjiArray.sort((a, b) => a.frequency - b.frequency)
-        const sortedByLevel = libFunctions.sortByObjectKey(sortedByFrequencyData, dictionnary.fr.levels)
-        const sortedByImportance = sortedByLevel.sort((a, b) => b.importance - a.importance)
+        const sortedByImportance = kanjiArray.sort((a, b) => b.importance - a.importance)
     
         const slicedKanjiArray = sortedByImportance.slice(offset, offset + 100)
     
