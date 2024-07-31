@@ -30,6 +30,11 @@ module.exports = {
                 if (yomi.kana.includes(' ')) console.log('- Blank space in', kanji.kanji, 'reading', yomi)
                 yomi.examples = []
             })
+            kanji.kanjiParts.forEach((part) => {
+                if (part.includes(' ')) console.log('- Blank space in', kanji.kanji, 'part', part)
+            })
+            if (!kanji.origin.sameMeaning && !!!kanji.origin.otherMeaning.fr) console.log("! Missing meaning for", kanji.kanji)
+            if (!kanji.origin.pinyin) console.log("文 Missing Middle Chinese origin for", kanji.kanji)
             vocabularyList.forEach((word) => {
                 word.id = Number(word.id)
                 word.elements.every((element) => {
@@ -134,8 +139,11 @@ module.exports = {
         
         // Here we inject the related words
         vocabularyList.forEach((word) => {
-            if ((word.grammar?.includes("vb") || word.grammar?.includes("adj")) && !!!word.inflexions) console.log('- Missing inflexions for', word.completeWord)
+            if ((word.grammar?.includes("vb") || word.grammar?.includes("adj")) && !!!word.inflexions) console.log('! Missing inflexions for', word.completeWord)
             const base = word.completeWord
+            if (([ ...base ].filter(element => kanasDictionnary.isKatakana(element)).length === base.length) && !word.collections.includes("mok")) console.log("! Possible katakanized word missing from collection", base)
+            if (!!word.jukujikun && !word.collections.includes("jkjk")) console.log("! Possible jukujikun missing from collection", base)
+            if (libFunctions.wordsToIgnoreForComposingWords.includes(base)) return
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
             const stem = grammar.dispatchBaseWord(word)
@@ -205,6 +213,7 @@ module.exports = {
         console.log(kanjiList.length, 'kanji chargés le', new Date().toLocaleString('fr-FR'))
         console.log(vocabularyList.length, 'mots chargés le', new Date().toLocaleString('fr-FR'))
         console.log(sentencesList.length, 'phrases chargées le', new Date().toLocaleString('fr-FR'))
+
         return {
             kanjiList: kanjiList,
             vocabularyList: vocabularyList,

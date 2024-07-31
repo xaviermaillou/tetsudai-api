@@ -7,6 +7,10 @@ const sentenceExceptionCharacters = [
     "　",
 ]
 
+const wordsToIgnoreForComposingWords = [
+    "日本"
+]
+
 const katakanaRegularization = (string) => {
     return string.split('アー').join('アア').split('エー').join('エイ').split('イー').join('イイ').split('オー').join('オウ').split('ウー').join('ウウ')
         .split('カー').join('カア').split('ケー').join('ケイ').split('キー').join('キイ').split('コー').join('コウ').split('クー').join('クウ')
@@ -108,6 +112,7 @@ module.exports = {
         return importance[grammar]
     },
     sentenceExceptionCharacters,
+    wordsToIgnoreForComposingWords,
     katakanaRegularization,
     numberRegularization,
     findComposingWords: (stringsArray, string) => {
