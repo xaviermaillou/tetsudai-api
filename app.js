@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 
 const app = express()
-const port = process.env.PORT || 9002
+const port = process.env.PORT || 9001
 
 const explanationRoutes = require('./src/routes/explanationRoutes')
 const kanjiRoutes = require('./src/routes/kanjiRoutes')
