@@ -697,5 +697,18 @@ module.exports = {
                 tense
             }
         }
-    }
+    },
+    grammarProbableCombinations: [
+        "nc+ptc",
+        "nc+suf",
+        "np+ptc",
+        "dtm+nc",
+        "pn+ptc",
+        "ptc+vb",
+        "ptc+adj",
+        "cpl+ptc",
+    ],
+    grammarPriorityCombinations: [
+        "nb+suf",
+    ]
 }

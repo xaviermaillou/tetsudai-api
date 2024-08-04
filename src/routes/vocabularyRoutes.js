@@ -102,6 +102,13 @@ module.exports = (app, vocabularyList, sentencesList) => {
 
         const foundSentenceWithIds = []
 
+        const injectImportanceToWordIfMatch = (id) => {
+            const alreadyAddedItem = vocabularyArray.find((element) => element.id === id)
+            if (alreadyAddedItem?.importance < 2) {
+                alreadyAddedItem.importance = 2
+            }
+        }
+
         // With the found sentence, we execute a new search loop with the separated words
         // so that we can reinject the word id
         foundSentence.forEach((sentenceElement) => {
@@ -123,15 +130,29 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 const matchingWords = []
                 vocabularyList.forEach((word) => {
                     if(libFunctions.sentenceIgnoreFindings[sentenceElement] === word.completeWord) return
+
+
+
+                    // If the word has a stem, which implies it is a verb whose stem exists as an independent word
+                    // and this stem corresponds to the sentence part
+                    // we skip, assuming the stem form, as a noun, is the one intended
+                    /* if (
+                        !!word.relatedWords.stem[0] &&
+                        word.relatedWords.stem[0].completeWord === sentenceElement
+                    ) return */
+
                     if (bypass) {
                         // If we assumed the sentence element is already known
                         // and the current word base matches with the sentence element
                         // we can directly push the current word...
-                        if (word.completeWord === sentenceElement)
+                        if (word.completeWord === sentenceElement) {
                             matchingWords.push({
                                 id: word.id,
                                 word: sentenceElement
                             })
+                            // Here we add importance to the found word in vocabulary array for classic results
+                            injectImportanceToWordIfMatch(word.id)
+                        }
                         // ...and ignore any other word
                         else return
                     }
@@ -142,12 +163,10 @@ module.exports = (app, vocabularyList, sentencesList) => {
                             word: sentenceElement
                         })
                         // Here we add importance to the found word in vocabulary array for classic results
-                        const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
-                        if (alreadyAddedItem?.importance < 2) {
-                            alreadyAddedItem.importance = 2
-                        }
+                        injectImportanceToWordIfMatch(word.id)
                     }
                 })
+                
                 foundSentenceWithIds.push({
                     // If there is more than one matching word, we define ambiguity as true
                     ambiguity: matchingWords.length > 1,
@@ -288,12 +307,72 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 }
             })
         })
-        fullDataElements.forEach((fullDataElement) => {
-            fullDataElement.foundElements.forEach((element, i) => {
+
+        // We try to solve ambiguities based on grammar function of the word, the previous and the next one
+        fullDataElements.forEach((fullDataElement, i) => {
+            let overridingWords = []
+
+            for (let j = 0; j < fullDataElement.foundElements.length; j++) {
+                let found = false
+                let skip = false
+                if (fullDataElement.ambiguity) {
+                    fullDataElements[i - 1]?.foundElements.forEach((previousElement) => {
+                        grammar.grammarPriorityCombinations.forEach(combination => {
+                            if (previousElement.grammar[0] + "+" + fullDataElement.foundElements[j].grammar[0] === combination) {
+                                overridingWords = [ fullDataElement.foundElements[j] ]
+                                skip = true
+                                return
+                            }
+                        })
+                        if (skip) return
+                        grammar.grammarProbableCombinations.forEach(combination => {
+                            if (previousElement.grammar[0] + "+" + fullDataElement.foundElements[j].grammar[0] === combination) {
+                                overridingWords.push(fullDataElement.foundElements[j])
+                                found = true
+                                return
+                            }
+                        })
+                    })
+                    if (skip) break
+                    if (found) continue
+                    fullDataElements[i + 1]?.foundElements.forEach((nextElement) => {
+                        grammar.grammarPriorityCombinations.forEach(combination => {
+                            if (fullDataElement.foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
+                                overridingWords = [ fullDataElement.foundElements[j] ]
+                                skip = true
+                                return
+                            }
+                        })
+                        if (skip) return
+                        grammar.grammarProbableCombinations.forEach(combination => {
+                            if (fullDataElement.foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
+                                overridingWords.push(fullDataElement.foundElements[j])
+                                return
+                            }
+                        })
+                    })
+                    if (skip) break
+                }
+            }
+            console.log(overridingWords)
+            if (fullDataElement.ambiguity && overridingWords.length === 1) {
+                fullDataElement.foundElements = overridingWords
+                fullDataElement.ambiguity = false
+            }
+        })
+
+        fullDataElements.forEach((fullDataElement, i) => {
+            fullDataElement.foundElements.forEach((element) => {
                 element.sentenceGrammar = grammar
-                    .dispatchFunctionInSentence(element, element.word, fullDataElements[i - 1], fullDataElements[i + 1])
+                    .dispatchFunctionInSentence(
+                        element,
+                        element.word,
+                        fullDataElements[i - 1]?.foundElements[0],
+                        fullDataElements[i + 1]?.foundElements[0]
+                    )
             })
         })
+
         res.json({
             elements: fullDataElements,
             translation: req.body.translation,

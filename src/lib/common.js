@@ -17,6 +17,8 @@ const sentencePriorityFindings = [
     "に",
     "で",
     "と",
+    "て",
+    "何",
     "彼",
     "家"
 ]
@@ -31,7 +33,8 @@ const sentenceIgnoreFindings = {
 // (since we prioritize longer words in the finding parts algorithm)
 // So we decide to assume this alternative form is not the one intended in the sentence
 const sentenceIgnoreAlternatives = [
-    "今日は"
+    "今日は",
+    "彼の"
 ]
 
 // Words whose composing smaller words are misleading
@@ -132,6 +135,8 @@ module.exports = {
         return {
             id: word.id,
             elements: word.elements,
+            completeWord: word.completeWord,
+            alternativeWord: word.alternativeWord,
             romaji: word.romaji,
             translation: word.translation,
             grammar: word.grammar,

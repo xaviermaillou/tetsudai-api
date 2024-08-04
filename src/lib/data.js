@@ -169,7 +169,6 @@ module.exports = {
                         && word.id !== word2.id
                         && !base.includes("する")
                     ) {
-                        // word.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word2))
                         foundWords[base2] = libFunctions.getBasicWordElements(word2)
                         word2.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word))
                     }

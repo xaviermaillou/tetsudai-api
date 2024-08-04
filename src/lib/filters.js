@@ -1,4 +1,5 @@
 const { katakanaRegularization, numberRegularization, findByInflexion, sentenceIgnoreAlternatives } = require("./common")
+const grammar = require("./grammar")
 
 const frenchRegularization = (string) => {
     return string.split('\'').join(' ').split('é').join('e').split('è').join('e').split('ê').join('e')
@@ -205,6 +206,7 @@ module.exports = {
                 includes = true
                 if (regularizedString.includes(japaneseWord)) foundWords.push(japaneseWord)
                 if (vocabularyWord.adjectivePrecisions?.type === "na" && regularizedString.includes(japaneseWord + "な")) foundWords.push(japaneseWord + "な")
+                if (regularizedString.includes("お" + japaneseWord)) foundWords.push("お" + japaneseWord)
             }
     
             // Alternative word filtering
@@ -222,6 +224,13 @@ module.exports = {
                 const inflexionResult = findByInflexion(vocabularyWord, string)
                 if (inflexionResult.includes) includes = true
                 foundWords = [ ...foundWords, ...inflexionResult.foundWords ]
+            }
+
+            // Stem filtering
+            const stem = grammar.dispatchBaseWord(vocabularyWord)
+            if (!!stem && (stem.includes(regularizedString) || regularizedString.includes(stem))) {
+                includes = true
+                if (regularizedString.includes(stem)) foundWords.push(stem)
             }
         }
 
@@ -269,6 +278,7 @@ module.exports = {
             if (japaneseWord === regularizedString) matchingScore = score
             // Taking in account na adjectives
             if (vocabularyWord.adjectivePrecisions?.type === "na" && japaneseWord + "な" === regularizedString) matchingScore = score
+            if ("お" + japaneseWord === regularizedString) matchingScore = score
     
             // Alternative word filtering
             const alternativeWord = vocabularyWord.alternativeWord
@@ -279,6 +289,10 @@ module.exports = {
                 const inflexionResult = findByInflexion(vocabularyWord, string, score)
                 if (!!inflexionResult.score) matchingScore = inflexionResult.score
             }
+
+            // Stem filtering
+            const stem = grammar.dispatchBaseWord(vocabularyWord)
+            if (!!stem && stem === regularizedString) matchingScore = score
         }
 
         return matchingScore
