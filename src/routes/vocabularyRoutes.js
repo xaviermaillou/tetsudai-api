@@ -36,8 +36,8 @@ module.exports = (app, vocabularyList, sentencesList) => {
         }
     
         console.log('\nVocabulaire requêté \n',
-            'Niveau:', dictionnary.fr.levels[level], 'Grammaire:', dictionnary.fr.pluralClasses[grammar],
-            'Collection:', dictionnary.fr.collections[collection], 'Recherche:', search,
+            'Niveau:', dictionnary.fr.levels[level], '| Grammaire:', dictionnary.fr.pluralClasses[grammar],
+            '| Collection:', dictionnary.fr.collections[collection], '| Recherche:', search,
             '\nOffset:', offset)
         
         const vocabularyArray = []
@@ -93,15 +93,22 @@ module.exports = (app, vocabularyList, sentencesList) => {
         })
 
         let foundSentence = []
-        // If one of the found words is not the whole search string, we can assume there are several words in the search
+
+        // If none of the found words is the whole search string, we can assume there are several words in the search
         if (!foundJapaneseWordsArray.includes(libFunctions.katakanaRegularization(libFunctions.numberRegularization(search)))) {
+            // Based on all the found elements, and the search string, we try to build a sentence
             foundSentence = libFunctions.findComposingWords(foundJapaneseWordsArray, search)
         }
 
         const foundSentenceWithIds = []
-        // With the found japanese sentence, we execute a new search loop with the separated words
+
+        // With the found sentence, we execute a new search loop with the separated words
         // so that we can reinject the word id
         foundSentence.forEach((sentenceElement) => {
+            // With bypass we decide that we can assume we already know what the current sentence element is
+            let bypass = false
+            if (libFunctions.sentencePriorityFindings.includes(sentenceElement)) bypass = true
+
             if (libFunctions.sentenceExceptionCharacters.includes(sentenceElement)) {
                 foundSentenceWithIds.push({
                     ambiguity: false,
@@ -115,7 +122,21 @@ module.exports = (app, vocabularyList, sentencesList) => {
             else {
                 const matchingWords = []
                 vocabularyList.forEach((word) => {
-                    if (filters.getWordImportance(word, sentenceElement, 2, searchIsLatin) === 2) {
+                    if(libFunctions.sentenceIgnoreFindings[sentenceElement] === word.completeWord) return
+                    if (bypass) {
+                        // If we assumed the sentence element is already known
+                        // and the current word base matches with the sentence element
+                        // we can directly push the current word...
+                        if (word.completeWord === sentenceElement)
+                            matchingWords.push({
+                                id: word.id,
+                                word: sentenceElement
+                            })
+                        // ...and ignore any other word
+                        else return
+                    }
+                    // If no bypass, we check if the current sentence element perfectly matches with the current word
+                    else if (filters.getWordImportance(word, sentenceElement, 2, searchIsLatin) === 2) {
                         matchingWords.push({
                             id: word.id,
                             word: sentenceElement
@@ -128,6 +149,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     }
                 })
                 foundSentenceWithIds.push({
+                    // If there is more than one matching word, we define ambiguity as true
                     ambiguity: matchingWords.length > 1,
                     foundElements: matchingWords
                 })
@@ -174,20 +196,75 @@ module.exports = (app, vocabularyList, sentencesList) => {
             res.status(400).json('Requested id must be a number')
             return
         }
+
+        let foundWord
     
-        const sentencesArray = []
-    
-        sentencesList.forEach((sentence) => {
-            sentence.elements.every((element) => {
-                if (element.id === id) {
-                    sentencesArray.push(sentence)
-                    return false
+        vocabularyList.forEach((word) => {
+            if (word.id === id) {
+                foundWord = {
+                    main: word.completeWord,
+                    alternative: word.alternativeWord,
+                    inflexions: word.inflexions
                 }
-                return true
-            })
+            }
         })
     
-        res.json(sentencesArray.sort((a, b) => a.elements.length - b.elements.length))
+        if (!foundWord) {
+            res.status(404).json('No word found with this id.')
+            return
+        }
+    
+        const sentencesArray = []
+        let matchingWord
+    
+        sentencesList.forEach((sentence) => {
+            
+            let matchingWord
+            
+            if (sentence.sentence.includes(foundWord.main)) {
+                matchingWord = foundWord.main
+            }
+            else if (sentence.sentence.includes(foundWord.alternative)) {
+                matchingWord = foundWord.alternative
+            }
+            else if (foundWord.inflexions) {
+                const foundInflexion = libFunctions.findByInflexion(foundWord, sentence.sentence)
+                if (foundInflexion.foundWords?.length > 0) {
+                    matchingWord = foundInflexion.foundWords[0]
+                }
+            }
+            
+            if(libFunctions.sentenceIgnoreFindings[matchingWord] === foundWord.main) return
+            if (!!matchingWord) {
+                let splittedSentence = []
+                let index = 0
+                
+                while (index < sentence.sentence.length) {
+                    let matchingWordIndex = sentence.sentence.indexOf(matchingWord, index)
+                    
+                    if (matchingWordIndex === -1) {
+                        splittedSentence.push({string: sentence.sentence.slice(index), match: false})
+                        break
+                    }
+        
+                    if (matchingWordIndex > index) {
+                        splittedSentence.push({string: sentence.sentence.slice(index, matchingWordIndex), match: false})
+                    }
+        
+                    splittedSentence.push({string: matchingWord, match: true})
+                    
+                    index = matchingWordIndex + matchingWord.length
+                }
+
+                sentencesArray.push({
+                    sections: splittedSentence,
+                    translation: sentence.translation
+                })
+            }
+        })
+        
+        console.log(`${sentencesArray.length} phrases trouvées pour ${foundWord.main} sous la forme ${matchingWord}`)
+        res.json(libFunctions.shuffle(sentencesArray).slice(0, 20))
     })
 
     app.post('/foundSentence', (req, res) => {
@@ -222,50 +299,5 @@ module.exports = (app, vocabularyList, sentencesList) => {
             translation: req.body.translation,
             id: req.body.id
         })
-    })
-    
-    app.get('/vocabularyTrainingList/:level/:grammar/:collection', (req, res) => {
-        const level = Number(req.params.level)
-        const grammar = String(req.params.grammar)
-        const collection = String(req.params.collection)
-    
-        if (!dictionnary.fr.levels[level] && dictionnary.fr.levels[level] !== null) {
-            res.status(400).json(`Level query must be a number between 0 and ${
-                Object.keys(dictionnary.fr.levels)
-                    [Object.keys(dictionnary.fr.levels).length - 1]
-            }`)
-            return
-        }
-        if (!dictionnary.fr.pluralClasses[grammar]) {
-            res.status(400).json(`Grammar query must be one of those:
-            ${Object.keys(dictionnary.fr.classes).map((key) => key)}`)
-            return
-        }
-        if (!dictionnary.fr.collections[collection]) {
-            res.status(400).json(`Collection query must be one of those:
-            ${Object.keys(dictionnary.fr.collections).map((key) => key)}`)
-            return
-        }
-    
-        console.log('\nVocabulaire requêté pour l\'entraînement \n',
-            'Niveau:', dictionnary.fr.levels[level], 'Grammaire:', dictionnary.fr.pluralClasses[grammar],
-            'Collection:', dictionnary.fr.collections[collection])
-            
-        const vocabularyArray = []
-    
-        vocabularyList.forEach((word) => {
-            if (
-                (word.collections?.includes(collection) || collection === "0")
-                && (dictionnary.fr.levels[level] === word.level || !level) 
-                && (word.grammar?.includes(grammar) || grammar === "0")
-            ) {
-                vocabularyArray.push({ 
-                    id: word.id,
-                })
-            }
-        })
-    
-        console.log('Vocabulaire d\'entraînement envoyé:', vocabularyArray.length)
-        res.json(vocabularyArray)
     })
 }

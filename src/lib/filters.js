@@ -1,4 +1,4 @@
-const { katakanaRegularization, numberRegularization } = require("./common")
+const { katakanaRegularization, numberRegularization, findByInflexion, sentenceIgnoreAlternatives } = require("./common")
 
 const frenchRegularization = (string) => {
     return string.split('\'').join(' ').split('é').join('e').split('è').join('e').split('ê').join('e')
@@ -196,6 +196,7 @@ module.exports = {
             })
         }
         else {
+            // Japanese filtering
             const regularizedString = katakanaRegularization(numberRegularization(string))
 
             // Main word filtering
@@ -208,23 +209,19 @@ module.exports = {
     
             // Alternative word filtering
             const alternativeWord = vocabularyWord.alternativeWord
-            if (alternativeWord.includes(regularizedString) || regularizedString.includes(alternativeWord)) includes = true
+            if (alternativeWord.includes(regularizedString) || regularizedString.includes(alternativeWord)) {
+                includes = true
+                if (
+                    regularizedString.includes(alternativeWord) &&
+                    !sentenceIgnoreAlternatives.includes(alternativeWord)
+                ) foundWords.push(alternativeWord)
+            }
     
             // Inflexions filtering
             if (vocabularyWord.inflexions && (string.length > 1 || string === "だ")) {
-                const inflexionsArray = []
-                Object.values(vocabularyWord.inflexions).map((tense) => {
-                    if (tense?.affirmative?.neutral) inflexionsArray.push(tense.affirmative.neutral.main + tense.affirmative.neutral.ending)
-                    if (tense?.affirmative?.polite) inflexionsArray.push(tense.affirmative.polite.main + tense.affirmative.polite.ending) 
-                    if (tense?.negative?.neutral) inflexionsArray.push(tense.negative.neutral.main + tense.negative.neutral.ending) 
-                    if (tense?.negative?.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending)
-                })
-                inflexionsArray.forEach((inflexion) => {
-                    if (inflexion.includes(string) || string.includes(inflexion)) {
-                        includes = true
-                        if (string.includes(inflexion)) foundWords.push(inflexion)
-                    }
-                })
+                const inflexionResult = findByInflexion(vocabularyWord, string)
+                if (inflexionResult.includes) includes = true
+                foundWords = [ ...foundWords, ...inflexionResult.foundWords ]
             }
         }
 
@@ -275,20 +272,12 @@ module.exports = {
     
             // Alternative word filtering
             const alternativeWord = vocabularyWord.alternativeWord
-            if (alternativeWord === regularizedString && !!!matchingScore) matchingScore = 1
+            if (alternativeWord === regularizedString && !!!matchingScore) matchingScore = score
     
             // Inflexions filtering
             if (vocabularyWord.inflexions) {
-                const inflexionsArray = []
-                Object.values(vocabularyWord.inflexions).map((tense) => {
-                    if (tense?.affirmative?.neutral) inflexionsArray.push(tense.affirmative.neutral.main + tense.affirmative.neutral.ending)
-                    if (tense?.affirmative?.polite) inflexionsArray.push(tense.affirmative.polite.main + tense.affirmative.polite.ending) 
-                    if (tense?.negative?.neutral) inflexionsArray.push(tense.negative.neutral.main + tense.negative.neutral.ending) 
-                    if (tense?.negative?.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending) 
-                })
-                inflexionsArray.forEach((inflexion) => {
-                    if (inflexion === string) matchingScore = score
-                })
+                const inflexionResult = findByInflexion(vocabularyWord, string, score)
+                if (!!inflexionResult.score) matchingScore = inflexionResult.score
             }
         }
 

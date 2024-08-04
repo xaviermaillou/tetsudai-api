@@ -1,3 +1,4 @@
+// Characters that are not words, thus should be sent as simple string without any word object attached
 const sentenceExceptionCharacters = [
     "。",
     "、",
@@ -7,6 +8,33 @@ const sentenceExceptionCharacters = [
     "　",
 ]
 
+// Words whose main form should be prioritized over any other's alternative
+const sentencePriorityFindings = [
+    "は",
+    "を",
+    "が",
+    "か",
+    "に",
+    "で",
+    "と",
+    "彼",
+    "家"
+]
+
+// Words whose alternative form can be confused with many different words, we decide to skip them
+const sentenceIgnoreFindings = {
+    "した": "下"
+}
+
+// This is for the finding words phase (before building the sentence)
+// When these alternatives are found, they override, in the next phase, more probable words whose main form is shorter
+// (since we prioritize longer words in the finding parts algorithm)
+// So we decide to assume this alternative form is not the one intended in the sentence
+const sentenceIgnoreAlternatives = [
+    "今日は"
+]
+
+// Words whose composing smaller words are misleading
 const wordsToIgnoreForComposingWords = [
     "日本"
 ]
@@ -31,6 +59,25 @@ const katakanaRegularization = (string) => {
 }
 const numberRegularization = (string) => {
     return string
+        .split('５０').join('五十').split('50').join('五十')
+        .split('４９').join('四十九').split('49').join('四十九')
+        .split('４８').join('四十八').split('48').join('四十八')
+        .split('４７').join('四十七').split('47').join('四十七')
+        .split('４６').join('四十六').split('46').join('四十六')
+        .split('４５').join('四十五').split('45').join('四十五')
+        .split('４４').join('四十四').split('44').join('四十四')
+        .split('４３').join('四十三').split('43').join('四十三')
+        .split('４２').join('四十二').split('42').join('四十二')
+        .split('４１').join('四十一').split('41').join('四十一')
+        .split('４０').join('四十').split('40').join('四十')
+        .split('３９').join('三十九').split('39').join('三十九')
+        .split('３８').join('三十八').split('38').join('三十八')
+        .split('３７').join('三十七').split('37').join('三十七')
+        .split('３６').join('三十六').split('36').join('三十六')
+        .split('３５').join('三十五').split('35').join('三十五')
+        .split('３４').join('三十四').split('34').join('三十四')
+        .split('３３').join('三十三').split('33').join('三十三')
+        .split('３２').join('三十二').split('32').join('三十二')
         .split('３１').join('三十一').split('31').join('三十一')
         .split('３０').join('三十').split('30').join('三十')
         .split('２９').join('二十九').split('29').join('二十九')
@@ -112,9 +159,37 @@ module.exports = {
         return importance[grammar]
     },
     sentenceExceptionCharacters,
+    sentencePriorityFindings,
+    sentenceIgnoreFindings,
+    sentenceIgnoreAlternatives,
     wordsToIgnoreForComposingWords,
     katakanaRegularization,
     numberRegularization,
+    shuffle: (array) => { 
+        return array.sort(() => Math.random() - 0.5)
+    },
+    findByInflexion: (word, string, score) => {
+        let includes
+        const foundWords = []
+        let matches = false
+
+        const inflexionsArray = []
+        Object.values(word.inflexions).map((tense) => {
+            if (tense?.affirmative?.neutral) inflexionsArray.push(tense.affirmative.neutral.main + tense.affirmative.neutral.ending)
+            if (tense?.affirmative?.polite) inflexionsArray.push(tense.affirmative.polite.main + tense.affirmative.polite.ending) 
+            if (tense?.negative?.neutral) inflexionsArray.push(tense.negative.neutral.main + tense.negative.neutral.ending) 
+            if (tense?.negative?.polite) inflexionsArray.push(tense.negative.polite.main + tense.negative.polite.ending)
+        })
+        inflexionsArray.forEach((inflexion) => {
+            if (inflexion.includes(string) || string.includes(inflexion)) {
+                includes = true
+                if (string.includes(inflexion)) foundWords.push(inflexion)
+            }
+            if (inflexion === string) matches = true
+        })
+
+        return { includes, foundWords, score: (matches ? score : 0 )}
+    },
     findComposingWords: (stringsArray, string) => {
         // We create a copy of 'search' string, which will be sliced from the beginning at each found word
         let searchCopy = string

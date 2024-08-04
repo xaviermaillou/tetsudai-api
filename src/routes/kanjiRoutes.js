@@ -1,5 +1,4 @@
 const { dictionnary } = require('tetsudai-common')
-const libFunctions = require('../lib/common')
 const filters = require('../lib/filters')
 
 module.exports = (app, kanjiList) => {
@@ -35,8 +34,8 @@ module.exports = (app, kanjiList) => {
         }
     
         console.log('\nKanji requêtés \n',
-            'Niveau:', dictionnary.fr.levels[level], 'Grammaire:', dictionnary.fr.pluralClasses[grammar],
-            'Collection:', dictionnary.fr.collections[collection], 'Recherche:', search,
+            'Niveau:', dictionnary.fr.levels[level], '| Grammaire:', dictionnary.fr.pluralClasses[grammar],
+            '| Collection:', dictionnary.fr.collections[collection], '| Recherche:', search,
             '\nOffset:', offset)
             
         const kanjiArray = []
@@ -111,50 +110,5 @@ module.exports = (app, kanjiList) => {
         }
     
         res.json(foundKanji)
-    })
-    
-    app.get('/kanjiTrainingList/:level/:grammar/:collection', (req, res) => {
-        const level = Number(req.params.level)
-        const grammar = String(req.params.grammar)
-        const collection = String(req.params.collection)
-    
-        if (!dictionnary.fr.levels[level] && dictionnary.fr.levels[level] !== null) {
-            res.status(400).json(`Level query must be a number between 0 and ${
-                Object.keys(dictionnary.fr.levels)
-                    [Object.keys(dictionnary.fr.levels).length - 1]
-            }`)
-            return
-        }
-        if (!dictionnary.fr.pluralClasses[grammar]) {
-            res.status(400).json(`Grammar query must be one of those:
-            ${Object.keys(dictionnary.fr.classes).map((key) => key)}`)
-            return
-        }
-        if (!dictionnary.fr.collections[collection]) {
-            res.status(400).json(`Collection query must be one of those:
-            ${Object.keys(dictionnary.fr.collections).map((key) => key)}`)
-            return
-        }
-    
-        console.log('\nKanji requêtés pour l\'entraînement \n',
-            'Niveau:', dictionnary.fr.levels[level], 'Grammaire:', dictionnary.fr.pluralClasses[grammar],
-            'Collection:', dictionnary.fr.collections[collection])
-            
-        const kanjiArray = []
-    
-        kanjiList.forEach((kanji) => {
-            if (
-                (kanji.collections?.includes(collection) || collection === "0")
-                && (dictionnary.fr.levels[level] === kanji.level || !level) 
-                && (kanji.grammar?.includes(grammar) || grammar === "0")
-            ) {
-                kanjiArray.push({ 
-                    id: kanji.id,
-                })
-            }
-        })
-    
-        console.log('Kanji d\'entraînement envoyés:', kanjiArray.length)
-        res.json(kanjiArray)
     })
 }
