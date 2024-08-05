@@ -1,21 +1,29 @@
 const { getKanjiFullList, getVocabularyFullList, getSentencesFullList } = require('../request')
 const grammar = require('../lib/grammar')
-const { kanasDictionnary, dictionnary } = require('tetsudai-common')
+const { kanasDictionnary, dictionnary, types } = require('tetsudai-common')
 const libFunctions = require('./common')
 
 module.exports = {
     buildData: async () => {
         const rawKanjiList = await getKanjiFullList()
+        // Type validation
+        libFunctions.validateTypes(rawKanjiList, types.RawKanji, [])
+
         const kanjiList = libFunctions
             .sortByObjectKey(rawKanjiList, dictionnary.fr.levels)
             .sort((a, b) => a.frequency - b.frequency)
 
         const rawVocabularyList = await getVocabularyFullList()
+        // Type validation
+        libFunctions.validateTypes(rawVocabularyList, types.RawWord, [361, 956, 1011])
+
         const vocabularyList = libFunctions
             .sortByObjectKey(rawVocabularyList, dictionnary.fr.levels)
             .sort((a, b) => a.frequency - b.frequency)
 
         const sentencesList = await getSentencesFullList()
+        // Type validation
+        libFunctions.validateTypes(sentencesList, types.RawSentence, [])
 
         kanjiList.forEach((kanji) => {
             kanji.id = Number(kanji.id)
