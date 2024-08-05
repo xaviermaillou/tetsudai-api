@@ -221,6 +221,11 @@ module.exports = {
         console.log(vocabularyList.length, 'mots chargés le', new Date().toLocaleString('fr-FR'))
         console.log(sentencesList.length, 'phrases chargées le', new Date().toLocaleString('fr-FR'))
 
+        // Type validation
+        libFunctions.validateTypes(kanjiList, types.EnrichedKanji, [246, 14])
+        // Type validation
+        libFunctions.validateTypes(vocabularyList, types.EnrichedWord, [252, 361, 447, 956, 1011, 1037])
+
         return {
             kanjiList: kanjiList,
             vocabularyList: vocabularyList,

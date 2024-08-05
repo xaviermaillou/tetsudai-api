@@ -674,6 +674,7 @@ module.exports = {
         if (word.adjectivePrecisions) {
             return getAdjectiveConjugation(word);
         }
+        return null
     },
     dispatchBaseWord: (word) => {
         if (word.verbPrecisions) {

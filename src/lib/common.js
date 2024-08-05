@@ -139,6 +139,7 @@ module.exports = {
             translation: word.translation,
             grammar: word.grammar,
             verbPrecisions: word.verbPrecisions,
+            adjectivePrecisions: word.adjectivePrecisions,
             jukujikunAsMain: word.jukujikunAsMain,
             jukujikun: word.jukujikun
         }
