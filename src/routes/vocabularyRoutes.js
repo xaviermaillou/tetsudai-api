@@ -131,16 +131,6 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 vocabularyList.forEach((word) => {
                     if(libFunctions.sentenceIgnoreFindings[sentenceElement] === word.completeWord) return
 
-
-
-                    // If the word has a stem, which implies it is a verb whose stem exists as an independent word
-                    // and this stem corresponds to the sentence part
-                    // we skip, assuming the stem form, as a noun, is the one intended
-                    /* if (
-                        !!word.relatedWords.stem[0] &&
-                        word.relatedWords.stem[0].completeWord === sentenceElement
-                    ) return */
-
                     if (bypass) {
                         // If we assumed the sentence element is already known
                         // and the current word base matches with the sentence element
