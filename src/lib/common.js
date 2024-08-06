@@ -244,20 +244,5 @@ module.exports = {
             }
         }
         return foundWords.join("").length > alternativeFoundWords.join("").length ? foundWords : alternativeFoundWords
-    },
-    validateTypes: (array, type, idsToSkip) => {
-        array.forEach(element => {
-            if (idsToSkip.includes(element.id)) return
-
-            const validation = type.safeParse(element)
-
-            if (!validation.success) {
-                console.log("\n!!! Type validation errors")
-                const errors = validation.error.errors
-                errors.forEach(error => console.log(`-> ${error.message} in ${error.path}`))
-                console.log("\nElement data")
-                console.log(element, "\n")
-            }
-        })
     }
 }

@@ -1,13 +1,13 @@
 const { getKanjiFullList, getVocabularyFullList, getSentencesFullList } = require('../request')
 const grammar = require('../lib/grammar')
-const { kanasDictionnary, dictionnary, types } = require('tetsudai-common')
+const { kanasDictionnary, dictionnary, types, validation } = require('tetsudai-common')
 const libFunctions = require('./common')
 
 module.exports = {
     buildData: async () => {
         const rawKanjiList = await getKanjiFullList()
         // Type validation
-        libFunctions.validateTypes(rawKanjiList, types.RawKanji, [])
+        validation.validateDataObjectsArray(rawKanjiList, types.RawKanji, [])
 
         const kanjiList = libFunctions
             .sortByObjectKey(rawKanjiList, dictionnary.fr.levels)
@@ -15,7 +15,7 @@ module.exports = {
 
         const rawVocabularyList = await getVocabularyFullList()
         // Type validation
-        libFunctions.validateTypes(rawVocabularyList, types.RawWord, [361, 956, 1011])
+        validation.validateDataObjectsArray(rawVocabularyList, types.RawWord, [361, 956, 1011])
 
         const vocabularyList = libFunctions
             .sortByObjectKey(rawVocabularyList, dictionnary.fr.levels)
@@ -23,7 +23,7 @@ module.exports = {
 
         const sentencesList = await getSentencesFullList()
         // Type validation
-        libFunctions.validateTypes(sentencesList, types.RawSentence, [])
+        validation.validateDataObjectsArray(sentencesList, types.RawSentence, [])
 
         kanjiList.forEach((kanji) => {
             kanji.id = Number(kanji.id)
@@ -222,9 +222,9 @@ module.exports = {
         console.log(sentencesList.length, 'phrases chargées le', new Date().toLocaleString('fr-FR'))
 
         // Type validation
-        libFunctions.validateTypes(kanjiList, types.EnrichedKanji, [246, 14])
+        validation.validateDataObjectsArray(kanjiList, types.EnrichedKanji, [246, 14])
         // Type validation
-        libFunctions.validateTypes(vocabularyList, types.EnrichedWord, [252, 361, 447, 956, 1011, 1037])
+        validation.validateDataObjectsArray(vocabularyList, types.EnrichedWord, [252, 361, 447, 956, 1011, 1037])
 
         return {
             kanjiList: kanjiList,

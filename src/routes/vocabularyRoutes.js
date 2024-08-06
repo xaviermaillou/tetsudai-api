@@ -1,4 +1,4 @@
-const { dictionnary, types } = require('tetsudai-common')
+const { dictionnary, types, validation } = require('tetsudai-common')
 const libFunctions = require('../lib/common')
 const filters = require('../lib/filters')
 const grammar = require('../lib/grammar')
@@ -275,7 +275,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         console.log(`${sentencesArray.length} phrases trouvées pour ${foundWord.main} sous la forme ${matchingWord}`)
 
         // Type validation
-        libFunctions.validateTypes(sentencesArray, types.EnrichedSentence, [])
+        validation.validateDataObjectsArray(sentencesArray, types.EnrichedSentence, [])
 
         res.json(libFunctions.shuffle(sentencesArray).slice(0, 20))
     })
