@@ -135,8 +135,8 @@ module.exports = {
         return {
             id: word.id,
             elements: word.elements,
-            romaji: word.romaji,
             translation: word.translation,
+            romaji: word.romaji,
             grammar: word.grammar,
             verbPrecisions: word.verbPrecisions,
             adjectivePrecisions: word.adjectivePrecisions,

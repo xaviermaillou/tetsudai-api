@@ -68,14 +68,8 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
                     if (alreadyAddedItem === undefined) {
                         vocabularyArray.push({
-                            id: word.id,
-                            elements: word.elements,
-                            jukujikun: word.jukujikun,
+                            ...libFunctions.getBasicWordElements(word),
                             frequency: word.frequency,
-                            translation: word.translation,
-                            grammar: word.grammar,
-                            verbPrecisions: word.verbPrecisions,
-                            jukujikunAsMain: word.jukujikunAsMain,
                             importance: filters
                                 .getWordImportance(word, searchElement, i === 0 ? 2 : 1, searchIsLatin)
                         })

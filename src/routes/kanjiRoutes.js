@@ -1,4 +1,5 @@
 const { dictionnary } = require('tetsudai-common')
+const libFunctions = require('../lib/common')
 const filters = require('../lib/filters')
 
 module.exports = (app, kanjiList) => {
@@ -66,11 +67,8 @@ module.exports = (app, kanjiList) => {
                     const alreadyAddedItem = kanjiArray.find((element) => element.id === kanji.id)
                     if (alreadyAddedItem === undefined) {
                         kanjiArray.push({ 
-                            id: kanji.id,
-                            kanji: kanji.kanji,
-                            readings: kanji.readings,
+                            ...libFunctions.getBasicKanjiElements(kanji),
                             frequency: kanji.frequency,
-                            translation: kanji.translation,
                             importance: filters
                                 .getKanjiImportance(kanji, searchElement, 2, searchIsLatin)
                         })
