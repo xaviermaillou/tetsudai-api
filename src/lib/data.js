@@ -25,6 +25,7 @@ module.exports = {
         // Type validation
         validation.validateDataObjectsArray(sentencesList, types.RawSentence, [])
 
+        // Loop 1: kanjiList -> enriching kanji (readings, relatedJukujikun, grammar)
         kanjiList.forEach((kanji) => {
             kanji.id = Number(kanji.id)
             kanji.relatedJukujikun = []
@@ -86,7 +87,7 @@ module.exports = {
             kanji.kanjiTakenAsPartFrom = []
         })
 
-        // Here we relate kanji with each other as kanji's components
+        // Loop 2: kanjiList -> relating kanji with each other as kanji's components
         kanjiList.forEach((kanji) => {
             kanji.kanjiParts?.forEach((part) => {
                 if (part.includes(' ')) console.log('- Blank space in', kanji, 'part:', part)
@@ -103,6 +104,7 @@ module.exports = {
             })
         })
 
+        // Loop 3: vocabularyList -> enriching words (completeWord, alternativeWord, inflexions, transforming onyomi to hiragana if needed)
         vocabularyList.forEach((word) => {
 
             // Here we transform katakana words into hiragana when it's used this way in Japanese language
@@ -136,6 +138,7 @@ module.exports = {
 
             // Here we create the empty arrays for related words, that will be filled in the next loop
             word.relatedWords = {
+                synonyms: [],
                 stem: [],
                 verbForm: [],
                 wordUsedIn: [],
@@ -144,15 +147,19 @@ module.exports = {
                 suruForm: [],
             }
         })
-        
-        // Here we inject the related words
+
+        // Loop 4: vocabularyList -> injecting the related words
         vocabularyList.forEach((word) => {
             if ((word.grammar?.includes("vb") || word.grammar?.includes("adj")) && !!!word.inflexions) console.log('! Missing inflexions for', word.completeWord)
+
             const base = word.completeWord
+
             if (([ ...base ].filter(element => kanasDictionnary.isKatakana(element)).length === base.length) && !word.collections.includes("mok")) console.log("! Possible katakanized word missing from collection", base)
             if (!!word.jukujikun && !word.collections.includes("jkjk")) console.log("! Possible jukujikun missing from collection", base)
             if (libFunctions.wordsToIgnoreForComposingWords.includes(base)) return
+
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
+            const kanjiReadings = word.elements.map((element) => {if (element.kanji) return element.kana}).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
             const stem = grammar.dispatchBaseWord(word)
 
@@ -160,11 +167,26 @@ module.exports = {
             
             // Stem and general included words
             vocabularyList.forEach((word2) => {
+                if (word.id === word2.id) return
+                
                 const base2 = word2.completeWord
                 const kanjiOnly2 = word2.elements.map((element) => element.kanji).join('')
+                const kanjiReadings2 = word2.elements.map((element) => {if (element.kanji) return element.kana}).join('')
                 const baseWrittenInKana2 = word2.elements.map((element) => element.kana).join('')
 
-                if (kanjiOnly.includes(kanjiOnly2)) {
+                if (!!kanjiOnly && kanjiOnly === kanjiOnly2 && base === base2) {
+                    const meanings = [ ...word.translation.fr.join(", ").split(", "), ...word.alternatives.fr.join(", ").split(", ") ]
+                    const meanings2 = [ ...word2.translation.fr.join(", ").split(", "), ...word2.alternatives.fr.join(", ").split(", ") ]
+                    for (const meaning of meanings) {
+                        if (!meaning) continue
+                        if (meanings2.includes(meaning)) {
+                            word.relatedWords.synonyms.push(libFunctions.getBasicWordElements(word2))
+                            break
+                        }
+                    }
+                    if (word.relatedWords.synonyms.length === 0) console.log("- Possible synonyms:", base, `(${word.translation.fr})`, "&", base2, `(${word2.translation.fr})`)
+                }
+                else if (kanjiOnly.includes(kanjiOnly2)) {
                     if (!!stem
                         && base2 === stem
                     ) {
@@ -174,7 +196,7 @@ module.exports = {
                     else if (base.includes(base2)
                         && (!word2.grammar?.includes("ptc") || word.includesParticle)
                         && baseWrittenInKana.includes(baseWrittenInKana2)
-                        && word.id !== word2.id
+                        && kanjiReadings.includes(kanjiReadings2)
                         && !base.includes("する")
                     ) {
                         foundWords[base2] = libFunctions.getBasicWordElements(word2)
@@ -191,7 +213,7 @@ module.exports = {
                     (base.includes(base2)
                         && (!word2.grammar?.includes("ptc") || word.includesParticle)
                         && baseWrittenInKana.includes(baseWrittenInKana2)
-                        && word.id !== word2.id
+                        && kanjiReadings.includes(kanjiReadings2)
                         && !base.includes("する")
                     )
                 ) console.log("- Possible related words:", base, `(${word.id})`, "&", base2, `(${word2.id})`)
