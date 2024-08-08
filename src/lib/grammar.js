@@ -701,6 +701,7 @@ module.exports = {
     },
     grammarProbableCombinations: [
         "nc+ptc",
+        "pre+nc",
         "nc+suf",
         "np+ptc",
         "dtm+nc",
@@ -710,6 +711,7 @@ module.exports = {
         "cpl+ptc",
     ],
     grammarPriorityCombinations: [
+        "pre+nc",
         "nb+suf",
     ]
 }

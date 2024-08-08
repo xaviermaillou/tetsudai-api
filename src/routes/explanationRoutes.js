@@ -41,7 +41,8 @@ module.exports = (app) => {
                 - 10: Expression
                 - 11: Copule
                 - 12: Number
-                - 13: Suffix
+                - 13: Prefix
+                - 14: Suffix
 
             :collection: 
                 - 0: All collections
@@ -85,7 +86,8 @@ module.exports = (app) => {
             - 10: Expression
             - 11: Copule
             - 12: Number
-            - 13: Suffix
+            - 13: Prefix
+            - 14: Suffix
 
         :collection: 
             - 0: All collections
