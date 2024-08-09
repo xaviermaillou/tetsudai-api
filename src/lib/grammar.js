@@ -1,11 +1,13 @@
-const verbConjugationStructure = (base, inflexions, exceptionBases) => {
-    const masu = 'ます'
-    const masen = 'ません'
-    const nai = 'ない'
-    const desu = 'です'
-    const deshita = 'でした'
-    const katta = 'かった'
+const masu = 'ます'
+const masen = 'ません'
+const nai = 'ない'
+const desu = 'です'
+const deshita = 'でした'
+const katta = 'かった'
+const de = 'で'
+const da = 'だ'
 
+const verbConjugationStructure = (base, inflexions, exceptionBases) => {
     return {
         nonPast: {
             affirmative: {
@@ -158,21 +160,21 @@ const copuleConjugationStructure = () => {
         nonPast: {
             affirmative: {
                 neutral: {
-                    main: 'だ',
+                    main: da,
                     ending: '',
                 },
                 polite: {
-                    main: 'で',
+                    main: de,
                     ending: 'す',
                 }
             },
             negative: {
                 neutral: {
-                    main: 'では',
+                    main: de + 'は',
                     ending: 'ない',
                 },
                 polite: {
-                    main: 'では',
+                    main: de + 'は',
                     ending: 'ありません',
                 }
             }
@@ -180,25 +182,41 @@ const copuleConjugationStructure = () => {
         past: {
             affirmative: {
                 neutral: {
-                    main: 'だ',
+                    main: da,
                     ending: 'った',
                 },
                 polite: {
-                    main: 'で',
+                    main: de,
                     ending: 'した',
                 }
             },
             negative: {
                 neutral: {
-                    main: 'では',
+                    main: de + 'は',
                     ending: 'なかった',
                 },
                 polite: {
-                    main: 'では',
+                    main: de + 'は',
                     ending: 'ありませんでした',
                 }
             }
-        }
+        },
+        nonPastDesiderative: verbConjugationStructure('な', {
+            okurigana: 'る',
+            politeInterm: 'り',
+            connective: 'ら',
+            past: 'った',
+            teForm: 'って',
+            volitional: 'ろう',
+        }).nonPastDesiderative,
+        pastDesiderative: verbConjugationStructure('な', {
+            okurigana: 'る',
+            politeInterm: 'り',
+            connective: 'ら',
+            past: 'った',
+            teForm: 'って',
+            volitional: 'ろう',
+        }).pastDesiderative
     }
 }
 const getVerbConjugation = (word, precisions) => {
@@ -374,7 +392,17 @@ const getVerbConjugation = (word, precisions) => {
         });
     }
     if (precisions.type === 'desu') {
-        return copuleConjugationStructure();
+        return {
+            ...verbConjugationStructure('で', {
+                okurigana: '',
+                politeInterm: '',
+                connective: '',
+                past: '',
+                teForm: '',
+                volitional: '',
+            }),
+            ...copuleConjugationStructure()
+        };
     }
 }
 
