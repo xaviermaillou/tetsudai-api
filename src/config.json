@@ -1,4 +1,4 @@
 {
-    "DEV_REQUEST_URL": "http://localhost:9002",
+    "DEV_REQUEST_URL": "http://51.77.230.232:9002",
     "PROD_REQUEST_URL": "http://localhost:9002"
 }
