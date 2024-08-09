@@ -104,7 +104,7 @@ module.exports = {
             })
         })
 
-        // Loop 3: vocabularyList -> enriching words (completeWord, alternativeWord, inflexions, transforming onyomi to hiragana if needed)
+        // Loop 3: vocabularyList -> enriching words (primaryWord, secondaryWord, inflexions, transforming onyomi to hiragana if needed)
         vocabularyList.forEach((word) => {
 
             // Here we transform katakana words into hiragana when it's used this way in Japanese language
@@ -117,16 +117,16 @@ module.exports = {
                 }
             })
 
-            // Here we define completeWord, which is the word as normally used
-            word.completeWord = libFunctions.katakanaRegularization(
+            // Here we define primaryWord, which is the word as normally used
+            word.primaryWord = libFunctions.katakanaRegularization(
                 word.jukujikunAsMain ?
                     (word.jukujikun)
                     :
                     word.elements.map((element) => element.option === "rareKanji" ? element.kana : element.kanji || element.kana).join('')
             )
 
-            // Here we define alternativeWord, which is the opposite version of the nornally used word (in kanas if used in kanji, in kanji if used in kanas)
-            word.alternativeWord = libFunctions.katakanaRegularization(
+            // Here we define secondaryWord, which is the opposite version of the nornally used word (in kanas if used in kanji, in kanji if used in kanas)
+            word.secondaryWord = libFunctions.katakanaRegularization(
                 word.jukujikunAsMain ?
                     word.elements.map((element) => element.kanji || element.kana).join('')
                     :
@@ -150,9 +150,9 @@ module.exports = {
 
         // Loop 4: vocabularyList -> injecting the related words
         vocabularyList.forEach((word) => {
-            if ((word.grammar?.includes("vb") || word.grammar?.includes("adj")) && !!!word.inflexions) console.log('! Missing inflexions for', word.completeWord)
+            if ((word.grammar?.includes("vb") || word.grammar?.includes("adj")) && !!!word.inflexions) console.log('! Missing inflexions for', word.primaryWord)
 
-            const base = word.completeWord
+            const base = word.primaryWord
 
             if (([ ...base ].filter(element => kanasDictionnary.isKatakana(element)).length === base.length) && !word.collections.includes("mok")) console.log("! Possible katakanized word missing from collection", base)
             if (!!word.jukujikun && !word.collections.includes("jkjk")) console.log("! Possible jukujikun missing from collection", base)
@@ -169,7 +169,7 @@ module.exports = {
             vocabularyList.forEach((word2) => {
                 if (word.id === word2.id) return
                 
-                const base2 = word2.completeWord
+                const base2 = word2.primaryWord
                 const kanjiOnly2 = word2.elements.map((element) => element.kanji).join('')
                 const kanjiReadings2 = word2.elements.map((element) => {if (element.kanji) return element.kana}).join('')
                 const baseWrittenInKana2 = word2.elements.map((element) => element.kana).join('')
@@ -227,7 +227,7 @@ module.exports = {
                 if (element.kana === "する") {
                     const wordWithoutSuru = base.slice(0, -2)
                     vocabularyList.every((word2) => {
-                        const base2 = word2.completeWord
+                        const base2 = word2.primaryWord
                         if (base2 === wordWithoutSuru) {
                             word.relatedWords.baseWord.push(libFunctions.getBasicWordElements(word2))
                             word2.relatedWords.suruForm.push(libFunctions.getBasicWordElements(word))

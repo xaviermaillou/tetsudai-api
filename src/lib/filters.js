@@ -201,7 +201,7 @@ module.exports = {
             const regularizedString = katakanaRegularization(numberRegularization(string))
 
             // Main word filtering
-            const japaneseWord = vocabularyWord.completeWord
+            const japaneseWord = vocabularyWord.primaryWord
             if (japaneseWord.includes(regularizedString) || regularizedString.includes(japaneseWord)) {
                 includes = true
                 if (regularizedString.includes(japaneseWord)) foundWords.push(japaneseWord)
@@ -210,13 +210,13 @@ module.exports = {
             }
     
             // Alternative word filtering
-            const alternativeWord = vocabularyWord.alternativeWord
-            if (alternativeWord.includes(regularizedString) || regularizedString.includes(alternativeWord)) {
+            const secondaryWord = vocabularyWord.secondaryWord
+            if (secondaryWord.includes(regularizedString) || regularizedString.includes(secondaryWord)) {
                 includes = true
                 if (
-                    regularizedString.includes(alternativeWord) &&
-                    !sentenceIgnoreAlternatives.includes(alternativeWord)
-                ) foundWords.push(alternativeWord)
+                    regularizedString.includes(secondaryWord) &&
+                    !sentenceIgnoreAlternatives.includes(secondaryWord)
+                ) foundWords.push(secondaryWord)
             }
     
             // Inflexions filtering
@@ -274,15 +274,15 @@ module.exports = {
             const regularizedString = katakanaRegularization(numberRegularization(string))
     
             // Main word filtering
-            const japaneseWord = vocabularyWord.completeWord
+            const japaneseWord = vocabularyWord.primaryWord
             if (japaneseWord === regularizedString) matchingScore = score
             // Taking in account na adjectives
             if (vocabularyWord.adjectivePrecisions?.type === "na" && japaneseWord + "な" === regularizedString) matchingScore = score
             if ("お" + japaneseWord === regularizedString) matchingScore = score
     
             // Alternative word filtering
-            const alternativeWord = vocabularyWord.alternativeWord
-            if (alternativeWord === regularizedString && !!!matchingScore) matchingScore = score
+            const secondaryWord = vocabularyWord.secondaryWord
+            if (secondaryWord === regularizedString && !!!matchingScore) matchingScore = score
     
             // Inflexions filtering
             if (vocabularyWord.inflexions) {

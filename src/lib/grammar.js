@@ -202,7 +202,7 @@ const copuleConjugationStructure = () => {
     }
 }
 const getVerbConjugation = (word) => {
-    let base = word.completeWord.slice(0, -1);
+    let base = word.primaryWord.slice(0, -1);
 
     const info = word.verbPrecisions;
 
@@ -381,7 +381,7 @@ const getVerbConjugation = (word) => {
 }
 
 const getVerbStem = (word) => {
-    let base = word.completeWord.slice(0, -1);
+    let base = word.primaryWord.slice(0, -1);
 
     const info = word.verbPrecisions;
 
@@ -554,7 +554,7 @@ const iAdjectiveConjugationStructure = (base) => {
     }
 }
 const getAdjectiveConjugation = (word) => {
-    let base = word.completeWord;
+    let base = word.primaryWord;
     const info = word.adjectivePrecisions;
 
     if (info.type === 'na') {

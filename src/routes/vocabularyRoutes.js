@@ -123,13 +123,13 @@ module.exports = (app, vocabularyList, sentencesList) => {
             else {
                 const matchingWords = []
                 vocabularyList.forEach((word) => {
-                    if(libFunctions.sentenceIgnoreFindings[sentenceElement] === word.completeWord) return
+                    if(libFunctions.sentenceIgnoreFindings[sentenceElement] === word.primaryWord) return
 
                     if (bypass) {
                         // If we assumed the sentence element is already known
                         // and the current word base matches with the sentence element
                         // we can directly push the current word...
-                        if (word.completeWord === sentenceElement) {
+                        if (word.primaryWord === sentenceElement) {
                             matchingWords.push({
                                 id: word.id,
                                 word: sentenceElement
@@ -205,8 +205,8 @@ module.exports = (app, vocabularyList, sentencesList) => {
         vocabularyList.forEach((word) => {
             if (word.id === id) {
                 foundWord = {
-                    main: word.completeWord,
-                    alternative: word.alternativeWord,
+                    primary: word.primaryWord,
+                    secondary: word.secondaryWord,
                     inflexions: word.inflexions
                 }
             }
@@ -224,11 +224,11 @@ module.exports = (app, vocabularyList, sentencesList) => {
             
             let matchingWord
             
-            if (sentence.sentence.includes(foundWord.main)) {
-                matchingWord = foundWord.main
+            if (sentence.sentence.includes(foundWord.primary)) {
+                matchingWord = foundWord.primary
             }
-            else if (sentence.sentence.includes(foundWord.alternative)) {
-                matchingWord = foundWord.alternative
+            else if (sentence.sentence.includes(foundWord.secondary)) {
+                matchingWord = foundWord.secondary
             }
             else if (foundWord.inflexions) {
                 const foundInflexion = libFunctions.findByInflexion(foundWord, sentence.sentence)
@@ -237,7 +237,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 }
             }
             
-            if(libFunctions.sentenceIgnoreFindings[matchingWord] === foundWord.main) return
+            if(libFunctions.sentenceIgnoreFindings[matchingWord] === foundWord.primary) return
             if (!!matchingWord) {
                 let splittedSentence = []
                 let index = 0
@@ -266,7 +266,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
             }
         })
         
-        console.log(`${sentencesArray.length} phrases trouvées pour ${foundWord.main} sous la forme ${matchingWord}`)
+        console.log(`${sentencesArray.length} phrases trouvées pour ${foundWord.primary} sous la forme ${matchingWord}`)
 
         // Type validation
         validation.validateDataObjectsArray(sentencesArray, types.EnrichedSentence, [])
