@@ -203,19 +203,11 @@ const copuleConjugationStructure = () => {
         },
         nonPastDesiderative: verbConjugationStructure('な', {
             okurigana: 'る',
-            politeInterm: 'り',
-            connective: 'ら',
-            past: 'った',
-            teForm: 'って',
-            volitional: 'ろう',
+            politeInterm: 'り'
         }).nonPastDesiderative,
         pastDesiderative: verbConjugationStructure('な', {
             okurigana: 'る',
             politeInterm: 'り',
-            connective: 'ら',
-            past: 'った',
-            teForm: 'って',
-            volitional: 'ろう',
         }).pastDesiderative
     }
 }
