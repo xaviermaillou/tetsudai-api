@@ -207,7 +207,8 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 foundWord = {
                     primary: word.primaryWord,
                     secondary: word.secondaryWord,
-                    inflexions: word.inflexions
+                    inflexions: word.inflexions,
+                    alternativeInflexions: word.alternativeInflexions
                 }
             }
         })

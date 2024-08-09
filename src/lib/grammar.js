@@ -201,12 +201,10 @@ const copuleConjugationStructure = () => {
         }
     }
 }
-const getVerbConjugation = (word) => {
-    let base = word.primaryWord.slice(0, -1);
+const getVerbConjugation = (word, precisions) => {
+    let base = word.slice(0, -1);
 
-    const info = word.verbPrecisions;
-
-    if (info.type === 'ichidan') {
+    if (precisions.type === 'ichidan') {
         return verbConjugationStructure(base, {
             okurigana: 'る',
             politeInterm: '',
@@ -216,8 +214,8 @@ const getVerbConjugation = (word) => {
             volitional: 'よう',
         });
     }
-    if (info.type === 'godan') {
-        if (info.ending === 'u') {
+    if (precisions.type === 'godan') {
+        if (precisions.ending === 'u') {
             return verbConjugationStructure(base, {
                 okurigana: 'う',
                 politeInterm: 'い',
@@ -227,7 +225,7 @@ const getVerbConjugation = (word) => {
                 volitional: 'おう',
             });
         }
-        if (info.ending === 'ku') {
+        if (precisions.ending === 'ku') {
             return verbConjugationStructure(base, {
                 okurigana: 'く',
                 politeInterm: 'き',
@@ -237,7 +235,7 @@ const getVerbConjugation = (word) => {
                 volitional: 'こう',
             });
         }
-        if (info.ending === 'gu') {
+        if (precisions.ending === 'gu') {
             return verbConjugationStructure(base, {
                 okurigana: 'ぐ',
                 politeInterm: 'ぎ',
@@ -247,7 +245,7 @@ const getVerbConjugation = (word) => {
                 volitional: 'ごう',
             });
         }
-        if (info.ending === 'su') {
+        if (precisions.ending === 'su') {
             return verbConjugationStructure(base, {
                 okurigana: 'す',
                 politeInterm: 'し',
@@ -257,7 +255,7 @@ const getVerbConjugation = (word) => {
                 volitional: 'そう',
             });
         }
-        if (info.ending === 'mu') {
+        if (precisions.ending === 'mu') {
             return verbConjugationStructure(base, {
                 okurigana: 'む',
                 politeInterm: 'み',
@@ -267,7 +265,7 @@ const getVerbConjugation = (word) => {
                 volitional: 'もう',
             });
         }
-        if (info.ending === 'bu') {
+        if (precisions.ending === 'bu') {
             return verbConjugationStructure(base, {
                 okurigana: 'ぶ',
                 politeInterm: 'び',
@@ -277,7 +275,7 @@ const getVerbConjugation = (word) => {
                 volitional: 'ぼう',
             });
         }
-        if (info.ending === 'nu') {
+        if (precisions.ending === 'nu') {
             return verbConjugationStructure(base, {
                 okurigana: 'ぬ',
                 politeInterm: 'に',
@@ -287,7 +285,7 @@ const getVerbConjugation = (word) => {
                 volitional: 'のう',
             });
         }
-        if (info.ending === 'ru') {
+        if (precisions.ending === 'ru') {
             return verbConjugationStructure(base, {
                 okurigana: 'る',
                 politeInterm: 'り',
@@ -297,7 +295,7 @@ const getVerbConjugation = (word) => {
                 volitional: 'ろう',
             });
         }
-        if (info.ending === 'tsu') {
+        if (precisions.ending === 'tsu') {
             return verbConjugationStructure(base, {
                 okurigana: 'つ',
                 politeInterm: 'ち',
@@ -308,7 +306,7 @@ const getVerbConjugation = (word) => {
             });
         }
     }
-    if (info.type === 'suru') {
+    if (precisions.type === 'suru') {
         const noun = base.slice(0, -1);
 
         return verbConjugationStructure(base, {
@@ -331,7 +329,7 @@ const getVerbConjugation = (word) => {
             volitionalPolite: noun + 'し',
         });
     }
-    if (info.type === 'kuru') {
+    if (precisions.type === 'kuru') {
         return verbConjugationStructure(base, {
             okurigana: 'る',
             politeInterm: '',
@@ -352,7 +350,7 @@ const getVerbConjugation = (word) => {
             volitionalPolite: 'き'
         });
     }
-    if (info.type === 'iku') {
+    if (precisions.type === 'iku') {
         return verbConjugationStructure(base, {
             okurigana: 'く',
             politeInterm: 'き',
@@ -362,7 +360,7 @@ const getVerbConjugation = (word) => {
             volitional: 'こう',
         });
     }
-    if (info.type === 'aru') {
+    if (precisions.type === 'aru') {
         return verbConjugationStructure(base, {
             okurigana: 'る',
             politeInterm: 'り',
@@ -375,61 +373,59 @@ const getVerbConjugation = (word) => {
             pastNegNeutral: '',
         });
     }
-    if (info.type === 'desu') {
+    if (precisions.type === 'desu') {
         return copuleConjugationStructure();
     }
 }
 
-const getVerbStem = (word) => {
-    let base = word.primaryWord.slice(0, -1);
+const getVerbStem = (word, precisions) => {
+    let base = word.slice(0, -1);
 
-    const info = word.verbPrecisions;
-
-    if (info.type === 'ichidan') {
+    if (precisions.type === 'ichidan') {
         return base;
     }
-    if (info.type === 'godan') {
-        if (info.ending === 'u') {
+    if (precisions.type === 'godan') {
+        if (precisions.ending === 'u') {
             return base + 'い';
         }
-        if (info.ending === 'ku') {
+        if (precisions.ending === 'ku') {
             return base + 'き';
         }
-        if (info.ending === 'gu') {
+        if (precisions.ending === 'gu') {
             return base + 'ぎ';
         }
-        if (info.ending === 'su') {
+        if (precisions.ending === 'su') {
             return base + 'し';
         }
-        if (info.ending === 'mu') {
+        if (precisions.ending === 'mu') {
             return base + 'み';
         }
-        if (info.ending === 'bu') {
+        if (precisions.ending === 'bu') {
             return base + 'び';
         }
-        if (info.ending === 'nu') {
+        if (precisions.ending === 'nu') {
             return base + 'に';
         }
-        if (info.ending === 'ru') {
+        if (precisions.ending === 'ru') {
             return base + 'り';
         }
-        if (info.ending === 'tsu') {
+        if (precisions.ending === 'tsu') {
             return base + 'ち';
         }
     }
-    if (info.type === 'suru') {
+    if (precisions.type === 'suru') {
         return 'し';
     }
-    if (info.type === 'kuru') {
+    if (precisions.type === 'kuru') {
         return '来';
     }
-    if (info.type === 'iku') {
+    if (precisions.type === 'iku') {
         return '行き';
     }
-    if (info.type === 'aru') {
+    if (precisions.type === 'aru') {
         return 'あり';
     }
-    if (info.type === 'desu') {
+    if (precisions.type === 'desu') {
         return;
     }
 }
@@ -553,14 +549,13 @@ const iAdjectiveConjugationStructure = (base) => {
         }
     }
 }
-const getAdjectiveConjugation = (word) => {
-    let base = word.primaryWord;
-    const info = word.adjectivePrecisions;
+const getAdjectiveConjugation = (word, precisions) => {
+    let base = word;
 
-    if (info.type === 'na') {
+    if (precisions.type === 'na') {
         return naAdjectiveConjugationStructure(base);
     }
-    if (info.type === 'i') {
+    if (precisions.type === 'i') {
         base = base.slice(0, -1);
         return iAdjectiveConjugationStructure(base);
     }
@@ -667,18 +662,18 @@ const getTense = (word, foundString) => {
 }
 
 module.exports = {
-    dispatchInflexion: (word) => {
-        if (word.verbPrecisions) {
-            return getVerbConjugation(word);
+    dispatchInflexion: (word, verbPrecisions, adjectivePrecisions) => {
+        if (verbPrecisions) {
+            return getVerbConjugation(word, verbPrecisions);
         }
-        if (word.adjectivePrecisions) {
-            return getAdjectiveConjugation(word);
+        else if (adjectivePrecisions) {
+            return getAdjectiveConjugation(word, adjectivePrecisions);
         }
-        return null
+        else return null
     },
-    dispatchBaseWord: (word) => {
-        if (word.verbPrecisions) {
-            return getVerbStem(word);
+    dispatchBaseWord: (word, verbPrecisions) => {
+        if (verbPrecisions) {
+            return getVerbStem(word, verbPrecisions);
         }
     },
     dispatchFunctionInSentence: (word, foundString, previousWord, nextWord) => {

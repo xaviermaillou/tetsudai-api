@@ -134,7 +134,8 @@ module.exports = {
             )
 
             // here we inject the inflexions for verbs and adjectives
-            word.inflexions = grammar.dispatchInflexion(word)
+            word.inflexions = grammar.dispatchInflexion(word.primaryWord, word.verbPrecisions, word.adjectivePrecisions)
+            word.alternativeInflexions = grammar.dispatchInflexion(word.secondaryWord, word.verbPrecisions, word.adjectivePrecisions)
 
             // Here we create the empty arrays for related words, that will be filled in the next loop
             word.relatedWords = {
@@ -161,7 +162,7 @@ module.exports = {
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const kanjiReadings = word.elements.map((element) => {if (element.kanji) return element.kana}).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
-            const stem = grammar.dispatchBaseWord(word)
+            const stem = grammar.dispatchBaseWord(word.primaryWord, word.verbPrecisions)
 
             const foundWords = {}
             
