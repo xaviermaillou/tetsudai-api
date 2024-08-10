@@ -135,11 +135,9 @@ module.exports = {
     
             // Romaji filtering
             kanji.romaji?.forEach((word) => {
-                word.romaji?.forEach((word) => {
-                    if (word && romajiRegularization(word.toLowerCase())
-                        === romajiRegularization(string.toLowerCase())
-                    ) matchingScore = score
-                })
+                if (word && romajiRegularization(word.toLowerCase())
+                    === romajiRegularization(string.toLowerCase())
+                ) matchingScore = score
             })
         }
         else {
