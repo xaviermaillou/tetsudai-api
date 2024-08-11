@@ -1,4 +1,4 @@
-const { dictionnary, types, validation } = require('tetsudai-common')
+const { dictionnary } = require('tetsudai-common')
 const libFunctions = require('../lib/common')
 const filters = require('../lib/filters')
 const grammar = require('../lib/grammar')
@@ -188,36 +188,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
             res.status(404).json('No word found with this id.')
             return
         }
-    
-        res.json(foundWord)
-    })
-    
-    app.get('/sentences/:id', (req, res) => {
-        const id = Number(req.params.id)
-    
-        if (isNaN(id)) {
-            res.status(400).json('Requested id must be a number')
-            return
-        }
 
-        let foundWord
-    
-        vocabularyList.forEach((word) => {
-            if (word.id === id) {
-                foundWord = {
-                    primary: word.primaryWord,
-                    secondary: word.secondaryWord,
-                    inflexions: word.inflexions,
-                    alternativeInflexions: word.alternativeInflexions
-                }
-            }
-        })
-    
-        if (!foundWord) {
-            res.status(404).json('No word found with this id.')
-            return
-        }
-    
         const sentencesArray = []
         let matchingWord
     
@@ -225,11 +196,11 @@ module.exports = (app, vocabularyList, sentencesList) => {
             
             let matchingWord
             
-            if (sentence.sentence.includes(foundWord.primary)) {
-                matchingWord = foundWord.primary
+            if (sentence.sentence.includes(foundWord.primaryWord)) {
+                matchingWord = foundWord.primaryWord
             }
-            else if (sentence.sentence.includes(foundWord.secondary)) {
-                matchingWord = foundWord.secondary
+            else if (sentence.sentence.includes(foundWord.secondaryWord)) {
+                matchingWord = foundWord.secondaryWord
             }
             else if (foundWord.inflexions) {
                 const foundInflexion = libFunctions.findByInflexion(foundWord, sentence.sentence)
@@ -238,7 +209,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 }
             }
             
-            if(libFunctions.sentenceIgnoreFindings[matchingWord] === foundWord.primary) return
+            if(libFunctions.sentenceIgnoreFindings[matchingWord] === foundWord.primaryWord) return
             if (!!matchingWord) {
                 let splittedSentence = []
                 let index = 0
@@ -267,12 +238,12 @@ module.exports = (app, vocabularyList, sentencesList) => {
             }
         })
         
-        console.log(`${sentencesArray.length} phrases trouvées pour ${foundWord.primary} sous la forme ${matchingWord}`)
-
-        // Type validation
-        validation.validateDataObjectsArray(sentencesArray, types.EnrichedSentence, [])
-
-        res.json(libFunctions.shuffle(sentencesArray).slice(0, 20))
+        console.log(`${sentencesArray.length} phrases trouvées pour ${foundWord.primaryWord} sous la forme ${matchingWord}`)
+    
+        res.json({
+            word: foundWord,
+            sentences: libFunctions.shuffle(sentencesArray).slice(0, 20)
+        })
     })
 
     app.post('/foundSentence', (req, res) => {
