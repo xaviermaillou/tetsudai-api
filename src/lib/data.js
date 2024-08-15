@@ -122,7 +122,7 @@ module.exports = {
                 word.jukujikunAsMain ?
                     (word.jukujikun)
                     :
-                    word.elements.map((element) => element.option === "rareKanji" ? element.kana : element.kanji || element.kana).join('')
+                    word.elements.map((element) => element.options.rareKanji ? element.kana : element.kanji || element.kana).join('')
             )
 
             // Here we define secondaryWord, which is the opposite version of the nornally used word (in kanas if used in kanji, in kanji if used in kanas)
@@ -130,7 +130,7 @@ module.exports = {
                 word.jukujikunAsMain ?
                     word.elements.map((element) => element.kanji || element.kana).join('')
                     :
-                    word.elements.map((element) => element.option === "rareKanji" ? element.kanji || element.kana : element.kana || element.kanji).join('')
+                    word.elements.map((element) => element.options.rareKanji ? element.kanji || element.kana : element.kana || element.kanji).join('')
             )
 
             // here we inject the inflexions for verbs and adjectives
