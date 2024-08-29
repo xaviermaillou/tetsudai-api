@@ -43,23 +43,72 @@ module.exports = {
                 if (part.includes(' ')) console.log('- Blank space in', kanji.kanji, 'part', part)
             })
             if (!kanji.origin.sameMeaning && !!!kanji.origin.otherMeaning.fr) console.log("! Missing meaning for", kanji.kanji)
-            if (!kanji.origin.pinyin) console.log("文 Missing Middle Chinese origin for", kanji.kanji)
+            // if (!kanji.origin.pinyin) console.log("文 Missing Middle Chinese origin for", kanji.kanji)
             vocabularyList.forEach((word) => {
                 word.id = Number(word.id)
                 word.elements.every((element) => {
                     if (kanji.kanji === element.kanji) {
-                        element.kana ?
-                            kanasDictionnary.isKatakana(element.kana) ?
-                            kanji.readings.onyomi.forEach((yomi) => {
-                                if (yomi.kana === element.kana) yomi.examples.push(libFunctions.getBasicWordElements(word))
+                        // Word is injected in kanji's reading examples
+                        if (element.kana) {
+                            const found = kanji.readings[(kanasDictionnary.isKatakana(element.kana) ? "onyomi" : "kunyomi")].some((yomi) => {
+                                if (yomi.kana === element.kana) {
+                                    yomi.examples.push({
+                                        ...libFunctions.getBasicWordElements(word),
+                                        ateji: element.options.ateji
+                                    })
+                                    return true
+                                }
                             })
-                            :
-                            kanji.readings.kunyomi.forEach((yomi) => {
-                                if (yomi.kana === element.kana) yomi.examples.push(libFunctions.getBasicWordElements(word))
-                            })
-                        :
-                        kanji.relatedJukujikun.push(libFunctions.getBasicWordElements(word))
+                            if (!found) {
+                                if (element.options.ateji) {
+                                    kanji.readings.onyomi.forEach(reading => {
+                                        if (element.kana.startsWith(reading.kana))
+                                            if (!reading.extensions)
+                                                reading.extensions = []
+                                            if (!reading.extensions.find(reading => reading.kana === element.kana))
+                                                reading.extensions.push({
+                                                    kana: element.kana,
+                                                    examples: [{
+                                                        ...libFunctions.getBasicWordElements(word),
+                                                        ateji: element.options.ateji
+                                                    }]
+                                                })
+                                            else    
+                                                reading.extensions.forEach(reading => {
+                                                    if (reading.kana === element.kana)
+                                                        reading.examples.push({
+                                                            ...libFunctions.getBasicWordElements(word),
+                                                            ateji: element.options.ateji
+                                                        })
+                                                })
+                                    })
+                                }
+                                if (element.options.irregular) {
+                                    if (!kanji.readings.irregular)
+                                        kanji.readings.irregular = []
+                                    if (!kanji.readings.irregular.find(reading => reading.kana === element.kana))
+                                        kanji.readings.irregular.push({
+                                            kana: element.kana,
+                                            examples: [{
+                                                ...libFunctions.getBasicWordElements(word),
+                                                ateji: element.options.ateji
+                                            }]
+                                        })
+                                    else    
+                                        kanji.readings.irregular.forEach(reading => {
+                                            if (reading.kana === element.kana)
+                                                reading.examples.push({
+                                                    ...libFunctions.getBasicWordElements(word),
+                                                    ateji: element.options.ateji
+                                                })
+                                        })
+                                }
+                                else console.log("! Possible mismatch with", kanji.kanji, "and the reading", element.kana, "of word n°", word.id)
+                            }
+                        }
+                        else kanji.relatedJukujikun.push(libFunctions.getBasicWordElements(word))
                         kanji.grammar.push(...word.grammar)
+                        // Kanji is injected in word's element details
                         element.details = {
                             id: kanji.id,
                             kanji: kanji.kanji,
