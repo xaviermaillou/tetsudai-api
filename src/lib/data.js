@@ -2,6 +2,7 @@ const { getKanjiFullList, getVocabularyFullList, getSentencesFullList } = requir
 const grammar = require('../lib/grammar')
 const { kanasDictionnary, dictionnary, types, validation } = require('tetsudai-common')
 const libFunctions = require('./common')
+const { gatheredReadings } = require('tetsudai-common/lib/kanasDictionnary')
 
 module.exports = {
     buildData: async () => {
@@ -134,6 +135,10 @@ module.exports = {
             })
             kanji.kanjiUsedAsPartIn = []
             kanji.kanjiTakenAsPartFrom = []
+
+            kanji.readings.kunyomi = gatheredReadings(kanji.readings.kunyomi, false)
+            kanji.readings.onyomi = gatheredReadings(kanji.readings.onyomi, true)
+            if (!!kanji.readings.irregular) kanji.readings.irregular = gatheredReadings(kanji.readings.irregular, true)
         })
 
         // Loop 2: kanjiList -> relating kanji with each other as kanji's components
@@ -185,6 +190,8 @@ module.exports = {
             // here we inject the inflexions for verbs and adjectives
             word.inflexions = grammar.dispatchInflexion(word.primaryWord, word.verbPrecisions, word.adjectivePrecisions)
             word.alternativeInflexions = grammar.dispatchInflexion(word.secondaryWord, word.verbPrecisions, word.adjectivePrecisions)
+
+            word.chineseLegacy = word.elements.every(element => element.options.chineseLegacy)
 
             // Here we create the empty arrays for related words, that will be filled in the next loop
             word.relatedWords = {
