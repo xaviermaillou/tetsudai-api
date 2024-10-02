@@ -2,7 +2,7 @@ const { getKanjiFullList, getVocabularyFullList, getSentencesFullList } = requir
 const grammar = require('../lib/grammar')
 const { kanasDictionnary, dictionnary, types, validation } = require('tetsudai-common')
 const libFunctions = require('./common')
-const { gatheredReadings } = require('tetsudai-common/lib/kanasDictionnary')
+const { gatherReadings, hiraganaVariations, katakanaVariations } = require('tetsudai-common/lib/kanasDictionnary')
 
 module.exports = {
     buildData: async () => {
@@ -136,9 +136,9 @@ module.exports = {
             kanji.kanjiUsedAsPartIn = []
             kanji.kanjiTakenAsPartFrom = []
 
-            kanji.readings.kunyomi = gatheredReadings(kanji.readings.kunyomi, false)
-            kanji.readings.onyomi = gatheredReadings(kanji.readings.onyomi, true)
-            if (!!kanji.readings.irregular) kanji.readings.irregular = gatheredReadings(kanji.readings.irregular, true)
+            kanji.readings.kunyomi = gatherReadings(kanji.readings.kunyomi, false)
+            kanji.readings.onyomi = gatherReadings(kanji.readings.onyomi, true)
+            if (!!kanji.readings.irregular) kanji.readings.irregular = gatherReadings(kanji.readings.irregular, true)
         })
 
         // Loop 2: kanjiList -> relating kanji with each other as kanji's components
@@ -250,10 +250,35 @@ module.exports = {
                         word.relatedWords.stem.push(libFunctions.getBasicWordElements(word2))
                         word2.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word))
                     }
-                    else if (base.includes(base2)
+                    else if (
+                        base.includes(base2)
                         && (!word2.grammar?.includes("ptc") || word.includesParticle)
-                        && baseWrittenInKana.includes(baseWrittenInKana2)
-                        && kanjiReadings.includes(kanjiReadings2)
+                        && (
+                            baseWrittenInKana.includes(baseWrittenInKana2)
+                            || (
+                                !!hiraganaVariations[baseWrittenInKana2.split("")[0]]
+                                && hiraganaVariations[baseWrittenInKana2.split("")[0]]
+                                    .some(kanaVariation => baseWrittenInKana.includes(kanaVariation + baseWrittenInKana2.slice(1)))
+                            )
+                            || (
+                                !!katakanaVariations[baseWrittenInKana2.split("")[0]]
+                                && katakanaVariations[baseWrittenInKana2.split("")[0]]
+                                    .some(kanaVariation => baseWrittenInKana.includes(kanaVariation + baseWrittenInKana2.slice(1)))
+                            )
+                        )
+                        && (
+                            kanjiReadings.includes(kanjiReadings2)
+                            || (
+                                !!hiraganaVariations[kanjiReadings2.split("")[0]]
+                                && hiraganaVariations[kanjiReadings2.split("")[0]]
+                                    .some(kanaVariation => kanjiReadings.includes(kanaVariation + kanjiReadings2.slice(1)))
+                            )
+                            || (
+                                !!katakanaVariations[kanjiReadings.split("")[0]]
+                                && katakanaVariations[kanjiReadings2.split("")[0]]
+                                    .some(kanaVariation => kanjiReadings.includes(kanaVariation + kanjiReadings2.slice(1)))
+                            )
+                        )
                         && !base.includes("する")
                     ) {
                         foundWords[base2] = libFunctions.getBasicWordElements(word2)
