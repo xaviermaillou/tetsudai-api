@@ -225,7 +225,7 @@ module.exports = {
             // Stem and general included words
             vocabularyList.forEach((word2) => {
                 if (word.id === word2.id) return
-                
+
                 const base2 = word2.primaryWord
                 const kanjiOnly2 = word2.elements.map((element) => element.kanji).join('')
                 const kanjiReadings2 = word2.elements.map((element) => {if (element.kanji) return element.kana}).join('')
@@ -280,10 +280,7 @@ module.exports = {
                             )
                         )
                         && !base.includes("する")
-                    ) {
-                        foundWords[base2] = libFunctions.getBasicWordElements(word2)
-                        word2.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word))
-                    }
+                    ) foundWords[base2] = word2.id
                 }
                 // Here we check for possible related words that are missing the kanji that could confirm their bound
                 // As instance フランス had its kanji (仏蘭西) but フランス語 was missing it
@@ -301,8 +298,18 @@ module.exports = {
                 ) console.log("- Possible related words:", base, `(${word.id})`, "&", base2, `(${word2.id})`)
             })
 
+            // Based on all the words that are included within the current word (foundWords) we find the composing words (as if the current word was a sentence)
+            // It is done to ensure the included words don't overlap
+            // As instance 国人 (country person) was considered as being included in 韓国人 (korean person), while that one was actually composed by 韓国 and 人
             const filteredWordsStrings = libFunctions.findComposingWords(Object.keys(foundWords), base)
-            word.relatedWords.wordTakenFrom = filteredWordsStrings.map((word) => foundWords[word])
+            filteredWordsStrings.forEach(string => {
+                vocabularyList.forEach(word2 => {
+                    if (word2.id === foundWords[string]) {
+                        word.relatedWords.wordTakenFrom.push(libFunctions.getBasicWordElements(word2))
+                        word2.relatedWords.wordUsedIn.push(libFunctions.getBasicWordElements(word))
+                    }
+                })
+            })
 
             // Suru form
             word.elements.forEach((element) => {
