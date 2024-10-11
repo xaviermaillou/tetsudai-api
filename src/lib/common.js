@@ -43,22 +43,23 @@ const wordsToIgnoreForComposingWords = [
 ]
 
 const katakanaRegularization = (string) => {
-    return string.split('アー').join('アア').split('エー').join('エイ').split('イー').join('イイ').split('オー').join('オウ').split('ウー').join('ウウ')
-        .split('カー').join('カア').split('ケー').join('ケイ').split('キー').join('キイ').split('コー').join('コウ').split('クー').join('クウ')
-        .split('ガー').join('ガア').split('ゲー').join('ゲイ').split('ギー').join('ギイ').split('ゴー').join('ゴウ').split('グー').join('グウ')
-        .split('サー').join('サア').split('セー').join('セイ').split('シー').join('シイ').split('ソー').join('ソウ').split('スー').join('スウ')
-        .split('ザー').join('ザア').split('ゼー').join('ゼイ').split('ジー').join('ジイ').split('ゾー').join('ゾウ').split('ズー').join('ズウ')
-        .split('ター').join('タア').split('テー').join('テイ').split('チー').join('チイ').split('トー').join('トウ').split('ツー').join('ツウ')
-        .split('ダー').join('ダア').split('デー').join('デイ').split('ヂー').join('ヂイ').split('ドー').join('ドウ').split('ヅー').join('ヅウ')
-        .split('ナー').join('ナア').split('ネー').join('ネイ').split('ニー').join('ニイ').split('ノー').join('ノウ').split('ヌー').join('ヌウ')
-        .split('ハー').join('ハア').split('ヘー').join('ヘイ').split('ヒー').join('ヒイ').split('ホー').join('ホウ').split('フー').join('フウ')
-        .split('バー').join('バア').split('ベー').join('ベイ').split('ビー').join('ビイ').split('ボー').join('ボウ').split('ブー').join('ブウ')
-        .split('パー').join('パア').split('ペー').join('ペイ').split('ピー').join('ピイ').split('ポー').join('ポウ').split('プー').join('プウ')
-        .split('マー').join('マア').split('メー').join('メイ').split('ミー').join('ミイ').split('モー').join('モウ').split('ムー').join('ムウ')
-        .split('ヤー').join('ヤア').split('ヨー').join('ヨウ').split('ユー').join('ユウ')
-        .split('ラー').join('ラア').split('レー').join('レイ').split('リー').join('リイ').split('ロー').join('ロウ').split('ルー').join('ルウ')
-        .split('ワー').join('ワア').split('ヲー').join('ヲウ')
-        .split('ャー').join('ャア').split('ョー').join('ョウ').split('ュー').join('ュウ')
+    return string
+        .split('アア').join('アー').split('エイ').join('エー').split('イイ').join('イー').split('オウ').join('オー').split('ウウ').join('ウー')
+        .split('カア').join('カー').split('ケイ').join('ケー').split('キイ').join('キー').split('コウ').join('コー').split('クウ').join('クー')
+        .split('ガア').join('ガー').split('ゲイ').join('ゲー').split('ギイ').join('ギー').split('ゴウ').join('ゴー').split('グウ').join('グー')
+        .split('サア').join('サー').split('セイ').join('セー').split('シイ').join('シー').split('ソウ').join('ソー').split('スウ').join('スー')
+        .split('ザア').join('ザー').split('ゼイ').join('ゼー').split('ジイ').join('ジー').split('ゾウ').join('ゾー').split('ズウ').join('ズー')
+        .split('タア').join('ター').split('テイ').join('テー').split('チイ').join('チー').split('トウ').join('トー').split('ツウ').join('ツー')
+        .split('ダア').join('ダー').split('デイ').join('デー').split('ヂイ').join('ヂー').split('ドウ').join('ドー').split('ヅウ').join('ヅー')
+        .split('ナア').join('ナー').split('ネイ').join('ネー').split('ニイ').join('ニー').split('ノウ').join('ノー').split('ヌウ').join('ヌー')
+        .split('ハア').join('ハー').split('ヘイ').join('ヘー').split('ヒイ').join('ヒー').split('ホウ').join('ホー').split('フウ').join('フー')
+        .split('バア').join('バー').split('ベイ').join('ベー').split('ビイ').join('ビー').split('ボウ').join('ボー').split('ブウ').join('ブー')
+        .split('パア').join('パー').split('ペイ').join('ペー').split('ピイ').join('ピー').split('ポウ').join('ポー').split('プウ').join('プー')
+        .split('マア').join('マー').split('メイ').join('メー').split('ミイ').join('ミー').split('モウ').join('モー').split('ムウ').join('ムー')
+        .split('ヤア').join('ヤー').split('ヨウ').join('ヨー').split('ユウ').join('ユー')
+        .split('ラア').join('ラー').split('レイ').join('レー').split('リイ').join('リー').split('ロウ').join('ロー').split('ルウ').join('ルー')
+        .split('ワア').join('ワー').split('ヲウ').join('ヲー')
+        .split('ャア').join('ャー').split('ョウ').join('ョー').split('ュウ').join('ュー')
 }
 const numberRegularization = (string) => {
     return string

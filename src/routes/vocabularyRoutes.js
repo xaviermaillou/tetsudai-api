@@ -129,7 +129,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                         // If we assumed the sentence element is already known
                         // and the current word base matches with the sentence element
                         // we can directly push the current word...
-                        if (word.primaryWord === sentenceElement) {
+                        if (libFunctions.katakanaRegularization(word.primaryWord) === sentenceElement) {
                             matchingWords.push({
                                 id: word.id,
                                 word: sentenceElement
@@ -166,7 +166,8 @@ module.exports = (app, vocabularyList, sentencesList) => {
         console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
         res.json({
             results: libFunctions.sortByObjectKey(slicedVocabularyArray, dictionnary.fr.levels),
-            sentence: (search && foundSentence.join('').length === search.length) ? foundSentenceWithIds : null
+            sentence: (search && foundSentence.join('').length === search.length) ? foundSentenceWithIds : null,
+            foundSentence // Used for detectMissingParts function in tetsudai-data-server
         })
     })
     
@@ -190,10 +191,9 @@ module.exports = (app, vocabularyList, sentencesList) => {
         }
 
         const sentencesArray = []
-        let matchingWord
-    
-        sentencesList.forEach((sentence) => {
-            
+        const matchingWords = []
+
+        sentencesList.forEach((sentence) => {            
             let matchingWord
             
             if (sentence.sentence.includes(foundWord.primaryWord)) {
@@ -208,7 +208,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     matchingWord = foundInflexion.foundWords[0]
                 }
             }
-            
+
             if(libFunctions.sentenceIgnoreFindings[matchingWord] === foundWord.primaryWord) return
             if (!!matchingWord) {
                 let splittedSentence = []
@@ -221,15 +221,17 @@ module.exports = (app, vocabularyList, sentencesList) => {
                         splittedSentence.push({string: sentence.sentence.slice(index), match: false})
                         break
                     }
-        
+                    
                     if (matchingWordIndex > index) {
                         splittedSentence.push({string: sentence.sentence.slice(index, matchingWordIndex), match: false})
                     }
-        
+                    
                     splittedSentence.push({string: matchingWord, match: true})
                     
                     index = matchingWordIndex + matchingWord.length
                 }
+                
+                if (!matchingWords.includes(matchingWord)) matchingWords.push(matchingWord)
 
                 sentencesArray.push({
                     sections: splittedSentence,
@@ -238,7 +240,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
             }
         })
         
-        console.log(`${sentencesArray.length} phrases trouvées pour ${foundWord.primaryWord} sous la forme ${matchingWord}`)
+        console.log(`${sentencesArray.length} phrases trouvées pour ${foundWord.primaryWord} sous la/les forme(s) ${matchingWords}`)
     
         res.json({
             word: foundWord,
@@ -251,7 +253,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         fullDataElements.forEach((fullDataElement) => {
             fullDataElement.foundElements.forEach((element) => {
                 if (element.id) {
-                    vocabularyList.forEach((word, i) => {
+                    vocabularyList.forEach(word => {
                         if (word.id === element.id) {
                             element.elements = word.elements
                             element.jukujikun = word.jukujikun
@@ -314,7 +316,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     if (skip) break
                 }
             }
-            console.log(overridingWords)
+
             if (fullDataElement.ambiguity && overridingWords.length === 1) {
                 fullDataElement.foundElements = overridingWords
                 fullDataElement.ambiguity = false

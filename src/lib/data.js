@@ -172,20 +172,16 @@ module.exports = {
             })
 
             // Here we define primaryWord, which is the word as normally used
-            word.primaryWord = libFunctions.katakanaRegularization(
-                word.jukujikunAsMain ?
-                    (word.jukujikun)
-                    :
-                    word.elements.map((element) => element.options.rareKanji ? element.kana : element.kanji || element.kana).join('')
-            )
+            word.primaryWord = word.jukujikunAsMain ?
+                (word.jukujikun)
+                :
+                word.elements.map((element) => element.options.rareKanji ? element.kana : element.kanji || element.kana).join('')
 
             // Here we define secondaryWord, which is the opposite version of the nornally used word (in kanas if used in kanji, in kanji if used in kanas)
-            word.secondaryWord = libFunctions.katakanaRegularization(
-                word.jukujikunAsMain ?
-                    word.elements.map((element) => element.kanji || element.kana).join('')
-                    :
-                    word.elements.map((element) => element.options.rareKanji ? element.kanji || element.kana : element.kana || element.kanji).join('')
-            )
+            word.secondaryWord = word.jukujikunAsMain ?
+                word.elements.map((element) => element.kanji || element.kana).join('')
+                :
+                word.elements.map((element) => element.options.rareKanji ? element.kanji || element.kana : element.kana || element.kanji).join('')
 
             // here we inject the inflexions for verbs and adjectives
             word.inflexions = grammar.dispatchInflexion(word.primaryWord, word.verbPrecisions, word.adjectivePrecisions)
@@ -218,7 +214,7 @@ module.exports = {
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const kanjiReadings = word.elements.map((element) => {if (element.kanji) return element.kana}).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
-            const stem = grammar.dispatchBaseWord(word.primaryWord, word.verbPrecisions)
+            const stem = grammar.dispatchBaseWord(base, word.verbPrecisions)
 
             const foundWords = {}
             
