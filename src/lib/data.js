@@ -214,7 +214,6 @@ module.exports = {
             const kanjiOnly = word.elements.map((element) => element.kanji).join('')
             const kanjiReadings = word.elements.map((element) => {if (element.kanji) return element.kana}).join('')
             const baseWrittenInKana = word.elements.map((element) => element.kana).join('')
-            const stem = grammar.dispatchBaseWord(base, word.verbPrecisions)
 
             const foundWords = {}
             
@@ -226,6 +225,7 @@ module.exports = {
                 const kanjiOnly2 = word2.elements.map((element) => element.kanji).join('')
                 const kanjiReadings2 = word2.elements.map((element) => {if (element.kanji) return element.kana}).join('')
                 const baseWrittenInKana2 = word2.elements.map((element) => element.kana).join('')
+                const stem2 = grammar.dispatchBaseWord(base2, word2.verbPrecisions)?.stem
 
                 if (!!kanjiOnly && kanjiOnly === kanjiOnly2 && base === base2) {
                     const meanings = [ ...word.translation.fr.join(", ").split(", "), ...word.alternatives.fr.join(", ").split(", ") ]
@@ -240,11 +240,16 @@ module.exports = {
                     if (word.relatedWords.synonyms.length === 0) console.log("- Possible synonyms:", base, `(${word.translation.fr})`, "&", base2, `(${word2.translation.fr})`)
                 }
                 else if (kanjiOnly.includes(kanjiOnly2)) {
-                    if (!!stem
-                        && base2 === stem
+                    if (!!stem2
+                        && base === stem2
                     ) {
-                        word.relatedWords.stem.push(libFunctions.getBasicWordElements(word2))
-                        word2.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word))
+                        word.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word2))
+                        word2.relatedWords.stem.push(libFunctions.getBasicWordElements(word))
+                    }
+                    else if (!!stem2
+                        && base.includes(stem2)
+                    ) {
+                        foundWords[stem2] = word2.id
                     }
                     else if (
                         base.includes(base2)
@@ -270,7 +275,7 @@ module.exports = {
                                     .some(kanaVariation => kanjiReadings.includes(kanaVariation + kanjiReadings2.slice(1)))
                             )
                             || (
-                                !!katakanaVariations[kanjiReadings.split("")[0]]
+                                !!katakanaVariations[kanjiReadings2.split("")[0]]
                                 && katakanaVariations[kanjiReadings2.split("")[0]]
                                     .some(kanaVariation => kanjiReadings.includes(kanaVariation + kanjiReadings2.slice(1)))
                             )
@@ -281,11 +286,10 @@ module.exports = {
                 // Here we check for possible related words that are missing the kanji that could confirm their bound
                 // As instance フランス had its kanji (仏蘭西) but フランス語 was missing it
                 else if (
-                    (!!stem
-                        && base2 === stem
+                    (!!stem2
+                        && base === stem2
                     )
-                    ||
-                    (base.includes(base2)
+                    || (base.includes(base2)
                         && (!word2.grammar?.includes("ptc") || word.includesParticle)
                         && baseWrittenInKana.includes(baseWrittenInKana2)
                         && kanjiReadings.includes(kanjiReadings2)
@@ -298,6 +302,7 @@ module.exports = {
             // It is done to ensure the included words don't overlap
             // As instance 国人 (country person) was considered as being included in 韓国人 (korean person), while that one was actually composed by 韓国 and 人
             const filteredWordsStrings = libFunctions.findComposingWords(Object.keys(foundWords), base)
+
             filteredWordsStrings.forEach(string => {
                 vocabularyList.forEach(word2 => {
                     if (word2.id === foundWords[string]) {

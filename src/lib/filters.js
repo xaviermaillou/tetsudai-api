@@ -224,11 +224,15 @@ module.exports = {
                 foundWords = [ ...foundWords, ...inflexionResult.foundWords ]
             }
 
-            // Stem filtering
-            const stem = grammar.dispatchBaseWord(vocabularyWord)
-            if (!!stem && (stem.includes(regularizedString) || regularizedString.includes(stem))) {
+            // Stem and te form filtering
+            const extractedBase = grammar.dispatchBaseWord(vocabularyWord.primaryWord, vocabularyWord.verbPrecisions)
+            if (!!extractedBase?.stem && (extractedBase.stem.includes(regularizedString) || regularizedString.includes(extractedBase.stem))) {
                 includes = true
-                if (regularizedString.includes(stem)) foundWords.push(stem)
+                if (regularizedString.includes(extractedBase.stem)) foundWords.push(extractedBase.stem)
+            }
+            if (!!extractedBase?.teForm && (extractedBase.teForm.includes(regularizedString) || regularizedString.includes(extractedBase.teForm))) {
+                includes = true
+                if (regularizedString.includes(extractedBase.teForm)) foundWords.push(extractedBase.teForm)
             }
         }
 
@@ -288,9 +292,10 @@ module.exports = {
                 if (!!inflexionResult.score) matchingScore = inflexionResult.score
             }
 
-            // Stem filtering
-            const stem = grammar.dispatchBaseWord(vocabularyWord)
-            if (!!stem && stem === regularizedString) matchingScore = score
+            // Stem and te form filtering
+            const extractedBase = grammar.dispatchBaseWord(vocabularyWord.primaryWord, vocabularyWord.verbPrecisions)
+            if (!!extractedBase?.stem && extractedBase.stem === regularizedString) matchingScore = score
+            if (!!extractedBase?.teForm && extractedBase.teForm === regularizedString) matchingScore = score
         }
 
         return matchingScore

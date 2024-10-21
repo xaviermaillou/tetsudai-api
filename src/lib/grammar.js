@@ -17,7 +17,7 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
                 },
                 polite: {
                     main: exceptionBases?.nonPastAffPolite ?? base,
-                    ending: inflexions.politeInterm + masu,
+                    ending: inflexions.stem + masu,
                 }
             },
             negative: {
@@ -27,7 +27,7 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
                 },
                 polite: {
                     main: exceptionBases?.nonPastNegPolite ?? base,
-                    ending: inflexions.politeInterm + masen,
+                    ending: inflexions.stem + masen,
                 }
             }
         },
@@ -39,7 +39,7 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
                 },
                 polite: {
                     main: exceptionBases?.pastAffPolite ?? base,
-                    ending: inflexions.politeInterm + 'ました',
+                    ending: inflexions.stem + 'ました',
                 }
             },
             negative: {
@@ -49,7 +49,7 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
                 },
                 polite: {
                     main: exceptionBases?.pastNegPolite ?? base,
-                    ending: inflexions.politeInterm + masen + deshita,
+                    ending: inflexions.stem + masen + deshita,
                 }
             }
         },
@@ -101,21 +101,21 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
             affirmative: {
                 neutral: {
                     main: exceptionBases?.pastAffNeutral ?? base,
-                    ending: inflexions.politeInterm + 'たい',
+                    ending: inflexions.stem + 'たい',
                 },
                 polite: {
                     main: exceptionBases?.pastAffPolite ?? base,
-                    ending: inflexions.politeInterm + 'たい' + desu,
+                    ending: inflexions.stem + 'たい' + desu,
                 }
             },
             negative: {
                 neutral: {
                     main: exceptionBases?.pastAffNeutral ?? base,
-                    ending: inflexions.politeInterm + 'たく' + nai,
+                    ending: inflexions.stem + 'たく' + nai,
                 },
                 polite: {
                     main: exceptionBases?.pastAffPolite ?? base,
-                    ending: inflexions.politeInterm + 'たく' + nai + desu,
+                    ending: inflexions.stem + 'たく' + nai + desu,
                 }
             }
         },
@@ -123,21 +123,21 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
             affirmative: {
                 neutral: {
                     main: exceptionBases?.pastAffNeutral ?? base,
-                    ending: inflexions.politeInterm + 'た' + katta,
+                    ending: inflexions.stem + 'た' + katta,
                 },
                 polite: {
                     main: exceptionBases?.pastAffPolite ?? base,
-                    ending: inflexions.politeInterm + 'た' + katta + desu,
+                    ending: inflexions.stem + 'た' + katta + desu,
                 }
             },
             negative: {
                 neutral: {
                     main: exceptionBases?.pastAffNeutral ?? base,
-                    ending: inflexions.politeInterm + 'たくな' + katta,
+                    ending: inflexions.stem + 'たくな' + katta,
                 },
                 polite: {
                     main: exceptionBases?.pastAffPolite ?? base,
-                    ending: inflexions.politeInterm + 'たくな' + katta + desu,
+                    ending: inflexions.stem + 'たくな' + katta + desu,
                 }
             }
         },
@@ -149,7 +149,7 @@ const verbConjugationStructure = (base, inflexions, exceptionBases) => {
                 },
                 polite: {
                     main: exceptionBases?.volitionalPolite ?? base,
-                    ending: inflexions.politeInterm + 'ましょう',
+                    ending: inflexions.stem + 'ましょう',
                 }
             }
         },
@@ -202,10 +202,10 @@ const copuleConjugationStructure = () => {
             }
         },
         nonPastDesiderative: verbConjugationStructure('な', {
-            politeInterm: 'り'
+            stem: 'り'
         }).nonPastDesiderative,
         pastDesiderative: verbConjugationStructure('な', {
-            politeInterm: 'り',
+            stem: 'り',
         }).pastDesiderative
     }
 }
@@ -215,7 +215,7 @@ const getVerbConjugation = (word, precisions) => {
     if (precisions.type === 'ichidan') {
         return verbConjugationStructure(base, {
             okurigana: 'る',
-            politeInterm: '',
+            stem: '',
             connective: '',
             past: 'た',
             teForm: 'て',
@@ -226,7 +226,7 @@ const getVerbConjugation = (word, precisions) => {
         if (precisions.ending === 'u') {
             return verbConjugationStructure(base, {
                 okurigana: 'う',
-                politeInterm: 'い',
+                stem: 'い',
                 connective: 'わ',
                 past: 'った',
                 teForm: 'って',
@@ -236,7 +236,7 @@ const getVerbConjugation = (word, precisions) => {
         if (precisions.ending === 'ku') {
             return verbConjugationStructure(base, {
                 okurigana: 'く',
-                politeInterm: 'き',
+                stem: 'き',
                 connective: 'か',
                 past: 'いた',
                 teForm: 'いて',
@@ -246,7 +246,7 @@ const getVerbConjugation = (word, precisions) => {
         if (precisions.ending === 'gu') {
             return verbConjugationStructure(base, {
                 okurigana: 'ぐ',
-                politeInterm: 'ぎ',
+                stem: 'ぎ',
                 connective: 'が',
                 past: 'いだ',
                 teForm: 'いで',
@@ -256,7 +256,7 @@ const getVerbConjugation = (word, precisions) => {
         if (precisions.ending === 'su') {
             return verbConjugationStructure(base, {
                 okurigana: 'す',
-                politeInterm: 'し',
+                stem: 'し',
                 connective: 'さ',
                 past: 'した',
                 teForm: 'して',
@@ -266,7 +266,7 @@ const getVerbConjugation = (word, precisions) => {
         if (precisions.ending === 'mu') {
             return verbConjugationStructure(base, {
                 okurigana: 'む',
-                politeInterm: 'み',
+                stem: 'み',
                 connective: 'ま',
                 past: 'んだ',
                 teForm: 'んで',
@@ -276,7 +276,7 @@ const getVerbConjugation = (word, precisions) => {
         if (precisions.ending === 'bu') {
             return verbConjugationStructure(base, {
                 okurigana: 'ぶ',
-                politeInterm: 'び',
+                stem: 'び',
                 connective: 'ば',
                 past: 'んだ',
                 teForm: 'んで',
@@ -286,7 +286,7 @@ const getVerbConjugation = (word, precisions) => {
         if (precisions.ending === 'nu') {
             return verbConjugationStructure(base, {
                 okurigana: 'ぬ',
-                politeInterm: 'に',
+                stem: 'に',
                 connective: 'な',
                 past: 'んだ',
                 teForm: 'んで',
@@ -296,7 +296,7 @@ const getVerbConjugation = (word, precisions) => {
         if (precisions.ending === 'ru') {
             return verbConjugationStructure(base, {
                 okurigana: 'る',
-                politeInterm: 'り',
+                stem: 'り',
                 connective: 'ら',
                 past: 'った',
                 teForm: 'って',
@@ -306,7 +306,7 @@ const getVerbConjugation = (word, precisions) => {
         if (precisions.ending === 'tsu') {
             return verbConjugationStructure(base, {
                 okurigana: 'つ',
-                politeInterm: 'ち',
+                stem: 'ち',
                 connective: 'た',
                 past: 'った',
                 teForm: 'って',
@@ -319,7 +319,7 @@ const getVerbConjugation = (word, precisions) => {
 
         return verbConjugationStructure(base, {
             okurigana: 'る',
-            politeInterm: '',
+            stem: '',
             connective: '',
             past: 'た',
             teForm: 'て',
@@ -340,7 +340,7 @@ const getVerbConjugation = (word, precisions) => {
     if (precisions.type === 'kuru') {
         return verbConjugationStructure(base, {
             okurigana: 'る',
-            politeInterm: '',
+            stem: '',
             connective: '',
             past: 'た',
             teForm: 'て',
@@ -361,7 +361,7 @@ const getVerbConjugation = (word, precisions) => {
     if (precisions.type === 'iku') {
         return verbConjugationStructure(base, {
             okurigana: 'く',
-            politeInterm: 'き',
+            stem: 'き',
             connective: 'か',
             past: 'った',
             teForm: 'って',
@@ -371,7 +371,7 @@ const getVerbConjugation = (word, precisions) => {
     if (precisions.type === 'aru') {
         return verbConjugationStructure(base, {
             okurigana: 'る',
-            politeInterm: 'り',
+            stem: 'り',
             connective: '',
             past: 'った',
             teForm: 'って',
@@ -385,7 +385,7 @@ const getVerbConjugation = (word, precisions) => {
         return {
             ...verbConjugationStructure('で', {
                 okurigana: '',
-                politeInterm: '',
+                stem: '',
                 connective: '',
                 past: '',
                 teForm: '',
@@ -432,7 +432,8 @@ const getVerbStem = (word, precisions) => {
         }
     }
     if (precisions.type === 'suru') {
-        return 'し';
+        const noun = base.slice(0, -1);
+        return noun + 'し';
     }
     if (precisions.type === 'kuru') {
         return '来';
@@ -442,6 +443,59 @@ const getVerbStem = (word, precisions) => {
     }
     if (precisions.type === 'aru') {
         return 'あり';
+    }
+    if (precisions.type === 'desu') {
+        return;
+    }
+}
+
+const getVerbTeForm = (word, precisions) => {
+    let base = word.slice(0, -1);
+
+    if (precisions.type === 'ichidan') {
+        return base + 'て';
+    }
+    if (precisions.type === 'godan') {
+        if (precisions.ending === 'u') {
+            return base + 'って';
+        }
+        if (precisions.ending === 'ku') {
+            return base + 'いて';
+        }
+        if (precisions.ending === 'gu') {
+            return base + 'いで';
+        }
+        if (precisions.ending === 'su') {
+            return base + 'して';
+        }
+        if (precisions.ending === 'mu') {
+            return base + 'んで';
+        }
+        if (precisions.ending === 'bu') {
+            return base + 'んで';
+        }
+        if (precisions.ending === 'nu') {
+            return base + 'んで';
+        }
+        if (precisions.ending === 'ru') {
+            return base + 'って';
+        }
+        if (precisions.ending === 'tsu') {
+            return base + 'って';
+        }
+    }
+    if (precisions.type === 'suru') {
+        const noun = base.slice(0, -1);
+        return noun + 'して';
+    }
+    if (precisions.type === 'kuru') {
+        return '来て';
+    }
+    if (precisions.type === 'iku') {
+        return '行って';
+    }
+    if (precisions.type === 'aru') {
+        return 'あって';
     }
     if (precisions.type === 'desu') {
         return;
@@ -678,6 +732,12 @@ const getTense = (word, foundString) => {
     }
     return foundTense
 }
+const getForm = (word, foundString) => {
+    let foundForm
+    if (getVerbStem(foundString, word.verbPrecisions) === foundString) foundForm = "stem"
+    else if (getVerbTeForm(foundString, word.verbPrecisions) === foundString) foundForm = "teForm"
+    return foundForm
+}
 
 module.exports = {
     dispatchInflexion: (word, verbPrecisions, adjectivePrecisions) => {
@@ -691,24 +751,32 @@ module.exports = {
     },
     dispatchBaseWord: (word, verbPrecisions) => {
         if (verbPrecisions) {
-            return getVerbStem(word, verbPrecisions);
+            return {
+                stem: getVerbStem(word, verbPrecisions),
+                teForm: getVerbTeForm(word, verbPrecisions)
+            }
         }
     },
     dispatchFunctionInSentence: (word, foundString, previousWord, nextWord) => {
         if (word.grammar) {
             let grammarFunction
             let tense
+            let form
             if (word.grammar.length > 1) {
                 grammarFunction = getUniqueFunction(word, foundString, previousWord, nextWord)
             }
             else grammarFunction = word.grammar[0]
             if (grammarFunction === "vb" || grammarFunction === "adj") {
                 tense = getTense(word, foundString)
+                if (grammarFunction === "vb" ) {
+                    form = getForm(word, foundString)
+                }
             }
     
             return {
                 function: grammarFunction,
-                tense
+                tense,
+                form
             }
         }
     },

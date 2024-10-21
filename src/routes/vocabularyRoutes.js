@@ -207,9 +207,18 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 if (foundInflexion.foundWords?.length > 0) {
                     matchingWord = foundInflexion.foundWords[0]
                 }
+                const extractedBase = grammar.dispatchBaseWord(foundWord.primaryWord, foundWord.verbPrecisions)
+                if (extractedBase) {
+                    if (sentence.sentence.includes(extractedBase.teForm)) {
+                        matchingWord = extractedBase.teForm
+                    }
+                    else if (sentence.sentence.includes(extractedBase.stem)) {
+                        matchingWord = extractedBase.stem
+                    }
+                }
             }
 
-            if(libFunctions.sentenceIgnoreFindings[matchingWord] === foundWord.primaryWord) return
+            if (libFunctions.sentenceIgnoreFindings[matchingWord] === foundWord.primaryWord) return
             if (!!matchingWord) {
                 let splittedSentence = []
                 let index = 0
