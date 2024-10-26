@@ -248,9 +248,8 @@ module.exports = {
                     }
                     else if (!!stem2
                         && base.includes(stem2)
-                    ) {
-                        foundWords[stem2] = word2.id
-                    }
+                        && kanjiReadings.includes(kanjiReadings2)
+                    ) foundWords[stem2] = word2.id
                     else if (
                         base.includes(base2)
                         && (!word2.grammar?.includes("ptc") || word.includesParticle)
