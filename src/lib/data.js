@@ -192,7 +192,7 @@ module.exports = {
             // Here we create the empty arrays for related words, that will be filled in the next loop
             word.relatedWords = {
                 synonyms: [],
-                stem: [],
+                stemForm: [],
                 verbForm: [],
                 wordUsedIn: [],
                 wordTakenFrom: [],
@@ -244,7 +244,7 @@ module.exports = {
                         && base === stem2
                     ) {
                         word.relatedWords.verbForm.push(libFunctions.getBasicWordElements(word2))
-                        word2.relatedWords.stem.push(libFunctions.getBasicWordElements(word))
+                        word2.relatedWords.stemForm.push(libFunctions.getBasicWordElements(word))
                     }
                     else if (!!stem2
                         && base.includes(stem2)
