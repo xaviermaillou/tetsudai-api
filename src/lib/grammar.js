@@ -734,8 +734,14 @@ const getTense = (word, foundString) => {
 }
 const getForm = (word, foundString) => {
     let foundForm
-    if (getVerbStem(foundString, word.verbPrecisions) === foundString) foundForm = "stem"
-    else if (getVerbTeForm(foundString, word.verbPrecisions) === foundString) foundForm = "teForm"
+    if (
+        getVerbStem(word.primaryWord, word.verbPrecisions) === foundString ||
+        getVerbStem(word.secondaryWord, word.verbPrecisions) === foundString
+    ) foundForm = "stem"
+    else if (
+        getVerbTeForm(word.primaryWord, word.verbPrecisions) === foundString ||
+        getVerbTeForm(word.secondaryWord, word.verbPrecisions) === foundString
+    ) foundForm = "teForm"
     return foundForm
 }
 

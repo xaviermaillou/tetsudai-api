@@ -264,6 +264,8 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 if (element.id) {
                     vocabularyList.forEach(word => {
                         if (word.id === element.id) {
+                            element.primaryWord = word.primaryWord
+                            element.secondaryWord = word.secondaryWord
                             element.elements = word.elements
                             element.jukujikun = word.jukujikun
                             element.translation = word.translation
@@ -287,7 +289,16 @@ module.exports = (app, vocabularyList, sentencesList) => {
                 let found = false
                 let skip = false
                 if (fullDataElement.ambiguity) {
+                    fullDataElement.foundElements.forEach(foundElement => {
+                        if (foundElement.word === foundElement.primaryWord) {
+                            overridingWords = [ foundElement ]
+                            skip = true
+                            return
+                        }
+                    })
+                    if (skip) break
                     fullDataElements[i - 1]?.foundElements.forEach((previousElement) => {
+                        if (!!!previousElement.grammar) return
                         grammar.grammarPriorityCombinations.forEach(combination => {
                             if (previousElement.grammar[0] + "+" + fullDataElement.foundElements[j].grammar[0] === combination) {
                                 overridingWords = [ fullDataElement.foundElements[j] ]
@@ -307,6 +318,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     if (skip) break
                     if (found) continue
                     fullDataElements[i + 1]?.foundElements.forEach((nextElement) => {
+                        if (!!!nextElement.grammar) return
                         grammar.grammarPriorityCombinations.forEach(combination => {
                             if (fullDataElement.foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
                                 overridingWords = [ fullDataElement.foundElements[j] ]
