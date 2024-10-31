@@ -167,7 +167,7 @@ module.exports = {
     },
     sentenceExceptionCharacters,
     sentencePriorityFindings,
-    sentenceIgnoreFindings,
+    // sentenceIgnoreFindings,
     sentenceIgnoreAlternatives,
     wordsToIgnoreForComposingWords,
     katakanaRegularization,

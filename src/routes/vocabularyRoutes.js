@@ -284,61 +284,57 @@ module.exports = (app, vocabularyList, sentencesList) => {
             
             let overridingWords = []
 
-            const filteredElements = fullDataElement.foundElements
-                .filter(foundElement => !foundElement.grammar.includes("exp") || foundElement.grammar.length > 1)
-            if (filteredElements.length === 1) overridingWords = filteredElements
-            else
-                for (let j = 0; j < fullDataElement.foundElements.length; j++) {
-                    let found = false
-                    let skip = false
+            for (let j = 0; j < fullDataElement.foundElements.length; j++) {
+                let found = false
+                let skip = false
 
-                    fullDataElement.foundElements.forEach(foundElement => {
-                        if (foundElement.word === foundElement.primaryWord) {
-                            overridingWords = [ foundElement ]
+                fullDataElement.foundElements.forEach(foundElement => {
+                    if (foundElement.word === foundElement.primaryWord) {
+                        overridingWords = [ foundElement ]
+                        skip = true
+                        return
+                    }
+                })
+                if (skip) break
+                fullDataElements[i - 1]?.foundElements.forEach((previousElement) => {
+                    if (!!!previousElement.grammar) return
+                    grammar.grammarPriorityCombinations.forEach(combination => {
+                        if (previousElement.grammar[0] + "+" + fullDataElement.foundElements[j].grammar[0] === combination) {
+                            overridingWords = [ fullDataElement.foundElements[j] ]
                             skip = true
                             return
                         }
                     })
-                    if (skip) break
-                    fullDataElements[i - 1]?.foundElements.forEach((previousElement) => {
-                        if (!!!previousElement.grammar) return
-                        grammar.grammarPriorityCombinations.forEach(combination => {
-                            if (previousElement.grammar[0] + "+" + fullDataElement.foundElements[j].grammar[0] === combination) {
-                                overridingWords = [ fullDataElement.foundElements[j] ]
-                                skip = true
-                                return
-                            }
-                        })
-                        if (skip) return
-                        grammar.grammarProbableCombinations.forEach(combination => {
-                            if (previousElement.grammar[0] + "+" + fullDataElement.foundElements[j].grammar[0] === combination) {
-                                overridingWords.push(fullDataElement.foundElements[j])
-                                found = true
-                                return
-                            }
-                        })
+                    if (skip) return
+                    grammar.grammarProbableCombinations.forEach(combination => {
+                        if (previousElement.grammar[0] + "+" + fullDataElement.foundElements[j].grammar[0] === combination) {
+                            overridingWords.push(fullDataElement.foundElements[j])
+                            found = true
+                            return
+                        }
                     })
-                    if (skip) break
-                    if (found) continue
-                    fullDataElements[i + 1]?.foundElements.forEach((nextElement) => {
-                        if (!!!nextElement.grammar) return
-                        grammar.grammarPriorityCombinations.forEach(combination => {
-                            if (fullDataElement.foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
-                                overridingWords = [ fullDataElement.foundElements[j] ]
-                                skip = true
-                                return
-                            }
-                        })
-                        if (skip) return
-                        grammar.grammarProbableCombinations.forEach(combination => {
-                            if (fullDataElement.foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
-                                overridingWords.push(fullDataElement.foundElements[j])
-                                return
-                            }
-                        })
+                })
+                if (skip) break
+                if (found) continue
+                fullDataElements[i + 1]?.foundElements.forEach((nextElement) => {
+                    if (!!!nextElement.grammar) return
+                    grammar.grammarPriorityCombinations.forEach(combination => {
+                        if (fullDataElement.foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
+                            overridingWords = [ fullDataElement.foundElements[j] ]
+                            skip = true
+                            return
+                        }
                     })
-                    if (skip) break
-                }
+                    if (skip) return
+                    grammar.grammarProbableCombinations.forEach(combination => {
+                        if (fullDataElement.foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
+                            overridingWords.push(fullDataElement.foundElements[j])
+                            return
+                        }
+                    })
+                })
+                if (skip) break
+            }
 
             if (fullDataElement.ambiguity && overridingWords.length === 1) {
                 fullDataElement.foundElements = overridingWords

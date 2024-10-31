@@ -202,9 +202,11 @@ module.exports = {
             const japaneseWord = katakanaRegularization(vocabularyWord.primaryWord)
             if (japaneseWord.includes(regularizedString) || regularizedString.includes(japaneseWord)) {
                 includes = true
-                if (regularizedString.includes(japaneseWord)) foundWords.push(japaneseWord)
-                if (vocabularyWord.adjectivePrecisions?.type === "na" && regularizedString.includes(japaneseWord + "な")) foundWords.push(japaneseWord + "な")
-                if (regularizedString.includes("お" + japaneseWord)) foundWords.push("お" + japaneseWord)
+                if (!vocabularyWord.grammar.includes("exp") || vocabularyWord.grammar.length > 1) {
+                    if (regularizedString.includes(japaneseWord)) foundWords.push(japaneseWord)
+                    if (vocabularyWord.adjectivePrecisions?.type === "na" && regularizedString.includes(japaneseWord + "な")) foundWords.push(japaneseWord + "な")
+                    if (regularizedString.includes("お" + japaneseWord)) foundWords.push("お" + japaneseWord)
+                }
             }
     
             // Alternative word filtering
@@ -213,7 +215,8 @@ module.exports = {
                 includes = true
                 if (
                     regularizedString.includes(secondaryWord) &&
-                    !sentenceIgnoreAlternatives.includes(secondaryWord)
+                    !sentenceIgnoreAlternatives.includes(secondaryWord) &&
+                    !vocabularyWord.grammar.includes("exp")
                 ) foundWords.push(secondaryWord)
             }
     
