@@ -123,8 +123,6 @@ module.exports = (app, vocabularyList, sentencesList) => {
             else {
                 const matchingWords = []
                 vocabularyList.forEach((word) => {
-                    if(libFunctions.sentenceIgnoreFindings[sentenceElement] === word.primaryWord) return
-
                     if (bypass) {
                         // If we assumed the sentence element is already known
                         // and the current word base matches with the sentence element
@@ -196,13 +194,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
         sentencesList.forEach((sentence) => {            
             let matchingWord
             
-            if (sentence.sentence.includes(foundWord.primaryWord)) {
-                matchingWord = foundWord.primaryWord
-            }
-            else if (sentence.sentence.includes(foundWord.secondaryWord)) {
-                matchingWord = foundWord.secondaryWord
-            }
-            else if (foundWord.inflexions) {
+            if (foundWord.inflexions) {
                 const foundInflexion = libFunctions.findByInflexion(foundWord, sentence.sentence)
                 if (foundInflexion.foundWords?.length > 0) {
                     matchingWord = foundInflexion.foundWords[0]
@@ -217,8 +209,13 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     }
                 }
             }
+            else if (sentence.sentence.includes(foundWord.primaryWord)) {
+                matchingWord = foundWord.primaryWord
+            }
+            else if (sentence.sentence.includes(foundWord.secondaryWord)) {
+                matchingWord = foundWord.secondaryWord
+            }
 
-            if (libFunctions.sentenceIgnoreFindings[matchingWord] === foundWord.primaryWord) return
             if (!!matchingWord) {
                 let splittedSentence = []
                 let index = 0
@@ -283,12 +280,18 @@ module.exports = (app, vocabularyList, sentencesList) => {
 
         // We try to solve ambiguities based on grammar function of the word, the previous and the next one
         fullDataElements.forEach((fullDataElement, i) => {
+            if (!fullDataElement.ambiguity) return
+            
             let overridingWords = []
 
-            for (let j = 0; j < fullDataElement.foundElements.length; j++) {
-                let found = false
-                let skip = false
-                if (fullDataElement.ambiguity) {
+            const filteredElements = fullDataElement.foundElements
+                .filter(foundElement => !foundElement.grammar.includes("exp") || foundElement.grammar.length > 1)
+            if (filteredElements.length === 1) overridingWords = filteredElements
+            else
+                for (let j = 0; j < fullDataElement.foundElements.length; j++) {
+                    let found = false
+                    let skip = false
+
                     fullDataElement.foundElements.forEach(foundElement => {
                         if (foundElement.word === foundElement.primaryWord) {
                             overridingWords = [ foundElement ]
@@ -336,7 +339,6 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     })
                     if (skip) break
                 }
-            }
 
             if (fullDataElement.ambiguity && overridingWords.length === 1) {
                 fullDataElement.foundElements = overridingWords

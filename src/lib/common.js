@@ -24,9 +24,9 @@ const sentencePriorityFindings = [
 ]
 
 // Words whose alternative form can be confused with many different words, we decide to skip them
-const sentenceIgnoreFindings = {
-    "した": "下"
-}
+/* const sentenceIgnoreFindings = {
+    
+} */
 
 // This is for the finding words phase (before building the sentence)
 // When these alternatives are found, they override, in the next phase, more probable words whose main form is shorter
@@ -34,7 +34,8 @@ const sentenceIgnoreFindings = {
 // So we decide to assume this alternative form is not the one intended in the sentence
 const sentenceIgnoreAlternatives = [
     "今日は",
-    "彼の"
+    "彼の",
+    "した"
 ]
 
 // Words whose composing smaller words are misleading
