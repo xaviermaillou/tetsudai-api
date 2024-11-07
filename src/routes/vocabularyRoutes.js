@@ -1,7 +1,7 @@
 const { dictionnary } = require('tetsudai-common')
-const libFunctions = require('../lib/common')
+const libCommon = require('../lib/common')
 const filters = require('../lib/filters')
-const grammar = require('../lib/grammar')
+const libGrammar = require('../lib/grammar')
 
 module.exports = (app, vocabularyList, sentencesList) => {
     app.get('/vocabularyList/:offset/:level/:grammar/:collection/:search?', (req, res) => {
@@ -41,7 +41,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
             '\nOffset:', offset)
         
         const vocabularyArray = []
-        const foundJapaneseWordsArray = []
+        const foundWords = []
 
         const searchIsLatin = (/^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/).test(search)
     
@@ -68,7 +68,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     const alreadyAddedItem = vocabularyArray.find((element) => element.id === word.id)
                     if (alreadyAddedItem === undefined) {
                         vocabularyArray.push({
-                            ...libFunctions.getBasicWordElements(word),
+                            ...libCommon.getBasicWordElements(word),
                             frequency: word.frequency,
                             importance: filters
                                 .getWordImportance(word, searchElement, i === 0 ? 2 : 1, searchIsLatin)
@@ -82,80 +82,46 @@ module.exports = (app, vocabularyList, sentencesList) => {
                     && searchThroughWordResult.includes
                     && searchThroughWordResult.foundWords.length > 0
                 )
-                    foundJapaneseWordsArray.push( ...searchThroughWordResult.foundWords )
+                    foundWords.push( ...searchThroughWordResult.foundWords )
             })
         })
 
-        let foundSentence = []
+        let foundSentence
 
         // If none of the found words is the whole search string, we can assume there are several words in the search
-        if (!foundJapaneseWordsArray.includes(libFunctions.katakanaRegularization(libFunctions.numberRegularization(search)))) {
+        if (!foundWords.some(word => word.matching === libCommon.katakanaRegularization(libCommon.numberRegularization(search)))) {
             // Based on all the found elements, and the search string, we try to build a sentence
-            foundSentence = libFunctions.findComposingWords(foundJapaneseWordsArray, search)
-        }
-
-        const foundSentenceWithIds = []
-
-        const injectImportanceToWordIfMatch = (id) => {
-            const alreadyAddedItem = vocabularyArray.find((element) => element.id === id)
-            if (alreadyAddedItem?.importance < 2) {
-                alreadyAddedItem.importance = 2
-            }
-        }
-
-        // With the found sentence, we execute a new search loop with the separated words
-        // so that we can reinject the word id
-        foundSentence.forEach((sentenceElement) => {
-            // With bypass we decide that we can assume we already know what the current sentence element is
-            let bypass = false
-            if (libFunctions.sentencePriorityFindings.includes(sentenceElement)) bypass = true
-
-            if (libFunctions.sentenceExceptionCharacters.includes(sentenceElement)) {
-                foundSentenceWithIds.push({
-                    ambiguity: false,
-                    foundElements: [
-                        {
-                            word: sentenceElement
-                        }
-                    ]
-                })
-            }
-            else {
-                const matchingWords = []
-                vocabularyList.forEach((word) => {
-                    if (bypass) {
-                        // If we assumed the sentence element is already known
-                        // and the current word base matches with the sentence element
-                        // we can directly push the current word...
-                        if (libFunctions.katakanaRegularization(word.primaryWord) === sentenceElement) {
-                            matchingWords.push({
-                                id: word.id,
-                                word: sentenceElement
-                            })
-                            // Here we add importance to the found word in vocabulary array for classic results
-                            injectImportanceToWordIfMatch(word.id)
-                        }
-                        // ...and ignore any other word
-                        else return
-                    }
-                    // If no bypass, we check if the current sentence element perfectly matches with the current word
-                    else if (filters.getWordImportance(word, sentenceElement, 2, searchIsLatin) === 2) {
-                        matchingWords.push({
-                            id: word.id,
-                            word: sentenceElement
-                        })
-                        // Here we add importance to the found word in vocabulary array for classic results
-                        injectImportanceToWordIfMatch(word.id)
-                    }
-                })
+            foundSentence = libCommon.findComposingWords(foundWords, search)
+            
+            foundSentence.elements.forEach((sentenceElement, i) => {
+                if (!sentenceElement.ambiguity) return
                 
-                foundSentenceWithIds.push({
-                    // If there is more than one matching word, we define ambiguity as true
-                    ambiguity: matchingWords.length > 1,
-                    foundElements: matchingWords
+                let overridingWords = libGrammar.disambiguateMultipleMatchings(sentenceElement.foundElements, foundSentence.elements, i)
+    
+                if (overridingWords.length === 1) {
+                    sentenceElement.foundElements = overridingWords
+                    sentenceElement.ambiguity = false
+                }
+            })
+    
+            foundSentence.elements.forEach((sentenceElement, i) => {
+                sentenceElement.foundElements.forEach(element => {
+                    vocabularyArray.forEach(word => {
+                        if (word.id === element.id) word.importance = 2
+                    })
+                    if (element.id) {
+                        element.importance = libCommon.getImportanceWithinSentence(element.grammar[0])
+                        element.sentenceGrammar = libGrammar
+                            .dispatchFunctionInSentence(
+                                element,
+                                element.matching,
+                                foundSentence.elements[i - 1]?.foundElements[0],
+                                foundSentence.elements[i + 1]?.foundElements[0]
+                            )
+                    }
                 })
-            }
-        })
+            })
+        }
 
         const sortedByImportance = vocabularyArray.sort((a, b) => b.importance - a.importance)
     
@@ -163,9 +129,9 @@ module.exports = (app, vocabularyList, sentencesList) => {
     
         console.log('Vocabulaire envoyé:', slicedVocabularyArray.length)
         res.json({
-            results: libFunctions.sortByObjectKey(slicedVocabularyArray, dictionnary.fr.levels),
-            sentence: (search && foundSentence.join('').length === search.length) ? foundSentenceWithIds : null,
-            foundSentence // Used for detectMissingParts function in tetsudai-data-server
+            results: libCommon.sortByObjectKey(slicedVocabularyArray, dictionnary.fr.levels),
+            sentence: (!!search && foundSentence?.strings.join("").length === search.length) ? foundSentence.elements : null,
+            foundSentence: foundSentence?.strings // Used for detectMissingParts function in tetsudai-data-server
         })
     })
     
@@ -195,11 +161,11 @@ module.exports = (app, vocabularyList, sentencesList) => {
             let matchingWord
             
             if (foundWord.inflexions) {
-                const foundInflexion = libFunctions.findByInflexion(foundWord, sentence.sentence)
+                const foundInflexion = libCommon.findByInflexion(foundWord, sentence.sentence)
                 if (foundInflexion.foundWords?.length > 0) {
                     matchingWord = foundInflexion.foundWords[0]
                 }
-                const extractedBase = grammar.dispatchBaseWord(foundWord.primaryWord, foundWord.verbPrecisions)
+                const extractedBase = libGrammar.dispatchBaseWord(foundWord.primaryWord, foundWord.verbPrecisions)
                 if (extractedBase) {
                     if (sentence.sentence.includes(extractedBase.teForm)) {
                         matchingWord = extractedBase.teForm
@@ -250,114 +216,7 @@ module.exports = (app, vocabularyList, sentencesList) => {
     
         res.json({
             word: foundWord,
-            sentences: libFunctions.shuffle(sentencesArray).slice(0, 20)
-        })
-    })
-
-    app.post('/foundSentence', (req, res) => {
-        const fullDataElements = [ ...req.body.elements ]
-        fullDataElements.forEach((fullDataElement) => {
-            fullDataElement.foundElements.forEach((element) => {
-                if (element.id) {
-                    vocabularyList.forEach(word => {
-                        if (word.id === element.id) {
-                            element.primaryWord = word.primaryWord
-                            element.secondaryWord = word.secondaryWord
-                            element.elements = word.elements
-                            element.jukujikun = word.jukujikun
-                            element.translation = word.translation
-                            element.jukujikunAsMain = word.jukujikunAsMain
-                            element.verbPrecisions = word.verbPrecisions
-                            element.grammar = word.grammar
-                            element.inflexions = word.inflexions
-                            element.sentenceGrammar = undefined
-                            element.importance = libFunctions.getImportanceWithinSentence(word.grammar[0])
-                        }
-                    })
-                }
-            })
-        })
-
-        // We try to solve ambiguities based on grammar function of the word, the previous and the next one
-        fullDataElements.forEach((fullDataElement, i) => {
-            if (!fullDataElement.ambiguity) return
-            
-            let overridingWords = []
-
-            for (let j = 0; j < fullDataElement.foundElements.length; j++) {
-                let found = false
-                let skip = false
-
-                fullDataElement.foundElements.forEach(foundElement => {
-                    if (foundElement.word === foundElement.primaryWord) {
-                        overridingWords = [ foundElement ]
-                        skip = true
-                        return
-                    }
-                })
-                if (skip) break
-                fullDataElements[i - 1]?.foundElements.forEach((previousElement) => {
-                    if (!!!previousElement.grammar) return
-                    grammar.grammarPriorityCombinations.forEach(combination => {
-                        if (previousElement.grammar[0] + "+" + fullDataElement.foundElements[j].grammar[0] === combination) {
-                            overridingWords = [ fullDataElement.foundElements[j] ]
-                            skip = true
-                            return
-                        }
-                    })
-                    if (skip) return
-                    grammar.grammarProbableCombinations.forEach(combination => {
-                        if (previousElement.grammar[0] + "+" + fullDataElement.foundElements[j].grammar[0] === combination) {
-                            overridingWords.push(fullDataElement.foundElements[j])
-                            found = true
-                            return
-                        }
-                    })
-                })
-                if (skip) break
-                if (found) continue
-                fullDataElements[i + 1]?.foundElements.forEach((nextElement) => {
-                    if (!!!nextElement.grammar) return
-                    grammar.grammarPriorityCombinations.forEach(combination => {
-                        if (fullDataElement.foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
-                            overridingWords = [ fullDataElement.foundElements[j] ]
-                            skip = true
-                            return
-                        }
-                    })
-                    if (skip) return
-                    grammar.grammarProbableCombinations.forEach(combination => {
-                        if (fullDataElement.foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
-                            overridingWords.push(fullDataElement.foundElements[j])
-                            return
-                        }
-                    })
-                })
-                if (skip) break
-            }
-
-            if (fullDataElement.ambiguity && overridingWords.length === 1) {
-                fullDataElement.foundElements = overridingWords
-                fullDataElement.ambiguity = false
-            }
-        })
-
-        fullDataElements.forEach((fullDataElement, i) => {
-            fullDataElement.foundElements.forEach((element) => {
-                element.sentenceGrammar = grammar
-                    .dispatchFunctionInSentence(
-                        element,
-                        element.word,
-                        fullDataElements[i - 1]?.foundElements[0],
-                        fullDataElements[i + 1]?.foundElements[0]
-                    )
-            })
-        })
-
-        res.json({
-            elements: fullDataElements,
-            translation: req.body.translation,
-            id: req.body.id
+            sentences: libCommon.shuffle(sentencesArray).slice(0, 20)
         })
     })
 }

@@ -300,7 +300,7 @@ module.exports = {
             // Based on all the words that are included within the current word (foundWords) we find the composing words (as if the current word was a sentence)
             // It is done to ensure the included words don't overlap
             // As instance 国人 (country person) was considered as being included in 韓国人 (korean person), while that one was actually composed by 韓国 and 人
-            const filteredWordsStrings = libFunctions.findComposingWords(Object.keys(foundWords), base)
+            const filteredWordsStrings = libFunctions.findComposingWords(Object.keys(foundWords).map(key => ({ matching: key })), base).strings
 
             filteredWordsStrings.forEach(string => {
                 vocabularyList.forEach(word2 => {

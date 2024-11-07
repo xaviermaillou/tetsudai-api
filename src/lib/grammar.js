@@ -723,7 +723,22 @@ const getTense = (word, foundString) => {
             })
         })
     })
-    if (!foundTense && word.adjectivePrecisions?.type === "na") {
+    if (!!!foundTense) {
+        Object.entries(word.alternativeInflexions).forEach(([tense, tenseValues]) => {
+            Object.entries(tenseValues).forEach(([sign, signValues]) => {
+                Object.entries(signValues).forEach(([form, formValues]) => {
+                    if ((formValues.main + formValues.ending) === foundString) {
+                        foundTense = {
+                            tense,
+                            form,
+                            sign
+                        }
+                    }
+                })
+            })
+        })
+    }
+    if (!!!foundTense && word.adjectivePrecisions?.type === "na") {
         foundTense = {
             tense: "nonPast",
             form: "neutral",
@@ -744,6 +759,22 @@ const getForm = (word, foundString) => {
     ) foundForm = "teForm"
     return foundForm
 }
+
+const grammarProbableCombinations = [
+    "nc+ptc",
+    "pre+nc",
+    "nc+suf",
+    "np+ptc",
+    "dtm+nc",
+    "pn+ptc",
+    "ptc+vb",
+    "ptc+adj",
+    "cpl+ptc",
+]
+const grammarPriorityCombinations = [
+    "pre+nc",
+    "nb+suf",
+]
 
 module.exports = {
     dispatchInflexion: (word, verbPrecisions, adjectivePrecisions) => {
@@ -786,19 +817,62 @@ module.exports = {
             }
         }
     },
-    grammarProbableCombinations: [
-        "nc+ptc",
-        "pre+nc",
-        "nc+suf",
-        "np+ptc",
-        "dtm+nc",
-        "pn+ptc",
-        "ptc+vb",
-        "ptc+adj",
-        "cpl+ptc",
-    ],
-    grammarPriorityCombinations: [
-        "pre+nc",
-        "nb+suf",
-    ]
+    disambiguateMultipleMatchings: (foundElements, sentenceElements, index) => {
+        let overridingWords = []
+
+        for (let j = 0; j < foundElements.length; j++) {
+            let found = false
+            let skip = false
+
+            const primaryWordMatchings = foundElements.filter(foundElement => foundElement.matching === foundElement.primaryWord)
+            if (primaryWordMatchings.length === 1) {
+                overridingWords = [ ...primaryWordMatchings ]
+                break
+            }
+
+            sentenceElements[index - 1]?.foundElements.forEach((previousElement) => {
+                if (!!!previousElement.grammar) return
+                grammarPriorityCombinations.forEach(combination => {
+                    if (previousElement.grammar[0] + "+" + foundElements[j].grammar[0] === combination) {
+                        overridingWords = [ foundElements[j] ]
+                        skip = true
+                        return
+                    }
+                })
+                if (skip) return
+                grammarProbableCombinations.forEach(combination => {
+                    if (previousElement.grammar[0] + "+" + foundElements[j].grammar[0] === combination) {
+                        overridingWords.push(foundElements[j])
+                        found = true
+                        return
+                    }
+                })
+            })
+
+            if (skip) break
+
+            if (found) continue
+
+            sentenceElements[index + 1]?.foundElements.forEach((nextElement) => {
+                if (!!!nextElement.grammar) return
+                grammarPriorityCombinations.forEach(combination => {
+                    if (foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
+                        overridingWords = [ foundElements[j] ]
+                        skip = true
+                        return
+                    }
+                })
+                if (skip) return
+                grammarProbableCombinations.forEach(combination => {
+                    if (foundElements[j].grammar[0] + "+" + nextElement.grammar[0] === combination) {
+                        overridingWords.push(foundElements[j])
+                        return
+                    }
+                })
+            })
+            if (skip) break
+        }
+
+        return overridingWords
+    }
 }

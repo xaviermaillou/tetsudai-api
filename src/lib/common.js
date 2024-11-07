@@ -8,7 +8,7 @@ const sentenceExceptionCharacters = [
     "　",
 ]
 
-// Words whose main form should be prioritized over any other's alternative
+// Words whose main form should be prioritized over any other word's alternative
 const sentencePriorityFindings = [
     "は",
     "を",
@@ -42,6 +42,10 @@ const sentenceIgnoreAlternatives = [
 const wordsToIgnoreForComposingWords = [
     "日本"
 ]
+
+const smallerWordsRules = {
+    "では": (previousWord) => !!previousWord && !sentenceExceptionCharacters.includes(previousWord.matching) && !previousWord.grammar?.includes("ptc")
+}
 
 const katakanaRegularization = (string) => {
     return string
@@ -114,6 +118,59 @@ const numberRegularization = (string) => {
         .split('３').join('三').split('3').join('三')
         .split('２').join('二').split('2').join('二')
         .split('１').join('一').split('1').join('一')
+}
+
+const findMatchingWords = (foundWords, string, reverse) => {
+    // We create a copy of 'search' string, which will be sliced from the beginning at each found word
+    let searchCopy = string
+    const composingWords = []
+
+    for (let i = 0; i < searchCopy.length; i++) {
+        // 'stringToCompare' value is equal to 'searchCopy' with an 'i' amount of letters removed from its ending
+        const stringToCompare = i === 0 ? searchCopy : searchCopy.slice(reverse ? i : 0, reverse ? undefined : -i)
+        // The current word 'stringToCompare' (a slice of 'searchCopy') matches one of the found words
+        const foundMatchings = foundWords.filter(word => word.matching === katakanaRegularization(numberRegularization(stringToCompare)))
+        if (foundMatchings.length > 0) {
+            if (foundMatchings.some(word => !!smallerWordsRules[word.matching] && smallerWordsRules[word.matching](composingWords[i - 1]))) continue
+
+            composingWords[reverse ? "unshift" : "push"]({
+                foundElements: foundMatchings,
+                ambiguity: foundMatchings.length > 1
+            })
+
+            searchCopy = searchCopy.slice(reverse ? 0 : -i, reverse ? i : undefined)
+
+            if (searchCopy === stringToCompare) break
+            // Loop is reset
+            else i = -1
+        }
+        // No match has been found between any of the 'stringToCompare' variables (slices of 'searchCopy') and the found words
+        // so we remove one letter from the beginning of 'searchCopy' and start a new loop with this new value of 'searchCopy'
+        else if (i === (searchCopy.length - 1)) {
+            if (sentenceExceptionCharacters.includes(stringToCompare)) {
+                composingWords[reverse ? "unshift" : "push"]({
+                    foundElements: [ { matching: stringToCompare } ],
+                    ambiguity: false
+                })
+            }
+
+            searchCopy = searchCopy.slice(reverse ? 0 : 1, reverse ? -1 : undefined)
+            
+            if (searchCopy === stringToCompare) break
+            // Loop is reset
+            else i = -1
+        }
+    }
+
+    composingWords.forEach((word, i) => {
+        word.foundElements.forEach(element => {
+            if (!!element.smallerComposingWords) {
+                const pass = smallerWordsRules[element.matching](composingWords[i - 1])
+            }
+        })
+    })
+
+    return composingWords
 }
 
 module.exports = {
@@ -196,62 +253,32 @@ module.exports = {
         inflexionsArray.forEach((inflexion) => {
             if (inflexion.includes(string) || string.includes(inflexion)) {
                 includes = true
-                if (string.includes(inflexion)) foundWords.push(inflexion)
+                if (string.includes(inflexion)) foundWords.push({ matching: inflexion, ...word })
             }
             if (inflexion === string) matches = true
         })
 
         return { includes, foundWords, score: (matches ? score : 0 )}
     },
-    findComposingWords: (stringsArray, string) => {
-        // We create a copy of 'search' string, which will be sliced from the beginning at each found word
-        let searchCopy = string
-        let alternativeSearchCopy = string
-        const foundWords = []
-        const alternativeFoundWords = []
-        for (let i = 0; i < searchCopy.length; i++) {
-            // 'stringToCompare' value is equal to 'searchCopy' with an 'i' amount of letters removed from its ending
-            const stringToCompare = i === 0 ? searchCopy : searchCopy.slice(0, -i)
-            // The current word 'stringToCompare' (a slice of 'searchCopy') matches one of the found words
-            if (stringsArray.includes(katakanaRegularization(numberRegularization(stringToCompare)))) {
-                foundWords.push(stringToCompare)
-                searchCopy = searchCopy.slice(-i)
-                if (searchCopy === stringToCompare) break
-                // Loop is reset
-                else i = -1
-            }
-            // No match has been found between any of the 'stringToCompare' variables (slices of 'searchCopy') and the found words
-            // so we remove one letter from the beginning of 'searchCopy' and start a new loop with this new value of 'searchCopy'
-            else if (i === (searchCopy.length - 1)) {
-                if (sentenceExceptionCharacters.includes(stringToCompare)) {
-                    foundWords.push(stringToCompare)
-                }
-                searchCopy = searchCopy.slice(1)
-                if (searchCopy === stringToCompare) break
-                // Loop is reset
-                else i = -1
-            }
+    findComposingWords: (foundWords, string) => {
+        const composingWords = findMatchingWords(foundWords, string, false)
+        const alternativeComposingWords = []
+
+        const firstFoundMatchingStrings = composingWords.map(word => word.foundElements[0].matching)
+        if (firstFoundMatchingStrings.length < string.length) {
+            alternativeComposingWords.push(...findMatchingWords(foundWords, string, true))
         }
-        // If an element has been skipped, we redo the loop in reverse
-        if (foundWords.join("").length < string.length) {
-            for (let i = 0; i < alternativeSearchCopy.length; i++) {
-                const stringToCompare = i === 0 ? alternativeSearchCopy : alternativeSearchCopy.slice(i)
-                if (stringsArray.includes(katakanaRegularization(numberRegularization(stringToCompare)))) {
-                    alternativeFoundWords.unshift(stringToCompare)
-                    alternativeSearchCopy = alternativeSearchCopy.slice(0, i)
-                    if (alternativeSearchCopy === stringToCompare) break
-                    else i = -1
-                }
-                else if (i === (alternativeSearchCopy.length - 1)) {
-                    if (sentenceExceptionCharacters.includes(stringToCompare)) {
-                        alternativeFoundWords.unshift(stringToCompare)
-                    }
-                    alternativeSearchCopy = alternativeSearchCopy.slice(0, -1)
-                    if (alternativeSearchCopy === stringToCompare) break
-                    else i = -1
-                }
+        const secondFoundMatchingStrings = alternativeComposingWords.map(word => word.foundElements[0].matching)
+
+        return firstFoundMatchingStrings.join("").length > secondFoundMatchingStrings.join("").length ?
+            {
+                elements: composingWords,
+                strings: firstFoundMatchingStrings
             }
-        }
-        return foundWords.join("").length > alternativeFoundWords.join("").length ? foundWords : alternativeFoundWords
+            :
+            {
+                elements: alternativeComposingWords,
+                strings: secondFoundMatchingStrings
+            }
     }
 }

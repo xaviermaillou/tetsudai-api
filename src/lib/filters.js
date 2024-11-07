@@ -1,4 +1,4 @@
-const { katakanaRegularization, numberRegularization, findByInflexion, sentenceIgnoreAlternatives } = require("./common")
+const { katakanaRegularization, numberRegularization, findByInflexion, sentencePriorityFindings, sentenceIgnoreAlternatives } = require("./common")
 const grammar = require("./grammar")
 
 const frenchRegularization = (string) => {
@@ -8,6 +8,16 @@ const frenchRegularization = (string) => {
 }
 const romajiRegularization = (string) => {
     return string.split('ou').join('o').split('ei').join('e').split('aa').join('a').split('ii').join('i').split('uu').join('u')
+}
+
+const japaneseWordMatching = (string, word, wordData) => {
+    let matching
+    if (string.includes(word)) matching = word
+    if (wordData.adjectivePrecisions?.type === "na" && string.includes(word + "な")) matching = word + "な"
+    if (string.includes("お" + word)) matching = "お" + word
+
+    if (!!matching) return { matching, ...wordData }
+    else return null
 }
 
 module.exports = {
@@ -202,19 +212,18 @@ module.exports = {
             const japaneseWord = katakanaRegularization(vocabularyWord.primaryWord)
             if (japaneseWord.includes(regularizedString) || regularizedString.includes(japaneseWord)) {
                 includes = true
-                if (regularizedString.includes(japaneseWord)) foundWords.push(japaneseWord)
-                if (vocabularyWord.adjectivePrecisions?.type === "na" && regularizedString.includes(japaneseWord + "な")) foundWords.push(japaneseWord + "な")
-                if (regularizedString.includes("お" + japaneseWord)) foundWords.push("お" + japaneseWord)
+                const matching = japaneseWordMatching(regularizedString, japaneseWord, vocabularyWord)
+                if (!!matching) foundWords.push(matching)
             }
     
             // Alternative word filtering
             const secondaryWord = katakanaRegularization(vocabularyWord.secondaryWord)
             if (secondaryWord.includes(regularizedString) || regularizedString.includes(secondaryWord)) {
                 includes = true
-                if (
-                    regularizedString.includes(secondaryWord) &&
-                    !sentenceIgnoreAlternatives.includes(secondaryWord)
-                ) foundWords.push(secondaryWord)
+                if (!sentencePriorityFindings.includes(secondaryWord) && !sentenceIgnoreAlternatives.includes(secondaryWord)) {
+                    const matching = japaneseWordMatching(regularizedString, secondaryWord, vocabularyWord)
+                    if (!!matching) foundWords.push(matching)
+                }
             }
     
             // Inflexions filtering
@@ -228,15 +237,29 @@ module.exports = {
             const extractedBase = grammar.dispatchBaseWord(vocabularyWord.primaryWord, vocabularyWord.verbPrecisions)
             if (!!extractedBase?.stem && (extractedBase.stem.includes(regularizedString) || regularizedString.includes(extractedBase.stem))) {
                 includes = true
-                if (regularizedString.includes(extractedBase.stem)) foundWords.push(extractedBase.stem)
+                if (regularizedString.includes(extractedBase.stem)) foundWords.push({ matching: extractedBase.stem, ...vocabularyWord })
             }
             if (!!extractedBase?.teForm && (extractedBase.teForm.includes(regularizedString) || regularizedString.includes(extractedBase.teForm))) {
                 includes = true
-                if (regularizedString.includes(extractedBase.teForm)) foundWords.push(extractedBase.teForm)
+                if (regularizedString.includes(extractedBase.teForm)) foundWords.push({ matching: extractedBase.teForm, ...vocabularyWord })
             }
         }
 
-        return { includes, foundWords }
+        const cumulatedWords = []
+
+        return {
+            includes,
+            foundWords: foundWords.filter(word => {
+                if (!cumulatedWords.some(el => el.id === word.id && el.matching === word.matching)) {
+                    cumulatedWords.push({
+                        id: word.id,
+                        matching: word.matching
+                    })
+                    return true
+                }
+                else return false
+            })
+        }
     },
 
     getWordImportance: (vocabularyWord, string, score, searchIsLatin) => {
