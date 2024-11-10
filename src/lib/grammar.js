@@ -1,3 +1,5 @@
+const libCommon = require("./common")
+
 const masu = 'ます'
 const masen = 'ません'
 const nai = 'ない'
@@ -823,6 +825,12 @@ module.exports = {
         for (let j = 0; j < foundElements.length; j++) {
             let found = false
             let skip = false
+
+            const priorityMatchings = foundElements.filter(foundElement => libCommon.ignoreWhenAmbiguity[foundElement.matching] !== foundElement.id)
+            if (priorityMatchings.length === 1) {
+                overridingWords = [ ...priorityMatchings ]
+                break
+            }
 
             const primaryWordMatchings = foundElements.filter(foundElement => foundElement.matching === foundElement.primaryWord)
             if (primaryWordMatchings.length === 1) {

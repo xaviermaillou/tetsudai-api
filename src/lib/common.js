@@ -43,8 +43,15 @@ const wordsToIgnoreForComposingWords = [
     "日本"
 ]
 
+// For cases where two or more words, that compose a bigger word but are not related to it, should be taken into account and the bigger word ignored
 const smallerWordsRules = {
     "では": (previousWord) => !!previousWord && !sentenceExceptionCharacters.includes(previousWord.matching) && !previousWord.grammar?.includes("ptc")
+}
+
+// Very special cases where we decide to just ignore a word when there is ambiguity, since there is no way to grammarly distinguish it from another homonym, that is more likely to be used
+// As instance, if there is ambiguity with the string "いる", we assume it will probably be いる as presence verb, thus we ignore its homonym that means "to be needed" (id 322)
+const ignoreWhenAmbiguity = {
+    "いる": 322
 }
 
 const katakanaRegularization = (string) => {
@@ -155,7 +162,7 @@ const findMatchingWords = (foundWords, string, reverse) => {
             }
 
             searchCopy = searchCopy.slice(reverse ? 0 : 1, reverse ? -1 : undefined)
-            
+
             if (searchCopy === stringToCompare) break
             // Loop is reset
             else i = -1
@@ -227,6 +234,7 @@ module.exports = {
     // sentenceIgnoreFindings,
     sentenceIgnoreAlternatives,
     wordsToIgnoreForComposingWords,
+    ignoreWhenAmbiguity,
     katakanaRegularization,
     numberRegularization,
     shuffle: (array) => { 
